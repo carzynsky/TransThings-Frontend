@@ -1,0 +1,46 @@
+body{
+    background-color:#f7f6f6;
+}
+
+.Truck-Image{
+    margin-top: 100px;
+    width: 120%;
+    height: 90%;
+}
+
+.Title-Label{
+    color: black;
+    font-size: 70px;
+    margin-left: -10px;
+}
+
+.Message-Label{
+    color: black;
+    font-size: 25px;
+}
+
+.My-Form{
+    border-radius: 50px;
+    width: 250px;
+}
+
+.My-Login-Button{
+    border-radius: 50px;
+    width: 100px;
+    background-color: coral;
+    border-color: coral;
+    color: white;
+    margin-top: 10px;
+}
+
+.My-Login-Button:hover{
+    background-color: black;
+    color: white;
+    border-color: black;
+}
+
+.My-Login-Button:focus{
+    outline: none;
+    box-shadow: none;
+}
+
