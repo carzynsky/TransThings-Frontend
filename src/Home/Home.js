@@ -3,26 +3,69 @@ import NavigationBar from './NavigationBar';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './Home.css';
 import {Button, Col, Row, Form, Container} from 'react-bootstrap';
+import Loader from 'react-loader-spinner';
 import truckImage from './images/truck.png';
 import axios from 'axios';
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 
 class Home extends Component {
-    constructor(){
-        super();
+    constructor(props){
+        super(props);
         this.state = {
             login: '',
             password: '',
             role: '',
-            errorResponse: ' '
+            errorResponse: ' ',
+            isLogging: false,
+            extraMessageLogin: '',
+            extraMessagePassword: '',
+            isLoginValid: true,
+            isPasswordValid: true
         }
     }
 
     // POST axios method to authenticate user
-    auth = () => {
+    async auth() {
+        let isValid = true
+        if(this.state.login === '' || this.state.login.trim() ===''){
+            isValid = false
+            this.setState({
+                extraMessageLogin: 'Wprowadź login.'
+            })
+        }
+        else{
+            this.setState({
+                extraMessageLogin: ''
+            })
+        }
+        if(this.state.password === '' || this.state.login.trim() === ''){
+            isValid = false
+            this.setState({
+                extraMessagePassword: 'Wprowadź hasło.',
+            })
+        }
+        else{
+            this.setState({
+                extraMessagePassword: ''
+            })
+        }
+
+        if(!isValid){
+            this.setState({
+                errorResponse: ''
+            })
+            return
+        }
+
+        this.setState({
+            errorResponse: '',
+            isLogging: true,
+        })
+
         const options = {
             url: 'https://localhost:44394/auth',
             method: 'POST',
-            timeout: 5000,
+            timeout: 4000,
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json;charset=UTF-8'
@@ -33,13 +76,23 @@ class Home extends Component {
             }
           };
 
-          axios(options)
+          await axios(options)
             .then(response => {
-                console.log(response);
+                alert(response.data.message)
             })
             .catch(error => {
+                if(error.response != null){
+                    this.setState({
+                        errorResponse: error.response.data,
+                        isLogging: false,
+                        password: ''
+                    })
+                    return
+                }
                 this.setState({
-                    errorResponse: error.response.data
+                    errorResponse: 'Server is offline. Try later.',
+                    isLogging: false,
+                    password: ''
                 })
             })
     }
@@ -58,6 +111,35 @@ class Home extends Component {
     }
 
     render(){
+        const isLogging = this.state.isLogging
+        let buttonOrSpinnerComponent
+
+        if(!isLogging){
+            buttonOrSpinnerComponent = <Button 
+                                            className="My-Login-Button" 
+                                            variant="dark"
+                                            disable={this.state.isLogging}
+                                            onClick={this.auth.bind(this)}>{this.state.isLogging ? 'Logowanie' : 'Zaloguj'}
+                                        </Button>
+        }
+        else{
+            buttonOrSpinnerComponent = 
+            <div style={{marginLeft: '30px', marginTop: '8px'}}>
+                <Loader
+                type="TailSpin"
+                color="coral"
+                height='40px'
+                width='40px'/>
+            </div>
+
+        }
+
+        const enterKeydown = (event)=> {
+            if (event.keyCode === 13) {
+                this.auth()
+            }
+        }
+
         return (
             <div>
                 <NavigationBar />
@@ -73,18 +155,25 @@ class Home extends Component {
                           <Row style={{marginTop: '50px'}}>
                               <Form>
                                   <Form.Group controlId="formGroupLogin">
-                                      <Form.Label>Login</Form.Label>
-                                      <Form.Control className="My-Form" placeholder="Podaj login" onChange={this.loginFieldChange}/>
+                                      {/* <Form.Label>Login</Form.Label> */}
+                                      <Form.Control className="My-Form" placeholder="Login" onChange={this.loginFieldChange}/>
+                                      <Form.Text className="text-muted">{this.state.extraMessageLogin}</Form.Text>
                                   </Form.Group>
                                   <Form.Group controlId="formGroupPassword">
-                                      <Form.Label>Hasło</Form.Label>
-                                      <Form.Control className="My-Form" type="password" placeholder="Password" onChange={this.passwordFieldChange}/>
-                                      <Form.Text className="text-muted">{this.state.errorResponse}</Form.Text>
+                                      {/* <Form.Label>Hasło</Form.Label> */}
+                                      <Form.Control className="My-Form" type="password" placeholder="Hasło" onChange={this.passwordFieldChange} 
+                                      value={this.state.password} onKeyDown={enterKeydown}/>
+                                      <Form.Text className="text-muted">{this.state.extraMessagePassword}</Form.Text>
                                   </Form.Group>
                               </Form>
                           </Row>
                           <Row>
-                              <Button className="My-Login-Button" variant="dark" onClick={this.auth}>Zaloguj</Button>
+                              {buttonOrSpinnerComponent}
+                          </Row>
+                          <Row>
+                              <div style={{marginTop: '10px'}}>
+                                <Form.Text className="text-muted">{this.state.errorResponse}</Form.Text>
+                              </div>
                           </Row>
                       </Col>
                       <Col xs='7'>
