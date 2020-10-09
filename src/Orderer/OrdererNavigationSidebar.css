@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Overpass:wght@700&display=swap');
+
+.Orderer-Navigation-Container{
+    height: 754px;
+    width: 300px;
+    background-color:#05386B;
+    font-family: 'Overpass', sans-serif;
+    color:#5CDB95;
+}
+
+.Orderer-Nav-Link{
+    margin-left: auto;
+    margin-right: auto;
+    color:#5CDB95;
+    font-size: 14px;
+    font-family: 'Overpass', sans-serif;
+    padding-top: 10px;
+    height: 35px;
+    border-radius: 20px;
+    margin-top: 25px;
+    width: 150px;
+    text-align: center;
+}
+
+.Orderer-Nav-Link:hover{
+    text-decoration: none;
+    color: #edf5e1;
+}

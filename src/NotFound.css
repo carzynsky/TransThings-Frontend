@@ -1,0 +1,12 @@
+.Error-Code-Label{
+    font-family: 'Overpass', sans-serif;
+    color:black;
+    font-size: 90px;
+    margin-left: -10px;
+}
+
+.Error-Message-Label{
+    font-family: 'Overpass', sans-serif;
+    color:black;
+    font-size: 20px;
+}

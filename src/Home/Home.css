@@ -1,5 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Overpass:wght@700&display=swap');
 body{
-    background-color:#f7f6f6;
+    background-color:#5CDB95;
 }
 
 .Truck-Image{
@@ -9,38 +10,56 @@ body{
 }
 
 .Title-Label{
-    color: black;
-    font-size: 70px;
+    font-family: 'Overpass', sans-serif;
+    color:#05386B;
+    font-size: 90px;
     margin-left: -10px;
 }
 
 .Message-Label{
-    color: black;
-    font-size: 25px;
+    font-family: 'Overpass', sans-serif;
+    color:#05386B;
+    font-size: 20px;
 }
 
 .My-Form{
-    border-radius: 50px;
+    border-radius: 20px;
     width: 250px;
+    background-color: transparent;
+    border: solid 2px #05386B;
+    height: 40px;
+    padding-left: 15px;
+}
+
+.My-Form:hover{
+    background-color: transparent;
+    border: solid 2px #edf5e1;
+}
+.My-Form:focus,
+.My-Form:active{
+    background-color: transparent;
+    border: solid 2px #edf5e1;
+    outline: none;
 }
 
 .My-Login-Button{
     border-radius: 50px;
     width: 100px;
-    background-color: coral;
-    border-color: coral;
-    color: white;
+    background-color: transparent;
+    border: solid 3px #05386B;
+    color: #05386B;
     margin-top: 10px;
 }
 
+.My-Login-Button:focus,
 .My-Login-Button:hover{
-    background-color: black;
-    color: white;
-    border-color: black;
-}
-
-.My-Login-Button:focus{
     outline: none;
     box-shadow: none;
+    background-color: transparent;
+    border: solid 3px #edf5e1;
 }
 
+.text-muted{
+    padding-left: 5px;
+    padding-top: 2px;
+}
