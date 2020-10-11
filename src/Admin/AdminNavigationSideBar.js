@@ -1,9 +1,24 @@
 import React from 'react';
-import {Nav, Container} from 'react-bootstrap';
-import {NavLink} from 'react-router-dom';
+import { Nav, Container } from 'react-bootstrap';
+import { NavLink } from 'react-router-dom';
+import history from '../history.js';
 import './AdminNavigationSideBar.css';
+import * as Cookies from 'js-cookie';
 
-function AdminNavigationSideBar() {
+const AdminNavigationSideBar = () => {
+
+    const handleLogout = (event) => {
+        event.preventDefault();
+        Cookies.remove('session');
+        history.push('/');
+        window.location.reload();
+    }
+
+    const handleBackHome = (event) => {
+        event.preventDefault();
+        history.push('/');
+    }
+
     return (
         <Container className="Navigation-Container">
             <Nav className="flex-column">
@@ -17,7 +32,8 @@ function AdminNavigationSideBar() {
                 <NavLink activeStyle={{ backgroundColor: '#5CDB95', color: '#05386B'}} className="Admin-Nav-Link" to= '/admin/magazyny'>MAGAZYNY</NavLink>
                 <NavLink activeStyle={{ backgroundColor: '#5CDB95', color: '#05386B'}} className="Admin-Nav-Link" to= '/admin/statystyki'>STATYSTYKI</NavLink>
                 <NavLink activeStyle={{ backgroundColor: '#5CDB95', color: '#05386B'}} className="Admin-Nav-Link" to= '/admin/profil'>PROFIL</NavLink>
-                <Nav.Link  className='Admin-Nav-Link' href="http://localhost:3000/">WYLOGUJ</Nav.Link>
+                <Nav.Link href='/' className='Admin-Nav-Link' onClick={handleBackHome}>POWRÓT</Nav.Link>
+                <Nav.Link href="/" className='Admin-Nav-Link' onClick={handleLogout}>WYLOGUJ</Nav.Link>
             </Nav>
         </Container>
     );

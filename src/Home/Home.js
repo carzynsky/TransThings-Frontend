@@ -1,12 +1,13 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import NavigationBar from './NavigationBar';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './Home.css';
 import {Button, Col, Row, Form, Container} from 'react-bootstrap';
-import {Redirect} from 'react-router-dom';
+import history from '../history';
 import Loader from 'react-loader-spinner';
 import axios from 'axios';
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import { setSessionCookie, getSessionCookie } from '../sessions';
 
 class Home extends Component {
     constructor(props){
@@ -19,8 +20,18 @@ class Home extends Component {
             isLogging: false,
             extraMessageLogin: '',
             extraMessagePassword: '',
-            isLoginValid: true,
-            isPasswordValid: true
+            isLogged: false
+        }
+    }
+    componentDidMount(){
+        let isLogged = getSessionCookie();
+        console.log(isLogged.role)
+
+        if(isLogged.role !== undefined){
+            this.setState({
+                isLogged: true,
+                role: isLogged.role
+            })
         }
     }
 
@@ -59,7 +70,7 @@ class Home extends Component {
 
         this.setState({
             errorResponse: '',
-            isLogging: true,
+            isLogging: true
         })
 
         const options = {
@@ -78,14 +89,14 @@ class Home extends Component {
 
           await axios(options)
             .then(response => {
-                console.log(response.data)
                 setTimeout(() => {
-                    this.setState({
-                        redirect: true,
-                        role: response.data.role
-                    })
+                    // this.setState({
+                    //     role: response.data.role
+                    // })
+                    setSessionCookie(response.data);
+                    history.push('/admin/konfiguracja');
+                    window.location.reload();
                 }, 1000) // 1 second delay
-
             })
             .catch(error => {
                 if(error.response != null){
@@ -119,19 +130,25 @@ class Home extends Component {
         })
     }
 
+    onClickContinue = () => {
+        console.log('siemaaa!');
+        history.push('/admin/konfiguracja')
+    }
+
     render(){
         const isLogging = this.state.isLogging
+        const isLogged = this.state.isLogged
+
         let buttonOrSpinnerComponent
 
-        if(!isLogging){
+        if(!isLogging && !isLogged){
             buttonOrSpinnerComponent = <Button 
                                             className="My-Login-Button" 
                                             variant="light"
-                                            disable={this.state.isLogging}
                                             onClick={this.auth.bind(this)}>{this.state.isLogging ? 'Logowanie' : 'Zaloguj'}
                                         </Button>
         }
-        else{
+        else if(isLogging && !isLogged){
             buttonOrSpinnerComponent = 
             <div style={{marginLeft: '30px', marginTop: '8px'}}>
                 <Loader
@@ -149,21 +166,43 @@ class Home extends Component {
             }
         }
 
-        if (this.state.redirect === true){
-            switch(this.state.role){
-                case 'Admin':{
-                    return <Redirect push to='/admin/konfiguracja'/>
-                }
-                case 'Forwarder':{
-                    return <Redirect push to='/spedytor/zlecenia'/>
-                }
-                case 'Orderer':{
-                    return <Redirect push to='/pracownik-zamowien/zamowienia'/>
-                }
-                default:
-                    break;
-            }
-          }
+
+        let loginComponent
+        if(isLogged){
+            loginComponent = <div>
+                <Row>
+                    <h1>Witaj {this.state.role}!</h1>
+                </Row>
+                <Row>
+                <Button className="My-Login-Button" 
+                                    variant="light"
+                                    onClick={this.onClickContinue.bind(this)}>Kontynuuj</Button>
+                </Row>
+                                
+                            </div>
+
+        }
+        else{
+            loginComponent = 
+            <Form>
+            <Form.Group controlId="formGroupLogin">
+                {/* <Form.Label>Login</Form.Label> */}
+                <input className="My-Form" placeholder="Login" onChange={this.loginFieldChange} autoComplete="off"/>
+                <Form.Text className="text-muted">{this.state.extraMessageLogin}</Form.Text>
+            </Form.Group>
+            <Form.Group controlId="formGroupPassword">
+                {/* <Form.Label>Hasło</Form.Label> */}
+                <input className="My-Form" type="password" placeholder="Hasło" onChange={this.passwordFieldChange} 
+                value={this.state.password} onKeyDown={enterKeydown} autoComplete="off"/>
+                <Form.Text className="text-muted">{this.state.extraMessagePassword}</Form.Text>
+            </Form.Group>
+        </Form>
+        }
+
+        // const session = useContext(SessionContext);
+        // if(session.userRole === 'Admin'){
+        //     console.log("JESSEETESTT")
+        // }
 
         return (
             <div>
@@ -184,17 +223,7 @@ class Home extends Component {
                       <Col xs='4'>
                         <Row style={{marginTop: '80px'}}>
                               <Form>
-                                  <Form.Group controlId="formGroupLogin">
-                                      {/* <Form.Label>Login</Form.Label> */}
-                                      <input className="My-Form" placeholder="Login" onChange={this.loginFieldChange} autocomplete="off"/>
-                                      <Form.Text className="text-muted">{this.state.extraMessageLogin}</Form.Text>
-                                  </Form.Group>
-                                  <Form.Group controlId="formGroupPassword">
-                                      {/* <Form.Label>Hasło</Form.Label> */}
-                                      <input className="My-Form" type="password" placeholder="Hasło" onChange={this.passwordFieldChange} 
-                                      value={this.state.password} onKeyDown={enterKeydown} autoComplete="off"/>
-                                      <Form.Text className="text-muted">{this.state.extraMessagePassword}</Form.Text>
-                                  </Form.Group>
+                                  {loginComponent}
                               </Form>
                           </Row>
                           <Row>

@@ -11,8 +11,8 @@ function NavigationBar() {
     <Navbar.Collapse id="basic-navbar-nav">
       <Nav className="ml-auto">
         <NavLink exact activeStyle={{ backgroundColor: '#05386B', color: '#5CDB95'}} className="Nav-Link" to= '/'>STRONA GŁÓWNA</NavLink>
-        <NavLink activeStyle={{ backgroundColor: '#05386B', color: '#5CDB95'}} className="Nav-Link" to= '/about'>INFORMACJE</NavLink>
-        <NavLink activeStyle={{ backgroundColor: '#05386B', color: '#5CDB95'}} className="Nav-Link" to= '/contact'>KONTAKT</NavLink>
+        <NavLink activeStyle={{ backgroundColor: '#05386B', color: '#5CDB95'}} className="Nav-Link" to= '/informacje'>INFORMACJE</NavLink>
+        <NavLink activeStyle={{ backgroundColor: '#05386B', color: '#5CDB95'}} className="Nav-Link" to= '/kontakt'>KONTAKT</NavLink>
       </Nav>
     </Navbar.Collapse>
   </Navbar>

@@ -12,10 +12,10 @@ function About() {
       <Row>
           <Col xs='12'>
               <Row>
-                  <label class="Title-Label">404</label>
+                  <label className="Title-Label">404</label>
               </Row>
               <Row>
-                  <label class="Message-Label">Informacje niezaimplementowane.</label>
+                  <label className="Message-Label">Informacje niezaimplementowane.</label>
               </Row>
           </Col>
       </Row>

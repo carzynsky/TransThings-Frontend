@@ -12,10 +12,10 @@ function Contact() {
       <Row>
           <Col xs='12'>
               <Row>
-                  <label class="Title-Label">404</label>
+                  <label className="Title-Label">404</label>
               </Row>
               <Row>
-                  <label class="Message-Label">Kontakt niezaimplementowany.</label>
+                  <label className="Message-Label">Kontakt niezaimplementowany.</label>
               </Row>
           </Col>
       </Row>

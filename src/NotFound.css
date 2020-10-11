@@ -10,3 +10,22 @@
     color:black;
     font-size: 20px;
 }
+
+.Home-Redirect-Button{
+    font-family: 'Overpass', sans-serif;
+    border-radius: 50px;
+    width: 100px;
+    background-color: transparent;
+    border: solid 3px #1a1a1d;
+    color: #1a1a1d;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+.Home-Redirect-Button:focus,
+.Home-Redirect-Button:hover{
+    outline: none;
+    box-shadow: none;
+    background-color: transparent;
+    border: solid 3px #edf5e1;
+}
