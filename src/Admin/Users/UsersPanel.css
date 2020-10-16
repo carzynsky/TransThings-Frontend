@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Overpass:wght@700&display=swap');
+
+.User-Tile{
+    padding-top: 15px;
+    background-color: #202125;
+    height: 200px;
+    border-radius: 10px;
+}
+.Short-Details-User-Tile{
+    background-color: #202125;
+    height: 400px;
+    border-radius: 10px;
+}
+
+.User-Details-Header{
+    padding-left: 5px;
+    padding-top: 15px;
+    font-size: 30px;
+    color:#5CDB95;
+    font-family: 'Overpass', sans-serif;
+}
+
+.User-Details-SubMessage{
+    padding-left: 5px;
+    font-size: 14px;
+    color:#a5a4a4;
+    font-family: 'Overpass', sans-serif;
+}
+
+.Add-User-Nav-Link{
+    color:#5CDB95;
+    font-size: 14px;
+    font-family: 'Overpass', sans-serif;
+}
+
+.Add-User-Nav-Link:hover{
+    text-decoration: none;
+}
+
+.Add-User-Redirect-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 100px;
+    font-size: 13px;
+    background-color: #5cdb95;
+    box-shadow: 2px 2px 15px -4px rgba(92,219,149,1);
+    border: solid 3px #5cdb95;
+    color: #202125;
+    margin-top: 5px;
+    padding-top: 10px;
+}
+
+.Edit-User-Redirect-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 80px;
+    padding-top: 10px;
+    font-size: 13px;
+    text-align: center;
+    background-color: #5cdb95;
+    border: solid 3px #5cdb95;
+    color: #202125;
+    box-shadow: 2px 2px 15px -4px rgba(92,219,149,1);
+    margin-top: 10px;
+}
+
+.Users-Data-Table-Container{
+    height: 400px;
+    background-color: #202125;
+    color: #5cdb95;
+    padding-top: 15px;
+    padding-bottom: 20px;
+    max-width: 750px;
+    border-radius: 10px;
+    font-family: 'Overpass', sans-serif;
+}
+
+.Users-Data-Table{
+    max-width: 750px;
+    font-size: 13px;
+    font-family: 'Overpass', sans-serif;
+}
+
+.Log-Stats-Header-SubMessage{
+    font-size: 24px;
+    font-family: 'Overpass', sans-serif;
+    color:#5cdb95;
+    padding-left: 6px;
+}
+
+.User-Details-Button{
+    font-size: 20px;
+    color:#5cdb95;
+}
+.User-Details-Button:hover{
+    cursor: pointer;
+    color: white;
+}

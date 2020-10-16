@@ -10,9 +10,10 @@ function NavigationBar() {
     <Navbar.Toggle aria-controls="basic-navbar-nav" />
     <Navbar.Collapse id="basic-navbar-nav">
       <Nav className="ml-auto">
-        <NavLink exact activeStyle={{ backgroundColor: '#05386B', color: '#5CDB95'}} className="Nav-Link" to= '/'>STRONA GŁÓWNA</NavLink>
-        <NavLink activeStyle={{ backgroundColor: '#05386B', color: '#5CDB95'}} className="Nav-Link" to= '/informacje'>INFORMACJE</NavLink>
-        <NavLink activeStyle={{ backgroundColor: '#05386B', color: '#5CDB95'}} className="Nav-Link" to= '/kontakt'>KONTAKT</NavLink>
+        {/* <NavLink exact activeStyle={{ border: '3px solid #05386B'}} className="Nav-Link" to= '/'>STRONA GŁÓWNA</NavLink> */}
+        <NavLink exact activeStyle={{ border: '3px solid #5CDB95'}} className="Nav-Link" to= '/'>STRONA GŁÓWNA</NavLink>
+        <NavLink activeStyle={{  border: '3px solid #5CDB95'}} className="Nav-Link" to= '/informacje'>INFORMACJE</NavLink>
+        <NavLink activeStyle={{  border: '3px solid #5CDB95'}} className="Nav-Link" to= '/kontakt'>KONTAKT</NavLink>
       </Nav>
     </Navbar.Collapse>
   </Navbar>

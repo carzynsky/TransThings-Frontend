@@ -8,6 +8,7 @@ import Loader from 'react-loader-spinner';
 import axios from 'axios';
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import { setSessionCookie, getSessionCookie } from '../sessions';
+import ParticlesBackground from '../ParticlesBackground';
 
 class Home extends Component {
     constructor(props){
@@ -23,14 +24,20 @@ class Home extends Component {
             isLogged: false
         }
     }
-    componentDidMount(){
-        let isLogged = getSessionCookie();
-        console.log(isLogged.role)
 
-        if(isLogged.role !== undefined){
+    componentDidMount(){
+        let sessionCookie = getSessionCookie();
+
+        if(sessionCookie.login === undefined){
+            this.setState({
+                isLogged: false
+            })
+        }
+        else{
             this.setState({
                 isLogged: true,
-                role: isLogged.role
+                login: sessionCookie.login,
+                role: sessionCookie.role
             })
         }
     }
@@ -90,30 +97,46 @@ class Home extends Component {
           await axios(options)
             .then(response => {
                 setTimeout(() => {
-                    // this.setState({
-                    //     role: response.data.role
-                    // })
                     setSessionCookie(response.data);
-                    history.push('/admin/konfiguracja');
-                    window.location.reload();
-                }, 1000) // 1 second delay
+                    switch(response.data.role){
+                        case 'Admin':{
+                            history.push('/admin/konfiguracja');
+                            break;
+                        }
+                        case 'Forwarder':{
+                            history.push('/spedytor/zlecenia');
+                            break;
+                        }
+                        case 'Orderer':{
+                            history.push('/pracownik-zamowien/zamowienia');
+                            break;
+                        }
+                        default:{
+                            return;
+                        }
+                    }
+                    window.location.reload(); // reload page after change url to get auth validation (workaround)
+                }, 1000) // 1 second delay for spinner
             })
             .catch(error => {
-                if(error.response != null){
+                setTimeout(() => {
+                    if(error.response != null){
+                        this.setState({
+                            errorResponse: error.response.data,
+                            isLogging: false,
+                            password: '',
+                            redirect: false
+                        })
+                        return
+                    }
+    
                     this.setState({
-                        errorResponse: error.response.data,
+                        errorResponse: 'Server is offline. Try later.',
                         isLogging: false,
                         password: '',
                         redirect: false
                     })
-                    return
-                }
-                this.setState({
-                    errorResponse: 'Server is offline. Try later.',
-                    isLogging: false,
-                    password: '',
-                    redirect: false
-                })
+                }, 1000); // 1 second delay for loading spinner
             })
     }
 
@@ -130,82 +153,92 @@ class Home extends Component {
         })
     }
 
+    // handle continue to panel
     onClickContinue = () => {
-        console.log('siemaaa!');
-        history.push('/admin/konfiguracja')
+        // NOTE: checking for cookie should be here
+        switch(this.state.role){
+            case 'Admin':{
+                history.push('/admin/konfiguracja');
+                break;
+            }
+            case 'Forwarder':{
+                history.push('/spedytor/zlecenia');
+                break;
+            }
+            case 'Orderer':{
+                history.push('/pracownik-zamowien/zamowienia');
+                break;
+            }
+            default:{
+                return;
+            }
+        }
+    }
+
+    // Hanndle enter click
+    handleEnterKeyDown = (event) => {
+        if (event.keyCode === 13) {
+            this.auth()
+        }
     }
 
     render(){
         const isLogging = this.state.isLogging
-        const isLogged = this.state.isLogged
-
         let buttonOrSpinnerComponent
 
-        if(!isLogging && !isLogged){
-            buttonOrSpinnerComponent = <Button 
-                                            className="My-Login-Button" 
-                                            variant="light"
-                                            onClick={this.auth.bind(this)}>{this.state.isLogging ? 'Logowanie' : 'Zaloguj'}
-                                        </Button>
+        if(!isLogging && !this.state.isLogged){
+            buttonOrSpinnerComponent = 
+            <Button 
+                className="My-Login-Button" 
+                variant="light"
+                onClick={this.auth.bind(this)}>ZALOGUJ
+            </Button>
         }
-        else if(isLogging && !isLogged){
+        else if(isLogging && !this.state.isLogged){
             buttonOrSpinnerComponent = 
             <div style={{marginLeft: '30px', marginTop: '8px'}}>
                 <Loader
                 type="TailSpin"
-                color="#05386B"
+                color="#5CDB95"
                 height='40px'
                 width='40px'/>
             </div>
-
         }
-
-        const enterKeydown = (event)=> {
-            if (event.keyCode === 13) {
-                this.auth()
-            }
-        }
-
 
         let loginComponent
-        if(isLogged){
-            loginComponent = <div>
+        if(this.state.isLogged){
+            loginComponent = 
+            <div>
                 <Row>
-                    <h1>Witaj {this.state.role}!</h1>
+                    <h1 className="Greeting-User-Message">WITAJ {this.state.login}!</h1>
                 </Row>
                 <Row>
-                <Button className="My-Login-Button" 
-                                    variant="light"
-                                    onClick={this.onClickContinue.bind(this)}>Kontynuuj</Button>
+                    <Button 
+                        className="My-Login-Button" 
+                        variant="light"
+                        onClick={this.onClickContinue.bind(this)}>DALEJ
+                    </Button>
                 </Row>
-                                
-                            </div>
-
+            </div>
         }
         else{
             loginComponent = 
             <Form>
-            <Form.Group controlId="formGroupLogin">
-                {/* <Form.Label>Login</Form.Label> */}
-                <input className="My-Form" placeholder="Login" onChange={this.loginFieldChange} autoComplete="off"/>
-                <Form.Text className="text-muted">{this.state.extraMessageLogin}</Form.Text>
-            </Form.Group>
-            <Form.Group controlId="formGroupPassword">
-                {/* <Form.Label>Hasło</Form.Label> */}
-                <input className="My-Form" type="password" placeholder="Hasło" onChange={this.passwordFieldChange} 
-                value={this.state.password} onKeyDown={enterKeydown} autoComplete="off"/>
-                <Form.Text className="text-muted">{this.state.extraMessagePassword}</Form.Text>
-            </Form.Group>
-        </Form>
+                <Form.Group controlId="formGroupLogin">
+                    <input className="My-Form" placeholder="Login" onChange={this.loginFieldChange} autoComplete="off"/>
+                    <Form.Text className="text-muted" style={{color: 'white'}}>{this.state.extraMessageLogin}</Form.Text>
+                </Form.Group>
+                <Form.Group controlId="formGroupPassword">
+                    <input className="My-Form" type="password" placeholder="Hasło" onChange={this.passwordFieldChange} 
+                    value={this.state.password} onKeyDown={this.handleEnterKeyDown.bind(this)} autoComplete="off"/>
+                    <Form.Text className="text-muted" style={{color: 'white'}}>{this.state.extraMessagePassword}</Form.Text>
+                </Form.Group>
+            </Form>
         }
-
-        // const session = useContext(SessionContext);
-        // if(session.userRole === 'Admin'){
-        //     console.log("JESSEETESTT")
-        // }
 
         return (
             <div>
+                <ParticlesBackground />
                 <NavigationBar />
                 <Container style={{marginTop: '150px'}}>
                   <Row>
@@ -222,10 +255,8 @@ class Home extends Component {
                       </Col>
                       <Col xs='4'>
                         <Row style={{marginTop: '80px'}}>
-                              <Form>
-                                  {loginComponent}
-                              </Form>
-                          </Row>
+                            {loginComponent}
+                        </Row>
                           <Row>
                               {buttonOrSpinnerComponent}
                           </Row>

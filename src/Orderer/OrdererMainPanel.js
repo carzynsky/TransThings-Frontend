@@ -2,7 +2,7 @@ import React from 'react';
 import {Row, Col, Container} from 'react-bootstrap';
 import {BrowserRouter, Switch, Route} from 'react-router-dom';
 import OrdererNavigationSidebar from './OrdererNavigationSidebar';
-import NotFound from '../NotFound';
+import LoadingPage from '../LoadingPage';
 import './OrdererMainPanel.css';
 
 function OrdererMainPanel() {
@@ -15,11 +15,11 @@ function OrdererMainPanel() {
                 </Col>
                 <Col xs='9'>
                     <Switch>
-                        <Route path='/pracownik-zamowien/zamowienia' exact component={NotFound}></Route>
-                        <Route path='/pracownik-zamowien/kontrahenci' component={NotFound}></Route>
-                        <Route path='/pracownik-zamowien/spedytorzy' component={NotFound}></Route>
-                        <Route path='/pracownik-zamowien/magazyny' component={NotFound}></Route>
-                        <Route path='/pracownik-zamowien/profil' component={NotFound}></Route>
+                        <Route path='/pracownik-zamowien/zamowienia' exact component={LoadingPage}></Route>
+                        <Route path='/pracownik-zamowien/kontrahenci' component={LoadingPage}></Route>
+                        <Route path='/pracownik-zamowien/spedytorzy' component={LoadingPage}></Route>
+                        <Route path='/pracownik-zamowien/magazyny' component={LoadingPage}></Route>
+                        <Route path='/pracownik-zamowien/profil' component={LoadingPage}></Route>
                     </Switch>
                 </Col>
             </Row>

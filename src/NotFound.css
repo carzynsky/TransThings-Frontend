@@ -1,23 +1,24 @@
 .Error-Code-Label{
     font-family: 'Overpass', sans-serif;
-    color:black;
+    color:#5CDB95;
     font-size: 90px;
     margin-left: -10px;
 }
 
 .Error-Message-Label{
     font-family: 'Overpass', sans-serif;
-    color:black;
+    color:#5CDB95;
     font-size: 20px;
 }
 
 .Home-Redirect-Button{
     font-family: 'Overpass', sans-serif;
-    border-radius: 50px;
+    font-size: 13px;
     width: 100px;
-    background-color: transparent;
-    border: solid 3px #1a1a1d;
-    color: #1a1a1d;
+    background-color: #5CDB95;
+    border: solid 3px #5CDB95;
+    color: #202125;
+    box-shadow: 2px 2px 15px -4px rgba(92,219,149,1);
     margin-top: 10px;
     padding-top: 10px;
 }
@@ -28,4 +29,5 @@
     box-shadow: none;
     background-color: transparent;
     border: solid 3px #edf5e1;
+    color: white;
 }

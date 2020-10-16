@@ -3,10 +3,12 @@ import {Container, Col, Row} from 'react-bootstrap';
 import NavigationBar from './NavigationBar';
 import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './About.css';
+import ParticlesBackground from '../ParticlesBackground';
 
 function About() {
   return (
     <div>
+    <ParticlesBackground />
     <NavigationBar />
     <Container style={{marginTop: '100px'}}>
       <Row>

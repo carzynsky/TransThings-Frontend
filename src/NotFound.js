@@ -23,7 +23,7 @@ class NotFound extends Component{
             this.setState({
                 loaded: true
             })
-        }, 500);
+        }, 1200);
     }
 
     render(){
@@ -47,7 +47,7 @@ class NotFound extends Component{
                                     className="Home-Redirect-Button" 
                                     variant="light"
                                     onClick={this.handleClick.bind(this)}
-                                    >Wróć
+                                    >WRÓĆ
                                 </Button>
                             </Row>
                         </Col>
@@ -57,26 +57,7 @@ class NotFound extends Component{
         }
         return(
             <div>
-                <Container style={{marginTop: '100px'}}>
-                    <Row>
-                        <Col xs='12' style={{marginLeft: '150px', marginTop: '50px'}}>
-                            <Row>
-                                {/* <label className="Error-Code-Label">404</label> */}
-                            </Row>
-                            <Row>
-                                {/* <label className="Error-Message-Label">Nie znaleziono strony o podanym adresie.</label> */}
-                            </Row>
-                            <Row>
-                                {/* <Button 
-                                    className="Home-Redirect-Button" 
-                                    variant="light"
-                                    onClick={this.handleClick.bind(this)}
-                                    >Wróć
-                                </Button> */}
-                            </Row>
-                        </Col>
-                    </Row>
-                </Container>
+
             </div>)
     }
 }

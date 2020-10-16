@@ -1,9 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Overpass:wght@700&display=swap');
 
 .Navigation-Container{
+    margin-left: -20px;
     height: 754px;
-    width: 300px;
-    background-color:#05386B;
+    width: 280px;
+    background-color:#202125;
     font-family: 'Overpass', sans-serif;
     color:#5CDB95;
 }
@@ -12,17 +13,36 @@
     margin-left: auto;
     margin-right: auto;
     color:#5CDB95;
-    font-size: 14px;
+    font-size: 13px;
     font-family: 'Overpass', sans-serif;
     padding-top: 10px;
     height: 35px;
-    border-radius: 20px;
-    margin-top: 25px;
-    width: 150px;
+    margin-top: 20px;
+    width: 130px;
     text-align: center;
 }
 
 .Admin-Nav-Link:hover{
     text-decoration: none;
     color: #edf5e1;
+}
+
+.Icon-Avatar{
+    margin-left: auto;
+    margin-right: auto;
+    width: 50px;
+    height: 50px;
+    background-color: #5CDB95;
+    border-radius: 100%;
+    font-family: 'Overpass', sans-serif;
+    color: #1a1a1d;
+    text-align: center;
+    padding-top: 15px;
+    box-shadow: 2px 2px 15px -2px rgba(92,219,149,1);
+}
+
+.Admin-Header{
+    font-family: 'Overpass', sans-serif;
+    color: #5CDB95;  
+    font-size: 12px; 
 }
