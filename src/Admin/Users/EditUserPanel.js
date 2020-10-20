@@ -5,7 +5,7 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './AddUserPanel.css';
 
-class AddUserPanel extends Component{
+class EditUserPanel extends Component{
     constructor(props){
         super(props);
         this.state = {
@@ -34,7 +34,7 @@ class AddUserPanel extends Component{
                                     <Form style={{paddingLeft: '10px'}}>
                                         <Form.Group controlId="formGroupNewUserFirstName">
                                             <Form.Label style={{color: 'white'}}>Imię</Form.Label>
-                                            <Form.Control className="My-Form-Add-User" autoComplete="off"/>
+                                            <Form.Control defaultValue='Maciej'className="My-Form-Add-User" autoComplete="off"/>
                                             <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
                                         </Form.Group>
                                     </Form>
@@ -43,7 +43,7 @@ class AddUserPanel extends Component{
                                     <Form style={{paddingLeft: '10px'}}>
                                         <Form.Group controlId="formGroupNewUserFirstName">
                                             <Form.Label style={{color: 'white'}}>Nazwisko</Form.Label>
-                                            <Form.Control className="My-Form-Add-User" autoComplete="off"/>
+                                            <Form.Control  defaultValue='Kąska' className="My-Form-Add-User" autoComplete="off"/>
                                             <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
                                         </Form.Group>
                                     </Form>
@@ -65,7 +65,7 @@ class AddUserPanel extends Component{
                                     <Form style={{paddingLeft: '10px'}}>
                                         <Form.Group controlId="formGroupNewUserFirstName">
                                             <Form.Label style={{color: 'white'}}>Pesel</Form.Label>
-                                            <Form.Control className="My-Form-Add-User" autoComplete="off"/>
+                                            <Form.Control defaultValue='09080709812' className="My-Form-Add-User" autoComplete="off"/>
                                             <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
                                         </Form.Group>
                                     </Form>
@@ -76,7 +76,7 @@ class AddUserPanel extends Component{
                                         <Form style={{paddingLeft: '10px'}}>
                                             <Form.Group controlId="formGroupNewUserFirstName">
                                                 <Form.Label style={{color: 'white'}}>Login:</Form.Label>
-                                                <Form.Control className="My-Form-Add-User" autoComplete="off"/>
+                                                <Form.Control defaultValue='maciej.kaska' className="My-Form-Add-User" autoComplete="off"/>
                                                 <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
                                             </Form.Group>
                                         </Form>
@@ -85,7 +85,7 @@ class AddUserPanel extends Component{
                                         <Form style={{paddingLeft: '10px'}}>
                                             <Form.Group controlId="formGroupNewUserFirstName">
                                                 <Form.Label style={{color: 'white'}}>Mail:</Form.Label>
-                                                <Form.Control className="My-Form-Add-User" autoComplete="off"/>
+                                                <Form.Control defaultValue='maciej.kaska@gmail.com' className="My-Form-Add-User" autoComplete="off"/>
                                                 <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
                                             </Form.Group>
                                         </Form>
@@ -107,11 +107,6 @@ class AddUserPanel extends Component{
                                 </Row>
                             </Container>
                             </div>
-                        </Row>
-                        <Row>
-                            <label style={{color: '#5CDB95'}}>
-                                Uwaga! Hasło dla użytkownika jest automatycznie generowane i pojawi się w tym miejscu. 
-                                Zostanie również wysłane użytkownikowi na podanym mail. Dla bezpieczeństwa pamiętaj aby przekazać je użytkownikowi!</label>
                         </Row>
                         <Row style={{marginTop: '25px'}}>
                             <Col xs='2'>
@@ -181,4 +176,4 @@ class AddUserPanel extends Component{
     }
 
 }
-export default AddUserPanel
+export default EditUserPanel

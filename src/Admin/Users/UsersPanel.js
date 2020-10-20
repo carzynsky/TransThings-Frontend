@@ -17,6 +17,7 @@ class UsersPanel extends Component{
             userRoles: [],
             addUserRedirect: false,
             initials: '',
+            isSelected: false,
             selectedUser: {
                 firstName: '',
                 lastName: '',
@@ -110,7 +111,8 @@ class UsersPanel extends Component{
                 phoneNumber: data.phoneNumber,
                 userRole: data.userRole
             },
-            initials: ini
+            initials: ini,
+            isSelected: true
         })
     }
 
@@ -268,6 +270,21 @@ class UsersPanel extends Component{
                     </Col>
                     <Col xs='4'>
                         <div className='Short-Details-User-Tile'>
+                            {!this.state.isSelected &&
+                            <Container>
+                                <Row>
+                                    <Col>
+                                        <label className="User-Details-Header">Użytkownik</label>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <label className="User-Details-SubMessage">Zaznacz użytkownika aby wyświetlić dane</label>
+                                    </Col>
+                                </Row>
+                            </Container>
+                            }
+                            {this.state.isSelected && 
                             <Container>
                             <Row>
                                 <Col>
@@ -276,11 +293,13 @@ class UsersPanel extends Component{
                                 <Col>
                                 </Col>
                                 <Col style={{paddingTop: '10px'}}>
-                                    <Button 
-                                        className="Edit-User-Redirect-Button" 
-                                        variant="light"
-                                    >EDYTUJ
-                                    </Button>
+                                    <NavLink className="Add-User-Nav-Link" to= '/admin/uzytkownicy/edytuj'>
+                                        <Button 
+                                            className="Edit-User-Redirect-Button" 
+                                            variant="light"
+                                        >EDYTUJ
+                                        </Button>
+                                    </NavLink>
                                 </Col>
                             </Row>
                             <Row style={{marginTop: '10px'}}>
@@ -330,6 +349,7 @@ class UsersPanel extends Component{
                                 </Col>
                             </Row>
                             </Container>
+    }
                         </div>
                     </Col>
                 </Row>
