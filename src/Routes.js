@@ -24,6 +24,7 @@ export const Routes = () => {
             <Route path='/kontakt' component={Contact}></Route>
             <Route path='/admin/konfiguracja' component={getSessionCookie().role === admin ? AdminMainPanel : NotFound }></Route>
             <Route path='/admin/uzytkownicy' component={getSessionCookie().role === admin ? AdminMainPanel : NotFound }></Route>
+            <Route path='/admin/kontrahenci' component={getSessionCookie().role === admin ? AdminMainPanel : NotFound }></Route>
             <Route path='/spedytor/zlecenia' component={getSessionCookie().role === forwarder ? ForwarderMainPanel : NotFound }></Route>
             <Route path='/pracownik-zamowien/zamowienia' component={getSessionCookie().role === orderer ? OrdererMainPanel : NotFound }></Route>
             <Route component={NotFound}/>
