@@ -4,16 +4,45 @@ import { NavLink } from 'react-router-dom';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './AddUserPanel.css';
+import { getSessionCookie } from '../../sessions';
+import axios from 'axios';
 
 class EditUserPanel extends Component{
     constructor(props){
         super(props);
         this.state = {
+            userId: this.props.location.userProps,
             birthdate: new Date(),
-            dateOfEmployment: new Date()
+            dateOfEmployment: new Date(),
+            token: getSessionCookie(),
+            user: ''
         }
     }
-    componentDidMount(){
+
+    async getUserById(){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/users/' + this.state.userId, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            });
+
+            const data = await response.data;
+            console.log(data)
+            this.setState({
+                user: data
+            })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    async componentDidMount(){
+        await this.getUserById();
     }
 
     render(){
@@ -34,7 +63,7 @@ class EditUserPanel extends Component{
                                     <Form style={{paddingLeft: '10px'}}>
                                         <Form.Group controlId="formGroupNewUserFirstName">
                                             <Form.Label style={{color: 'white'}}>Imię</Form.Label>
-                                            <Form.Control defaultValue='Maciej'className="My-Form-Add-User" autoComplete="off"/>
+                                            <Form.Control defaultValue={this.state.user.firstName} className="My-Form-Add-User" autoComplete="off"/>
                                             <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
                                         </Form.Group>
                                     </Form>
@@ -43,7 +72,7 @@ class EditUserPanel extends Component{
                                     <Form style={{paddingLeft: '10px'}}>
                                         <Form.Group controlId="formGroupNewUserFirstName">
                                             <Form.Label style={{color: 'white'}}>Nazwisko</Form.Label>
-                                            <Form.Control  defaultValue='Kąska' className="My-Form-Add-User" autoComplete="off"/>
+                                            <Form.Control  defaultValue={this.state.user.lastName} className="My-Form-Add-User" autoComplete="off"/>
                                             <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
                                         </Form.Group>
                                     </Form>
@@ -65,7 +94,7 @@ class EditUserPanel extends Component{
                                     <Form style={{paddingLeft: '10px'}}>
                                         <Form.Group controlId="formGroupNewUserFirstName">
                                             <Form.Label style={{color: 'white'}}>Pesel</Form.Label>
-                                            <Form.Control defaultValue='09080709812' className="My-Form-Add-User" autoComplete="off"/>
+                                            <Form.Control defaultValue={this.state.user.peselNumber} className="My-Form-Add-User" autoComplete="off"/>
                                             <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
                                         </Form.Group>
                                     </Form>
@@ -76,7 +105,7 @@ class EditUserPanel extends Component{
                                         <Form style={{paddingLeft: '10px'}}>
                                             <Form.Group controlId="formGroupNewUserFirstName">
                                                 <Form.Label style={{color: 'white'}}>Login:</Form.Label>
-                                                <Form.Control defaultValue='maciej.kaska' className="My-Form-Add-User" autoComplete="off"/>
+                                                <Form.Control defaultValue={this.state.user.login} className="My-Form-Add-User" autoComplete="off"/>
                                                 <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
                                             </Form.Group>
                                         </Form>
@@ -85,7 +114,7 @@ class EditUserPanel extends Component{
                                         <Form style={{paddingLeft: '10px'}}>
                                             <Form.Group controlId="formGroupNewUserFirstName">
                                                 <Form.Label style={{color: 'white'}}>Mail:</Form.Label>
-                                                <Form.Control defaultValue='maciej.kaska@gmail.com' className="My-Form-Add-User" autoComplete="off"/>
+                                                <Form.Control defaultValue={this.state.user.mail} className="My-Form-Add-User" autoComplete="off"/>
                                                 <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
                                             </Form.Group>
                                         </Form>

@@ -1,1 +1,2 @@
 [1010/200902.054:ERROR:file_io.cc(135)] WriteFile: Trwa zamykanie potoku. (0xE8)
+[1021/175835.739:ERROR:directory_reader_win.cc(43)] FindFirstFile: System nie mo¿e odnaleŸæ okreœlonej œcie¿ki. (0x3)

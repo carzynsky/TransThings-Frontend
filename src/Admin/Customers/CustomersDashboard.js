@@ -3,6 +3,7 @@ import { Row, Col, Container, Button} from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
+import { MdEdit } from 'react-icons/md';
 import axios from 'axios';
 import './CustomersDashboard.css';
 
@@ -182,7 +183,7 @@ class CustomersDashboard extends Component{
                                                             <Button 
                                                                 className="Edit-Customer-Redirect-Button" 
                                                                 variant="light"
-                                                            >Edytuj</Button>
+                                                            ><MdEdit size='1.0em'/><span>&nbsp;</span><span>Edytuj</span></Button>
                                                         </NavLink>
                                                 }
                                             ))

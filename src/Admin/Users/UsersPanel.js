@@ -4,6 +4,9 @@ import { Row, Col, Container, Button } from 'react-bootstrap';
 import { getSessionCookie } from '../../sessions';
 import { MDBDataTable } from 'mdbreact';
 import { Doughnut } from 'react-chartjs-2';
+import { HiUserAdd, HiOutlineRefresh } from 'react-icons/hi';
+import { CgMoreO }from 'react-icons/cg';
+import { MdEdit } from 'react-icons/md';
 import Circle from 'react-circle';
 import axios from 'axios';
 import './UsersPanel.css';
@@ -19,6 +22,7 @@ class UsersPanel extends Component{
             initials: '',
             isSelected: false,
             selectedUser: {
+                id: '',
                 firstName: '',
                 lastName: '',
                 gender: '',
@@ -101,6 +105,7 @@ class UsersPanel extends Component{
 
         this.setState({
             selectedUser: {
+                id: data.id,
                 firstName: data.firstName,
                 lastName: data.lastName,
                 gender: data.gender,
@@ -200,13 +205,13 @@ class UsersPanel extends Component{
                         <NavLink className="Add-User-Nav-Link" to= '/admin/uzytkownicy/dodaj'><Button 
                             className="Add-User-Redirect-Button" 
                             variant="light"
-                            >DODAJ
+                            ><HiUserAdd size='1.2em'/><span>&nbsp;</span><span>Dodaj</span>
                         </Button></NavLink>
                     </Col>
                     <Col xs='2'>
                     <Button
                         className="Add-User-Redirect-Button" 
-                        variant="light">ODŚWIEŻ</Button>
+                        variant="light"><HiOutlineRefresh size='1.0em'/> <span>&nbsp;</span><span>Odśwież</span></Button>
                     </Col>
                 </Row>
                 <Row style={{marginTop: '15px'}}>
@@ -262,29 +267,18 @@ class UsersPanel extends Component{
                                         login: user.login,
                                         mail: user.mail,
                                         role: user.userRole,
-                                        select: <label className='User-Details-Button' onClick={this.handleDetailsClick.bind(this, user)}>+</label>
+                                        select: <label className='User-Details-Button' onClick={this.handleDetailsClick.bind(this, user)}>
+                                            <CgMoreO className='User-Details-Icon'/>
+                                        </label>
                                     }
                                 ))
                         }}
                     />
                     </Col>
+                    {this.state.isSelected &&
+
                     <Col xs='4'>
                         <div className='Short-Details-User-Tile'>
-                            {!this.state.isSelected &&
-                            <Container>
-                                <Row>
-                                    <Col>
-                                        <label className="User-Details-Header">Użytkownik</label>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <label className="User-Details-SubMessage">Zaznacz użytkownika aby wyświetlić dane</label>
-                                    </Col>
-                                </Row>
-                            </Container>
-                            }
-                            {this.state.isSelected && 
                             <Container>
                             <Row>
                                 <Col>
@@ -293,11 +287,14 @@ class UsersPanel extends Component{
                                 <Col>
                                 </Col>
                                 <Col style={{paddingTop: '10px'}}>
-                                    <NavLink className="Add-User-Nav-Link" to= '/admin/uzytkownicy/edytuj'>
+                                    <NavLink className="Add-User-Nav-Link" to={{
+                                        pathname: '/admin/uzytkownicy/edytuj',
+                                        userProps: this.state.selectedUser.id
+                                    }}>
                                         <Button 
                                             className="Edit-User-Redirect-Button" 
                                             variant="light"
-                                        >EDYTUJ
+                                        ><MdEdit size='1.1em'/><span>&nbsp;</span><span>Edytuj</span>
                                         </Button>
                                     </NavLink>
                                 </Col>
@@ -349,9 +346,9 @@ class UsersPanel extends Component{
                                 </Col>
                             </Row>
                             </Container>
-    }
                         </div>
                     </Col>
+                                }
                 </Row>
             </Container>
         );
