@@ -5,10 +5,14 @@ import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
 import { CgMoreO } from 'react-icons/cg';
 import { GiFullMotorcycleHelmet } from 'react-icons/gi';
-import { FaTruckMoving } from 'react-icons/fa';
-import { MdEdit, MdAdd } from 'react-icons/md';
+import { FaTruckMoving, FaRoute } from 'react-icons/fa';
+import { MdEdit, MdAdd, MdDone } from 'react-icons/md';
 import { AiOutlineMail } from 'react-icons/ai';
+import { ImCross } from 'react-icons/im';
+import { RiDeleteBin6Line, RiTruckFill } from 'react-icons/ri';
 import axios from 'axios';
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
 import './TransportersDashboard.css';
 
 class TransportersDashboard extends Component{
@@ -18,9 +22,9 @@ class TransportersDashboard extends Component{
             token: getSessionCookie(),
             transporters: [],
             drivers: [],
-            selected: false,
             selectedTransporter: '',
-            transportersQuantity: ''
+            transportersQuantity: '',
+            isModalOpen: false
         }
     }
 
@@ -36,10 +40,35 @@ class TransportersDashboard extends Component{
             });
 
             const data = await response.data;
+            if(data.length === 0){
+                this.setState({
+                    selectedTransporter: ''
+                })
+                return;
+            }
+
             this.setState({
                 transporters: data,
-                transportersQuantity: data.length
+                transportersQuantity: data.length,
+                selectedTransporter: data[0]
             })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    async deleteTransporter(){
+        try
+        {
+            await axios.delete('https://localhost:44394/transporters/' + this.state.selectedTransporter.id, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            });
+            this.getTransporters();
         }
         catch(error){
             console.log(error);
@@ -48,14 +77,25 @@ class TransportersDashboard extends Component{
     
     async componentDidMount(){
         await this.getTransporters();
-        console.log(this.state.selectedTransporter);
 
     }
 
     handleDetailsClick = (transporter) => {
+        console.log(transporter)
         this.setState({
-            selectedTransporter: transporter,
-            selected: true
+            selectedTransporter: transporter
+        })
+    }
+
+    handleOpenModal = () => {
+        this.setState({
+            isModalOpen: true
+        })
+    }
+
+    handleCloseModal = () => {
+        this.setState({
+            isModalOpen: false
         })
     }
 
@@ -127,8 +167,17 @@ class TransportersDashboard extends Component{
                                                     label: '',
                                                     field: 'select',
                                                     sort: 'asc',
-                                                    width: 100
-                                                
+                                                    width: 50
+                                                },
+                                                {
+                                                    label: '',
+                                                    field: 'edit',
+                                                    width: 50
+                                                },
+                                                {
+                                                    label: '',
+                                                    field: 'delete',
+                                                    width: 50
                                                 }
                                             ],
                                             rows: this.state.transporters.map((transporter) => (
@@ -139,17 +188,81 @@ class TransportersDashboard extends Component{
                                                         zipCode: transporter.zipCode,
                                                         nip: transporter.nip,
                                                         select: 
-                                                        <NavLink 
-                                                            className="Add-User-Nav-Link" 
-                                                            push to={{
-                                                                // pathname: '/admin/kontrahenci/edytuj',
-                                                                // customerProps: customer.id
-                                                            }}>
-                                                                <Button 
-                                                                    className="Transporter-Details-Button" 
-                                                                    onClick={this.handleDetailsClick.bind(this, transporter)}
-                                                                    variant="light"><CgMoreO size='1.1em' /><span>&nbsp;</span><span>Szczegóły</span></Button>
-                                                        </NavLink>
+                                                            <CgMoreO 
+                                                                className='Transporter-Details-Icon' 
+                                                                onClick={this.handleDetailsClick.bind(this, transporter)}
+                                                                size='1.4em'/>,
+                                                        edit:
+                                                        <NavLink className="Add-User-Nav-Link" to={{
+                                                            pathname: '/admin/przewoznicy/edytuj',
+                                                            transporterProps: transporter}}>
+                                                            <MdEdit className='Transporter-Details-Icon' size='1.4em'/>
+                                                        </NavLink>,
+                                                        delete:
+                                                        <div>
+                                                            <Popup 
+                                                            trigger={
+                                                                <div>
+                                                                     <RiDeleteBin6Line 
+                                                                        size='1.4em'
+                                                                        className='Transporter-Details-Icon'
+                                                                        onClick={this.handleDetailsClick.bind(this, transporter)}
+                                                                    />
+                                                                </div>
+                                                               
+                                                            }
+                                                            modal
+                                                            open={this.state.isModalOpen}
+                                                            onOpen={this.handleOpenModal}
+                                                            contentStyle={{
+                                                                width: '35vw',
+                                                                height: '30vh',
+                                                                backgroundColor: '#202125',
+                                                                borderColor: '#202125',
+                                                                borderRadius: '15px',
+                                                            }}
+                                                            >
+                                                            { close => (<div>
+                                                                <Container>
+                                                                    <Row style={{textAlign: 'center'}}>
+                                                                        <Col>
+                                                                            <label className='Delete-Transporter-Modal-Header'>Czy na pewno chcesz usunąć przewoźnika {this.state.selectedTransporter.fullName} ?</label>
+                                                                        </Col>
+                                                                    </Row>
+                                                                    <Row style={{marginTop: '45px', textAlign: 'center'}}>
+                                                                        <Col>
+                                                                        <Button 
+                                                                            className="Confirm-Delete-Transporter-Button" 
+                                                                            variant="light"
+                                                                            onClick={() => {
+                                                                                close()
+                                                                            }}
+                                                                            >
+                                                                                <div>
+                                                                                <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
+                                                                                </div>
+                                                                        </Button>
+                                                                        </Col>
+                                                                        <Col>
+                                                                            <Button 
+                                                                                className="Confirm-Delete-Transporter-Button" 
+                                                                                variant="light"
+                                                                                onClick={() => {
+                                                                                    this.deleteTransporter();
+                                                                                    close();
+                                                                                }}
+                                                                                >
+                                                                                    <div>
+                                                                                    <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
+                                                                                    </div>
+                                                                            </Button>
+                                                                        </Col>
+                                                                    </Row>
+                                                                </Container>
+                                                            </div>
+                                                            )}
+                                                        </Popup>
+                                                        </div>
                                                     }
                                                 ))
                                         }}
@@ -159,16 +272,17 @@ class TransportersDashboard extends Component{
                             </Container>
                         </div>
                     </Col>
-                    {this.state.selected && 
                     <Col xs='4'>
                     <div className='Transporters-Data-Table-Container'>
                         <Container>
                             <Row>
                                 <Col>
-                                    <label className='Transporter-Info-Header'>{this.state.selectedTransporter.fullName}</label>
+                                <div className='Transporter-Info-Header'>
+                                    <RiTruckFill size='1.5em'/><span>&nbsp;</span>{this.state.selectedTransporter.fullName}
+                                </div>
                                 </Col>
                             </Row>
-                            <Row>
+                            <Row style={{marginTop:'25px'}}>
                                 <Col>
                                     <label className='Transporter-Info-Mail'>{this.state.selectedTransporter.country}</label>
                                 </Col>
@@ -181,13 +295,18 @@ class TransportersDashboard extends Component{
                                 </Col>
                             </Row>
                             <Row style={{marginTop: '25px'}}>
+                                <Col className='Transporter-Info-Sub'>
+                                    <FaRoute size='1.3em'/><span>&nbsp;&nbsp;</span>Obsługiwane trasy
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '10px'}}>
                                 <Col>
                                     <label className='Transporter-Info-Mail'>{this.state.selectedTransporter.supportedPathsDescriptions}</label>
                                 </Col>
                             </Row>
-                            <Row style={{marginTop: '15px'}}>
+                            <Row style={{marginTop: '25px'}}>
                                 <Col>
-                                    {this.state.selected && <NavLink 
+                                    <NavLink 
                                         className="Add-User-Nav-Link" 
                                         push to={{
                                             // pathname: '/admin/kontrahenci/edytuj',
@@ -196,12 +315,10 @@ class TransportersDashboard extends Component{
                                             <Button 
                                                 className="Transporters-Redirect-Button" 
                                                 variant="light"><GiFullMotorcycleHelmet size='1.8em' /><span>&nbsp;</span><span>Kierowcy</span></Button>
-                                    </NavLink>}
+                                    </NavLink>
                                 </Col>
-                            </Row>
-                            <Row style={{marginTop: '15px'}}>
                                 <Col>
-                                    {this.state.selected && <NavLink 
+                                    <NavLink 
                                         className="Add-User-Nav-Link" 
                                         push to={{
                                             // pathname: '/admin/kontrahenci/edytuj',
@@ -211,27 +328,12 @@ class TransportersDashboard extends Component{
                                                 className="Transporters-Redirect-Button" 
                                                 variant="light">
                                                     <FaTruckMoving size='1.5em' /><span>&nbsp;</span><span>Pojazdy</span></Button>
-                                    </NavLink>}
-                                </Col>
-                            </Row>
-                            <Row style={{marginTop: '15px'}}>
-                                <Col>
-                                    {this.state.selected && <NavLink 
-                                        className="Add-User-Nav-Link" 
-                                        push to={{
-                                            // pathname: '/admin/kontrahenci/edytuj',
-                                            // customerProps: customer.id
-                                        }}>
-                                            <Button 
-                                                className="Transporters-Redirect-Button" 
-                                                variant="light">
-                                                    <MdEdit size='1.3em' /><span>&nbsp;</span><span>Edycja</span></Button>
-                                    </NavLink>}
+                                    </NavLink>
                                 </Col>
                             </Row>
                         </Container>
                     </div>
-                    </Col>}
+                    </Col>
                 </Row>
                 <Row>
                     <Col>
@@ -239,7 +341,7 @@ class TransportersDashboard extends Component{
                             <Container>
                                 <Row style={{textAlign: 'left', paddingTop: '10px'}}>
                                     <Col>
-                                        <label className='Transporter-Info-Stats-Sub'>Liczba wszystkich przewoźników</label>
+                                        <label className='Transporter-Info-Stats-Sub'>Wszystkich przewoźników</label>
                                     </Col>
                                 </Row>
                                 <Row style={{textAlign: 'center'}}>

@@ -1,0 +1,25 @@
+.Edit-Transporter-Header{
+    padding-top: 15px;
+    font-size: 40px;
+    font-family: 'Overpass', sans-serif;
+    color:#e64b62;
+}
+
+.Edit-Transporter-Sub-Header{
+    padding-top: 15px;
+    font-size: 22px;
+    font-family: 'Overpass', sans-serif;
+    color:#e64b62;
+}
+
+.Edit-Transporter-Redirect-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    font-size: 13px;
+    background-color: #e64b62;
+    box-shadow: 2px 2px 15px -4px #e64b62;
+    border: solid 3px #e64b62;
+    color: #202125;
+    margin-top: 5px;
+    padding-top: 10px;
+}

@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
-import { MdAdd, MdEdit } from 'react-icons/md';
+import { MdAdd, MdEdit, MdDone } from 'react-icons/md';
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { CgMoreO } from 'react-icons/cg';
 import { AiFillPhone, AiOutlineMail } from 'react-icons/ai';
 import { IoMdContact } from 'react-icons/io';
+import { ImCross } from 'react-icons/im';
 import { FaFax, FaWarehouse } from 'react-icons/fa';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { NavLink } from 'react-router-dom';
 import { MDBDataTable } from 'mdbreact';
 import axios from 'axios';
-import './WarehousesDashboard.css';
 import { getSessionCookie } from '../../sessions';
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
+import './WarehousesDashboard.css';
 
 class WarehousesDashboard extends Component{
     constructor(props){
@@ -21,7 +24,8 @@ class WarehousesDashboard extends Component{
             warehouses: [],
             warehousesQuantity: '',
             selectedWarehouse: '',
-            selected: false
+            selected: true,
+            isModalOpen: false
         }
     }
 
@@ -37,10 +41,36 @@ class WarehousesDashboard extends Component{
             });
 
             const data = await response.data;
+            if(data.length === 0){
+                this.setState({
+                    warehouses: [],
+                    warehousesQuantity: 0,
+                    selectedWarehouse: ''
+                })
+                return;
+            }
             this.setState({
                 warehouses: data,
-                warehousesQuantity: data.length
+                warehousesQuantity: data.length,
+                selectedWarehouse: data[0]
             })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    async deleteWarehouse(){
+        try
+        {
+            await axios.delete('https://localhost:44394/warehouses/' + this.state.selectedWarehouse.id, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            });
+            this.getWarehouses();
         }
         catch(error){
             console.log(error);
@@ -52,10 +82,20 @@ class WarehousesDashboard extends Component{
     };
 
     handleDetailsClick = (warehouse) => {
-        console.log(warehouse)
         this.setState({
-            selectedWarehouse: warehouse,
-            selected: true
+            selectedWarehouse: warehouse
+        })
+    }
+
+    handleOpenModal = () => {
+        this.setState({
+            isModalOpen: true
+        })
+    }
+
+    handleCloseModal = () => {
+        this.setState({
+            isModalOpen: false
         })
     }
 
@@ -68,12 +108,12 @@ class WarehousesDashboard extends Component{
                             <Container>
                                 <Row>
                                     <Col>
-                                        <label className='Transporter-Table-Header'>Wszystkich magazynów</label>
+                                        <label className='Warehouse-Stats-Header'>Wszystkich magazynów</label>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <label className='Transporter-Table-Header'>{this.state.warehousesQuantity}</label>
+                                        <label className='Warehouse-Stats-Header'>{this.state.warehousesQuantity}</label>
                                     </Col>
                                 </Row>
                             </Container>
@@ -93,26 +133,26 @@ class WarehousesDashboard extends Component{
                                 <Row>
                                     <Col>
                                         <div className='Warehouse-Details-Sub'>
-                                            <AiOutlineMail size='1.5em'/> <span>&nbsp;</span><span>{this.state.selectedWarehouse.mail !== null ? this.state.selectedWarehouse.mail : 'brak danych'}</span>
+                                            <AiOutlineMail size='1.5em'/> <span>&nbsp;&nbsp;</span><span>{this.state.selectedWarehouse.mail !== null ? this.state.selectedWarehouse.mail : 'brak danych'}</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
                                         <div className='Warehouse-Details-Sub'>
-                                            <IoMdContact size='1.5em' /><span></span>&nbsp;&nbsp;<span>{this.state.selectedWarehouse.contactPersonFirstName}</span><span>&nbsp;</span><span>{this.state.selectedWarehouse.contactPersonLastName}</span>
+                                            <IoMdContact size='1.5em' /><span></span>&nbsp;&nbsp;&nbsp;<span>{this.state.selectedWarehouse.contactPersonFirstName}</span><span>&nbsp;</span><span>{this.state.selectedWarehouse.contactPersonLastName}</span>
                                         </div>
                                     </Col>
                                     <Col>
                                         <div className='Warehouse-Details-Sub'>
-                                            <AiFillPhone size='1.5em' /><span></span>&nbsp;&nbsp;<span>{this.state.selectedWarehouse.contactPhoneNumber !== null ? this.state.selectedWarehouse.contactPhoneNumber : 'brak danych'}</span>
+                                            <AiFillPhone size='1.5em' /><span></span>&nbsp;&nbsp;&nbsp;<span>{this.state.selectedWarehouse.contactPhoneNumber !== null ? this.state.selectedWarehouse.contactPhoneNumber : 'brak danych'}</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
                                         <div className='Warehouse-Details-Sub'>
-                                            <FaFax size='1.5em' /><span></span>&nbsp;&nbsp;<span>{this.state.selectedWarehouse.fax !== null ? this.state.selectedWarehouse.fax : 'brak danych'}</span>
+                                            <FaFax size='1.5em' /><span></span>&nbsp;&nbsp;&nbsp;<span>{this.state.selectedWarehouse.fax !== null ? this.state.selectedWarehouse.fax : 'brak danych'}</span>
                                         </div>
                                     </Col>
                                 </Row>
@@ -125,10 +165,10 @@ class WarehousesDashboard extends Component{
                     <div className='Warehouses-Table-Container'>
                         <Container>
                             <Row>
-                                <Col xs='8'>
+                                <Col xs='9'>
                                     <label className='Warehouse-Table-Header'>Lista magazynów</label>
                                 </Col>
-                                <Col xs='2'>
+                                <Col xs='1'>
                                         <NavLink className="Add-User-Nav-Link" to='/admin/magazyny/dodaj'>
                                             <Button 
                                                 className="Add-Warehouse-Redirect-Button" 
@@ -137,7 +177,7 @@ class WarehousesDashboard extends Component{
                                             </Button>
                                         </NavLink>
                                 </Col>
-                                <Col xs='2'>
+                                <Col xs='1' style={{marginLeft: '25px'}}>
                                     <Button 
                                         className="Add-Warehouse-Redirect-Button" 
                                         variant="light"
@@ -183,18 +223,19 @@ class WarehousesDashboard extends Component{
                                                     {
                                                         label: '',
                                                         field: 'select',
-                                                        sort: 'asc',
                                                         width: 50
                                                     },
                                                     {
                                                         label: '',
                                                         field: 'edit',
-                                                        width: 50
+                                                        width: 50,
+                                                        sort: 'asc',
                                                     },
                                                     {
                                                         label: '',
                                                         field: 'delete',
-                                                        width: 50
+                                                        width: 50,
+                                                        sort: 'asc',
                                                     }
                                                 ],
                                                 rows: this.state.warehouses.map((warehouse) => (
@@ -206,12 +247,78 @@ class WarehousesDashboard extends Component{
                                                             select: <div className='User-Details-Button' onClick={this.handleDetailsClick.bind(this, warehouse)}>
                                                                         <CgMoreO className='Warehouse-Details-Icon'/>
                                                                     </div>,
-                                                            edit: <div className='User-Details-Button' onClick={this.handleDetailsClick.bind(this, warehouse)}>
-                                                                        <MdEdit className='Warehouse-Details-Icon'/>
-                                                                    </div>,
-                                                            delete: <div className='User-Details-Button'>
-                                                                    <RiDeleteBin6Line className='Warehouse-Details-Icon'/>
+                                                            edit: 
+                                                                <NavLink className="Add-User-Nav-Link" to={{
+                                                                    pathname: '/admin/magazyny/edytuj',
+                                                                    warehouseProps: warehouse}}>
+                                                                    <div className='User-Details-Button'>
+                                                                        <MdEdit className='Warehouse-Details-Icon' size='1.0em'/>
+                                                                    </div>
+                                                                </NavLink>,
+                                                            delete:
+                                                            <div>
+                                                            <Popup 
+                                                            trigger={
+                                                                <div className='User-Details-Button' >
+                                                                    <RiDeleteBin6Line 
+                                                                        className='Warehouse-Details-Icon'
+                                                                        onClick={this.handleDetailsClick.bind(this, warehouse)}
+                                                                    />
+                                                                </div>
+                                                            }
+                                                            modal
+                                                            open={this.state.isModalOpen}
+                                                            onOpen={this.handleOpenModal}
+                                                            contentStyle={{
+                                                                width: '35vw',
+                                                                height: '30vh',
+                                                                backgroundColor: '#202125',
+                                                                borderColor: '#202125',
+                                                                borderRadius: '15px',
+                                                            }}
+                                                            >
+                                                            { close => (<div>
+                                                                <Container>
+                                                                    <Row style={{textAlign: 'center'}}>
+                                                                        <Col>
+                                                                            <label className='Edit-Warehouse-Modal-Header'>Czy na pewno chcesz usunąć magazyn {this.state.selectedWarehouse.name} ?</label>
+                                                                        </Col>
+                                                                    </Row>
+                                                                    <Row style={{marginTop: '45px', textAlign: 'center'}}>
+                                                                        <Col>
+                                                                        <Button 
+                                                                            className="Confirm-Edit-Warehouse-Button" 
+                                                                            variant="light"
+                                                                            onClick={() => {
+                                                                                close()
+                                                                            }}
+                                                                            >
+                                                                                <div>
+                                                                                <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
+                                                                                </div>
+                                                                        </Button>
+                                                                        </Col>
+                                                                        <Col>
+                                                                            <Button 
+                                                                                className="Confirm-Edit-Warehouse-Button" 
+                                                                                variant="light"
+                                                                                onClick={() => {
+                                                                                    this.deleteWarehouse();
+                                                                                    close();
+                                                                                }}
+                                                                                >
+                                                                                    <div>
+                                                                                    <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
+                                                                                    </div>
+                                                                            </Button>
+                                                                        </Col>
+                                                                    </Row>
+                                                                </Container>
                                                             </div>
+                                                            )}
+                                                        </Popup>
+                                                            </div>
+                                                            
                                                         }
                                                     ))
                                             }}

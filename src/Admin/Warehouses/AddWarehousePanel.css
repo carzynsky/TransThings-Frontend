@@ -1,10 +1,11 @@
 .Add-Warehouse-Container{
     padding-top: 15px;
     background-color: #202125;
-    height: 85vh;
+    height: 90vh;
     width: 100%;
     border-radius: 15px;
     margin-top: 50px;
+    padding-left: 15px;
 }
 
 .Add-Warehouse-Text-Fields{

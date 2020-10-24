@@ -23,6 +23,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "reactjs-percentage-circle": "^1.0.0",
+    "reactjs-popup": "^2.0.4",
     "redux": "^4.0.5",
     "redux-react-session": "^2.6.1"
   },

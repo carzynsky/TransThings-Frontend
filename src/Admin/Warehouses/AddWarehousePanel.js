@@ -5,9 +5,8 @@ import { HiOutlineRefresh } from 'react-icons/hi';
 import { CgMoreO } from 'react-icons/cg';
 import { AiFillPhone, AiOutlineMail } from 'react-icons/ai';
 import { IoMdContact } from 'react-icons/io';
-import { FaFax } from 'react-icons/fa';
+import { FaFax, FaWarehouse, FaCity } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
-import { MDBDataTable } from 'mdbreact';
 import axios from 'axios';
 import { TextField } from '@material-ui/core';
 import './AddWarehousePanel.css';
@@ -54,7 +53,8 @@ class AddWarehousePanel extends Component{
                 },
                 
             });
-            console.log(response);
+            if(response.status === 200)
+                alert('Dodano magazyn.');
 
         }
         catch(error){
@@ -82,7 +82,9 @@ class AddWarehousePanel extends Component{
                         <Container>
                             <Row>
                                 <Col>
-                                    <label className='Add-Warehouse-Header'>Dodawanie magazynu</label>
+                                    <div className='Add-Warehouse-Header'>
+                                        <FaWarehouse size='2.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Dodawanie magazynu</span>
+                                    </div>
                                 </Col>
                             </Row>
                             <Row style={{marginTop: '15px'}}>
@@ -101,7 +103,7 @@ class AddWarehousePanel extends Component{
                                         InputProps={{
                                             style: {
                                                 color: '#5c8bdb'
-                                            }
+                                            },
                                         }} />
                                 </form>
                                 </Col>
@@ -113,6 +115,7 @@ class AddWarehousePanel extends Component{
                                         id="warehouseStreetAddress" 
                                         label="Adres" 
                                         color="primary"
+                                        autoComplete="new-password"
                                         onChange={this.handleChange('streetAddress')}
                                         InputLabelProps={{
                                             style:{
@@ -132,6 +135,7 @@ class AddWarehousePanel extends Component{
                                         id="warehouseZipCode" 
                                         label="Kod pocztowy" 
                                         color="primary"
+                                        autoComplete="new-password"
                                         onChange={this.handleChange('zipCode')}
                                         InputLabelProps={{
                                             style:{
@@ -149,8 +153,9 @@ class AddWarehousePanel extends Component{
                                 <form  noValidate autoComplete="off">
                                     <TextField 
                                         id="warehouseCity" 
-                                        label="Miasto" 
+                                        label={<div><FaCity/><span>&nbsp;&nbsp;</span><span>Miasto</span></div>}
                                         color="primary"
+                                        autoComplete="new-password"
                                         onChange={this.handleChange('city')}
                                         InputLabelProps={{
                                             style:{
@@ -175,8 +180,9 @@ class AddWarehousePanel extends Component{
                                     <form  noValidate autoComplete="off">
                                         <TextField 
                                             id="warehouseContactPersonFirstName" 
-                                            label="Imię" 
+                                            label={<div><IoMdContact /><span>&nbsp;</span><span>Imię</span></div>}
                                             color="primary"
+                                            autoComplete="new-password"
                                             onChange={this.handleChange('contactPersonFirstName')}
                                             InputLabelProps={{
                                                 style:{
@@ -194,8 +200,9 @@ class AddWarehousePanel extends Component{
                                     <form  noValidate autoComplete="off">
                                         <TextField 
                                             id="warehouseContactPersonLastName" 
-                                            label="Nazwisko" 
+                                            label={<div><IoMdContact /><span>&nbsp;</span><span>Nazwisko</span></div>}
                                             color="primary"
+                                            autoComplete="new-password"
                                             onChange={this.handleChange('contactPersonLastName')}
                                             InputLabelProps={{
                                                 style:{
@@ -215,8 +222,9 @@ class AddWarehousePanel extends Component{
                                     <form  noValidate autoComplete="off">
                                         <TextField 
                                             id="warehouseContactPhoneNumber" 
-                                            label="Nr. telefonu" 
+                                            label={<div><AiFillPhone/><span>&nbsp;</span> <span>Nr. telefonu</span></div>}
                                             color="primary"
+                                            autoComplete="new-password"
                                             onChange={this.handleChange('contactPhoneNumber')}
                                             InputLabelProps={{
                                                 style:{
@@ -241,8 +249,9 @@ class AddWarehousePanel extends Component{
                                     <form  noValidate autoComplete="off">
                                         <TextField 
                                             id="warehouseMail" 
-                                            label="Adres email" 
+                                            label={<div><AiOutlineMail /><span>&nbsp;</span> <span>Adres email</span></div>}
                                             color="primary"
+                                            autoComplete="new-password"
                                             onChange={this.handleChange('mail')}
                                             InputLabelProps={{
                                                 style:{
@@ -260,8 +269,9 @@ class AddWarehousePanel extends Component{
                                     <form  noValidate autoComplete="off">
                                         <TextField 
                                             id="warehouseFax" 
-                                            label="Fax" 
+                                            label={<div><FaFax/><span>&nbsp;</span><span>Fax</span></div>}
                                             color="primary"
+                                            autoComplete="new-password"
                                             onChange={this.handleChange('fax')}
                                             InputLabelProps={{
                                                 style:{

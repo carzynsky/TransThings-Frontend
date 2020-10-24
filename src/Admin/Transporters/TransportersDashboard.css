@@ -9,17 +9,17 @@
     margin-top: 50px;
     height: 70vh;
     background-color: #202125;
-    color: #5cdb95;
+    color: whitesmoke;
     padding-top: 15px;
     border-radius: 15px;
     font-family: 'Overpass', sans-serif;
 }
 .Transporter-Table-Header{
-    padding-left: 5px;
+    padding-left: 10px;
     padding-top: 15px;
-    font-size: 32px;
+    font-size: 26px;
     font-family: 'Overpass', sans-serif;
-    color: #5cdb95;
+    color: #e64b62;
 }
 
 .Transporter-Info-Header{
@@ -29,8 +29,15 @@
     color:#e64b62;
 }
 
+.Transporter-Info-Sub{
+    padding-top: 15px;
+    font-size: 20px;
+    font-family: 'Overpass', sans-serif;
+    color:#e64b62;
+}
+
 .Transporter-Info-Stats-Sub{
-    font-size: 13px;
+    font-size: 16px;
     font-family: 'Overpass', sans-serif;
     color:#e64b62;
 }
@@ -87,10 +94,36 @@
     width: 90px;
     height: 35px;
     font-size: 13px;
-    background-color: #5cdb95;
-    box-shadow: 2px 2px 15px -4px rgba(92,219,149,1);
-    border: solid 3px #5cdb95;
+    background-color: #e64b62;
+    box-shadow: 2px 2px 15px -4px #e64b62;
+    border: solid 3px #e64b62;
     color: #202125;
     margin-top: 15px;
     margin-right: 15px;
+}
+.Transporter-Details-Icon{
+    color: #e64b62;
+    size: 1.0em;
+}
+.Transporter-Details-Icon:hover{
+    color: whitesmoke;
+    cursor: pointer;
+}
+.Confirm-Delete-Transporter-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    font-size: 13px;
+    background-color: #e64b62;
+    box-shadow: 2px 2px 15px -4px #e64b62;
+    border: solid 3px #e64b62;
+    color: #202125;
+    margin-top: 5px;
+    padding-top: 10px;
+}
+
+.Delete-Transporter-Modal-Header{
+    padding-top: 25px;
+    font-size: 20px;
+    font-family: 'Overpass', sans-serif;
+    color:#e64b62;
 }

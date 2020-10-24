@@ -20,7 +20,6 @@ class UsersPanel extends Component{
             userRoles: [],
             addUserRedirect: false,
             initials: '',
-            isSelected: false,
             selectedUser: {
                 id: '',
                 firstName: '',
@@ -76,20 +75,46 @@ class UsersPanel extends Component{
 
     // Get users from API
     async getUsers(){
-        console.log('jestem')
-        await axios.get('https://localhost:44394/users', {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=UTF-8',
-                'Authorization': 'Bearer ' + this.state.token.token
+        try{
+            const response = await axios.get('https://localhost:44394/users', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }});
+
+            const data = await response.data;
+            if(data.length === 0){
+                this.setState({
+                    users: [],
+                    selectedUser: {
+                        id: '',
+                        firstName: '',
+                        lastName: '',
+                        gender: '',
+                        birthDate: '',
+                        dateOfEmployment: '',
+                        login: '',
+                        mail: '',
+                        phoneNumber: '',
+                        userRole: ''
+                    },
+                    initials: ''
+                });
+                return;
             }
-        }).then((response) => {
+            console.log('jd')
+            let ini = data[0].firstName[0].toUpperCase() + data[0].lastName[0].toUpperCase();
             this.setState({
-                users: response.data
+                users: data,
+                selectedUser: data[0],
+                initials: ini
             })
-        }).catch((error) => {
+        }
+        catch(error){
             console.log(error);
-        })
+        }
+        
     }
 
     componentDidMount(){
@@ -275,8 +300,6 @@ class UsersPanel extends Component{
                         }}
                     />
                     </Col>
-                    {this.state.isSelected &&
-
                     <Col xs='4'>
                         <div className='Short-Details-User-Tile'>
                             <Container>
@@ -348,11 +371,9 @@ class UsersPanel extends Component{
                             </Container>
                         </div>
                     </Col>
-                                }
                 </Row>
             </Container>
         );
     }
-   
 }
 export default UsersPanel;
