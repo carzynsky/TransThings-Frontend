@@ -103,7 +103,6 @@ class UsersPanel extends Component{
                 });
                 return;
             }
-            console.log('jd')
             let ini = data[0].firstName[0].toUpperCase() + data[0].lastName[0].toUpperCase();
             this.setState({
                 users: data,

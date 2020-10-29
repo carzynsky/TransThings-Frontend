@@ -1,0 +1,45 @@
+.Edit-Vehicle-Header{
+    padding-top: 15px;
+    font-size: 40px;
+    font-family: 'Overpass', sans-serif;
+    color:#da55f1;
+}
+
+.Confirm-Edit-Vehicle-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    font-size: 13px;
+    background-color: #da55f1;
+    box-shadow: 2px 2px 15px -4px #da55f1;
+    border: solid 3px #da55f1;
+    color: #202125;
+    margin-top: 5px;
+    padding-top: 10px;
+}
+
+.Edit-Vehicle-Modal-Header{
+    padding-top: 25px;
+    font-size: 20px;
+    font-family: 'Overpass', sans-serif;
+    color:#da55f1;
+}
+
+.Edit-Vehicle-Redirect-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    font-size: 13px;
+    background-color: #da55f1;
+    box-shadow: 2px 2px 15px -4px #da55f1;
+    border: solid 3px #da55f1;
+    color: #202125;
+    margin-top: 5px;
+    padding-top: 10px;
+}
+
+#vehicleTypeLabel{
+    color: whitesmoke;
+}
+
+#selectVehicleType{
+    color: #da55f1;
+}

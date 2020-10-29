@@ -21,7 +21,6 @@ class TransportersDashboard extends Component{
         this.state = {
             token: getSessionCookie(),
             transporters: [],
-            drivers: [],
             selectedTransporter: '',
             transportersQuantity: '',
             isModalOpen: false
@@ -194,7 +193,7 @@ class TransportersDashboard extends Component{
                                                                 size='1.4em'/>,
                                                         edit:
                                                         <NavLink className="Add-User-Nav-Link" to={{
-                                                            pathname: '/admin/przewoznicy/edytuj',
+                                                            pathname: '/admin/przewoznicy/'+ transporter.fullName +'/edytuj',
                                                             transporterProps: transporter}}>
                                                             <MdEdit className='Transporter-Details-Icon' size='1.4em'/>
                                                         </NavLink>,
@@ -273,7 +272,7 @@ class TransportersDashboard extends Component{
                         </div>
                     </Col>
                     <Col xs='4'>
-                    <div className='Transporters-Data-Table-Container'>
+                    <div className='Transporters-Data-Table-Container' style={{minWidth: '200px'}}>
                         <Container>
                             <Row>
                                 <Col>
@@ -309,8 +308,9 @@ class TransportersDashboard extends Component{
                                     <NavLink 
                                         className="Add-User-Nav-Link" 
                                         push to={{
-                                            // pathname: '/admin/kontrahenci/edytuj',
-                                            // customerProps: customer.id
+                                            pathname: '/admin/przewoznicy/' + this.state.selectedTransporter.fullName + '/kierowcy',
+                                            transporterId: this.state.selectedTransporter.id,
+                                            transporterName: this.state.selectedTransporter.fullName
                                         }}>
                                             <Button 
                                                 className="Transporters-Redirect-Button" 
@@ -321,8 +321,9 @@ class TransportersDashboard extends Component{
                                     <NavLink 
                                         className="Add-User-Nav-Link" 
                                         push to={{
-                                            // pathname: '/admin/kontrahenci/edytuj',
-                                            // customerProps: customer.id
+                                            pathname: '/admin/przewoznicy/' + this.state.selectedTransporter.fullName + '/pojazdy',
+                                            transporterId: this.state.selectedTransporter.id,
+                                            transporterName: this.state.selectedTransporter.fullName
                                         }}>
                                             <Button 
                                                 className="Transporters-Redirect-Button" 

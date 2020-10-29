@@ -1,15 +1,25 @@
+.Edit-Transporter-Container{
+    padding-top: 15px;
+    background-color: #202125;
+    height: 92vh;
+    width: 100%;
+    border-radius: 15px;
+    margin-top: 50px;
+    padding-left: 15px;
+}
+
 .Edit-Transporter-Header{
     padding-top: 15px;
     font-size: 40px;
     font-family: 'Overpass', sans-serif;
-    color:#e64b62;
+    color:#5CDB95;
 }
 
 .Edit-Transporter-Sub-Header{
     padding-top: 15px;
     font-size: 22px;
     font-family: 'Overpass', sans-serif;
-    color:#e64b62;
+    color:#5CDB95;
 }
 
 .Edit-Transporter-Redirect-Button{
@@ -22,4 +32,23 @@
     color: #202125;
     margin-top: 5px;
     padding-top: 10px;
+}
+
+.Confirm-Edit-Transporter-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    font-size: 13px;
+    background-color: #e64b62;
+    box-shadow: 2px 2px 15px -4px #e64b62;
+    border: solid 3px #e64b62;
+    color: #202125;
+    margin-top: 5px;
+    padding-top: 10px;
+}
+
+.Edit-Transporter-Modal-Header{
+    padding-top: 25px;
+    font-size: 20px;
+    font-family: 'Overpass', sans-serif;
+    color:#e64b62;
 }

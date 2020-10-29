@@ -1,0 +1,55 @@
+.Edit-Driver-Header{
+    padding-top: 15px;
+    font-size: 40px;
+    font-family: 'Overpass', sans-serif;
+    color:#e6e947;
+}
+
+.Confirm-Edit-Driver-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    font-size: 13px;
+    background-color: #e6e947;
+    box-shadow: 2px 2px 15px -4px #e6e947;
+    border: solid 3px #e6e947;
+    color: #202125;
+    margin-top: 5px;
+    padding-top: 10px;
+}
+
+.Edit-Driver-Modal-Header{
+    padding-top: 25px;
+    font-size: 20px;
+    font-family: 'Overpass', sans-serif;
+    color:#e6e947;
+}
+
+.Edit-Driver-Redirect-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    font-size: 13px;
+    background-color: #e6e947;
+    box-shadow: 2px 2px 15px -4px #e6e947;
+    border: solid 3px #e6e947;
+    color: #202125;
+    margin-top: 5px;
+    padding-top: 10px;
+}
+
+#selectGender{
+    color: #e6e947;
+}
+
+#genderLabel{
+    color: whitesmoke;
+}
+
+.Edit-Driver-Container{
+    padding-top: 15px;
+    background-color: #202125;
+    height: 75vh;
+    width: 100%;
+    border-radius: 15px;
+    margin-top: 50px;
+    padding-left: 15px;
+}

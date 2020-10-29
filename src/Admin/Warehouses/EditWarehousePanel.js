@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
-import { MdAdd, MdEdit, MdDone } from 'react-icons/md';
-import { HiOutlineRefresh } from 'react-icons/hi';
-import { CgMoreO } from 'react-icons/cg';
+import { MdDone } from 'react-icons/md';
 import { AiFillPhone, AiOutlineMail } from 'react-icons/ai';
 import { IoMdContact } from 'react-icons/io';
 import { ImCross } from 'react-icons/im';

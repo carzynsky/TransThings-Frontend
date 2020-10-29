@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
-import { MdAdd, MdEdit, MdDone } from 'react-icons/md';
-import { HiOutlineRefresh } from 'react-icons/hi';
-import { CgMoreO } from 'react-icons/cg';
+import { MdDone } from 'react-icons/md';
 import { AiFillPhone, AiOutlineMail } from 'react-icons/ai';
-import { IoMdContact } from 'react-icons/io';
 import { ImCross } from 'react-icons/im';
-import { FaFax, FaWarehouse, FaCity } from 'react-icons/fa';
+import { FaRoute, FaCity } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
 import { RiTruckFill } from 'react-icons/ri';
 import axios from 'axios';
@@ -20,62 +17,54 @@ class EditTransporterPanel extends Component{
     constructor(props){
         super(props);
 
-        const warehouse = this.props.location.warehouseProps;
+        const transporter = this.props.location.transporterProps;
 
         this.state = {
             token: getSessionCookie(),
-            id: warehouse !== undefined ? warehouse.id : null,
-            name: warehouse !== undefined ? warehouse.name : null,
-            streetAddress: warehouse !== undefined ? warehouse.streetAddress : null,
-            zipCode: warehouse !== undefined ? warehouse.zipCode : null,
-            city: warehouse !== undefined ? warehouse.city : null,
-            contactPhoneNumber: warehouse !== undefined ? warehouse.contactPhoneNumber : null,
-            contactPersonFirstName: warehouse !== undefined ? warehouse.contactPersonFirstName : null,
-            contactPersonLastName: warehouse !== undefined ? warehouse.contactPersonLastName : null,
-            mail: warehouse !== undefined ? warehouse.mail : null,
-            fax: warehouse !== undefined ? warehouse.fax : null,
+            id: transporter !== undefined ? transporter.id : null,
+            fullName: transporter !== undefined ? transporter.fullName : null,
+            streetAddress: transporter !== undefined ? transporter.streetAddress : null,
+            shortName: transporter !== undefined ? transporter.shortName : null,
+            zipCode: transporter !== undefined ? transporter.zipCode : null,
+            city: transporter !== undefined ? transporter.city : null,
+            nip: transporter !== undefined ? transporter.nip : null,
+            country: transporter !== undefined ? transporter.country : null,
+            supportedPathsDescription: transporter !== undefined ? transporter.supportedPathsDescriptions : null,
+            mail: transporter !== undefined ? transporter.mail : null,
             isModalOpen: false
         }
     }
 
     // PUT call to api
-    async updateWarehouse(){
-        // try
-        // {
-        //     const response = await axios.put('https://localhost:44394/warehouses/' + this.state.id,
-        //     {
-        //         'name': this.state.name,
-        //         'streetAddress': this.state.streetAddress,
-        //         'zipCode': this.state.zipCode,
-        //         'city': this.state.city,
-        //         'contactPhoneNumber': this.state.contactPhoneNumber,
-        //         'contactPersonFirstName': this.state.contactPersonFirstName,
-        //         'contactPersonLastName': this.state.contactPersonLastName,
-        //         'mail': this.state.mail,
-        //         'fax': this.state.fax
-        //     },
-        //     {
-        //         headers: {
-        //             'Accept': 'application/json',
-        //             'Content-Type': 'application/json;charset=UTF-8',
-        //             'Authorization': 'Bearer ' + this.state.token.token
-        //         },
+    async updateTransporter(){
+        try
+        {
+            const response = await axios.put('https://localhost:44394/transporters/' + this.state.id,
+            {
+                'fullName': this.state.fullName,
+                'shortName': this.state.shortName,
+                'streetAddress': this.state.streetAddress,
+                'zipCode': this.state.zipCode,
+                'city': this.state.city,
+                'nip': this.state.nip,
+                'country': this.state.country,
+                'supportedPathsDescriptions': this.state.supportedPathsDescription,
+                'mail': this.state.mail
+            },
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
                 
-        //     });
-        //     if(response.status === 200)
-        //         alert('Zaktualizowano magazyn.')
-        // }
-        // catch(error){
-        //     console.log(error);
-        // }
-    }
-
-    // Handle click 'Save' button
-    handleSaveButton = () => {
-        this.setState({
-            trigger: true
-        })
-        // this.updateWarehouse();
+            });
+            if(response.status === 200)
+                alert('Zaktualizowano przewoźnika.')
+        }
+        catch(error){
+            console.log(error);
+        }
     }
 
     // handle change of text fields
@@ -102,7 +91,7 @@ class EditTransporterPanel extends Component{
             <Container>
                 <Row>
                     <Col>
-                    <div className='Add-Warehouse-Container'>
+                    <div className='Edit-Transporter-Container'>
                         <Container>
                             <Row>
                                 <Col>
@@ -116,11 +105,32 @@ class EditTransporterPanel extends Component{
                                 <form  noValidate autoComplete="off">
                                     <TextField 
                                         id="transporterFullName" 
-                                        label="Przewoźnik" 
+                                        label="Pełna nazwa" 
                                         color="secondary"
-                                        onChange={this.handleChange('name')}
+                                        onChange={this.handleChange('fullName')}
                                         autoComplete="new-password"
-                                        defaultValue={this.state.name}
+                                        defaultValue={this.state.fullName}
+                                        InputLabelProps={{
+                                            style:{
+                                                color: 'whitesmoke'
+                                            },
+                                        }}
+                                        InputProps={{
+                                            style: {
+                                                color: '#e64b62'
+                                            }
+                                        }} />
+                                </form>
+                                </Col>
+                                <Col>
+                                <form  noValidate autoComplete="off">
+                                    <TextField 
+                                        id="transporterShortName" 
+                                        label="Krótka nazwa" 
+                                        color="secondary"
+                                        onChange={this.handleChange('shortName')}
+                                        autoComplete="new-password"
+                                        defaultValue={this.state.shortName}
                                         InputLabelProps={{
                                             style:{
                                                 color: 'whitesmoke'
@@ -135,12 +145,40 @@ class EditTransporterPanel extends Component{
                                 </Col>
                             </Row>
                             <Row style={{marginTop: '5px'}}>
+                            <Col>
+                                <form  noValidate autoComplete="off">
+                                    <TextField 
+                                        id="transporterNip" 
+                                        label="NIP" 
+                                        color="secondary"
+                                        autoComplete="new-password"
+                                        defaultValue={this.state.nip}
+                                        onChange={this.handleChange('nip')}
+                                        InputLabelProps={{
+                                            style:{
+                                                color: 'whitesmoke'
+                                            },
+                                        }}
+                                        InputProps={{
+                                            style: {
+                                                color: '#e64b62'
+                                            }
+                                        }} />
+                                </form>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '20px'}}>
+                                <Col>
+                                    <label className='Edit-Transporter-Sub-Header'>Dane adresowe</label>
+                                </Col>
+                            </Row>
+                            <Row >
                                 <Col>
                                 <form  noValidate autoComplete="off">
                                     <TextField 
-                                        id="warehouseStreetAddress" 
+                                        id="transporterStreetAddress" 
                                         label="Adres" 
-                                        color="primary"
+                                        color="secondary"
                                         autoComplete="new-password"
                                         defaultValue={this.state.streetAddress}
                                         onChange={this.handleChange('streetAddress')}
@@ -151,7 +189,7 @@ class EditTransporterPanel extends Component{
                                         }}
                                         InputProps={{
                                             style: {
-                                                color: '#5c8bdb'
+                                                color: '#e64b62'
                                             }
                                         }} />
                                 </form>
@@ -159,9 +197,9 @@ class EditTransporterPanel extends Component{
                                 <Col>
                                 <form  noValidate autoComplete="off">
                                     <TextField 
-                                        id="warehouseZipCode" 
+                                        id="transporterZipCode" 
                                         label="Kod pocztowy" 
-                                        color="primary"
+                                        color="secondary"
                                         autoComplete="new-password"
                                         defaultValue={this.state.zipCode}
                                         onChange={this.handleChange('zipCode')}
@@ -172,7 +210,7 @@ class EditTransporterPanel extends Component{
                                         }}
                                         InputProps={{
                                             style: {
-                                                color: '#5c8bdb'
+                                                color: '#e64b62'
                                             }
                                         }} />
                                 </form>
@@ -180,9 +218,9 @@ class EditTransporterPanel extends Component{
                                 <Col>
                                 <form  noValidate autoComplete="off">
                                     <TextField 
-                                        id="warehouseCity" 
+                                        id="transporterCity" 
                                         label={<div><FaCity/><span>&nbsp;&nbsp;</span><span>Miasto</span></div>}
-                                        color="primary"
+                                        color="secondary"
                                         autoComplete="new-password"
                                         defaultValue={this.state.city}
                                         onChange={this.handleChange('city')}
@@ -193,27 +231,23 @@ class EditTransporterPanel extends Component{
                                         }}
                                         InputProps={{
                                             style: {
-                                                color: '#5c8bdb'
+                                                color: '#e64b62'
                                             }
                                         }} />
                                 </form>
                                 </Col>
                             </Row>
-                            <Row style={{marginTop: '25px'}}>
-                                <Col>
-                                    <label className='Edit-Transporter-Sub-Header'>Dane osoby do kontaktu</label>
-                                </Col>
-                            </Row>
-                            <Row>
+
+                            <Row style={{marginTop: '5px'}}>
                                 <Col>
                                     <form  noValidate autoComplete="off">
                                         <TextField 
-                                            id="warehouseContactPersonFirstName" 
-                                            label={<div><IoMdContact /><span>&nbsp;</span><span>Imię</span></div>}
-                                            color="primary"
+                                            id="transporterCountry" 
+                                            label='Kraj'
+                                            color="secondary"
                                             autoComplete="new-password"
-                                            defaultValue={this.state.contactPersonFirstName}
-                                            onChange={this.handleChange('contactPersonFirstName')}
+                                            defaultValue={this.state.country}
+                                            onChange={this.handleChange('country')}
                                             InputLabelProps={{
                                                 style:{
                                                     color: 'whitesmoke'
@@ -221,28 +255,7 @@ class EditTransporterPanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
-                                                }
-                                            }} />
-                                    </form>
-                                </Col>
-                                <Col>
-                                    <form  noValidate autoComplete="off">
-                                        <TextField 
-                                            id="warehouseContactPersonLastName" 
-                                            label={<div><IoMdContact /><span>&nbsp;</span><span>Nazwisko</span></div>}
-                                            color="primary"
-                                            autoComplete="new-password"
-                                            defaultValue={this.state.contactPersonLastName}
-                                            onChange={this.handleChange('contactPersonLastName')}
-                                            InputLabelProps={{
-                                                style:{
-                                                    color: 'whitesmoke'
-                                                },
-                                            }}
-                                            InputProps={{
-                                                style: {
-                                                    color: '#5c8bdb'
+                                                    color: '#e64b62'
                                                 }
                                             }} />
                                     </form>
@@ -252,37 +265,9 @@ class EditTransporterPanel extends Component{
                                 <Col>
                                     <form  noValidate autoComplete="off">
                                         <TextField 
-                                            id="warehouseContactPhoneNumber" 
-                                            label={<div><AiFillPhone/><span>&nbsp;</span> <span>Nr. telefonu</span></div>}
-                                            color="primary"
-                                            autoComplete="new-password"
-                                            defaultValue={this.state.contactPhoneNumber}
-                                            onChange={this.handleChange('contactPhoneNumber')}
-                                            InputLabelProps={{
-                                                style:{
-                                                    color: 'whitesmoke'
-                                                },
-                                            }}
-                                            InputProps={{
-                                                style: {
-                                                    color: '#5c8bdb'
-                                                }
-                                            }} />
-                                    </form>
-                                </Col>
-                            </Row>
-                            <Row style={{marginTop: '25px'}}>
-                                <Col>
-                                    <label className='Edit-Transporter-Sub-Header'>Pozostałe dane kontaktowe</label>
-                                </Col>
-                            </Row>
-                            <Row>
-                                <Col>
-                                    <form  noValidate autoComplete="off">
-                                        <TextField 
-                                            id="warehouseMail" 
+                                            id="transporterMail" 
                                             label={<div><AiOutlineMail /><span>&nbsp;</span> <span>Adres email</span></div>}
-                                            color="primary"
+                                            color="secondary"
                                             autoComplete="new-password"
                                             defaultValue={this.state.mail}
                                             onChange={this.handleChange('mail')}
@@ -293,21 +278,31 @@ class EditTransporterPanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: '#e64b62'
                                                 }
                                             }} 
                                             style={{width: '320px'}}/>
                                     </form>
                                 </Col>
+                            </Row>
+                            
+                            <Row style={{marginTop: '15px'}}>
+                                <Col>
+                                    <div className='Edit-Transporter-Sub-Header'>
+                                        <FaRoute /><span>&nbsp;</span><span>Obsługiwane trasy</span>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '5px'}}>
                                 <Col>
                                     <form  noValidate autoComplete="off">
                                         <TextField 
-                                            id="warehouseFax" 
-                                            label={<div><FaFax/><span>&nbsp;</span><span>Fax</span></div>}
-                                            color="primary"
+                                            id="warehouseMail" 
+                                            label='Trasy'
+                                            color="secondary"
                                             autoComplete="new-password"
-                                            defaultValue={this.state.fax}
-                                            onChange={this.handleChange('fax')}
+                                            defaultValue={this.state.supportedPathsDescription}
+                                            onChange={this.handleChange('supportedPathsDescription')}
                                             InputLabelProps={{
                                                 style:{
                                                     color: 'whitesmoke'
@@ -315,26 +310,19 @@ class EditTransporterPanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: '#e64b62'
                                                 }
-                                            }} />
+                                            }} 
+                                            style={{width: '35vw'}}/>
                                     </form>
                                 </Col>
                             </Row>
-                            <Row style={{marginTop: '40px'}}>
+                            <Row style={{marginTop: '35px'}}>
                                 <Col xs='1'>
-                                    {/* <NavLink className="Admin-Nav-Link" push to= '/admin/magazyny/'>
-                                        <Button 
-                                            className="Add-Warehouse-Redirect-Button" 
-                                            variant="light">
-                                            Wróć
-                                        </Button>
-                                    </NavLink> */}
-                                    <NavLink className="Admin-Nav-Link" push to= '/admin/przewoznicy/'>
+                                    <NavLink className="Admin-Nav-Link" to= '/admin/przewoznicy/'>
                                         <Button 
                                             className="Edit-Transporter-Redirect-Button" 
-                                            variant="light">
-                                            Wróć
+                                            variant="light">Wróć
                                         </Button>
                                     </NavLink>
                                 </Col>
@@ -344,7 +332,6 @@ class EditTransporterPanel extends Component{
                                             <Button 
                                                 className="Edit-Transporter-Redirect-Button" 
                                                 variant="light"
-                                                onClick={this.handleSaveButton}
                                                 style={{marginLeft: '30px'}}>
                                                     Zatwierdź
                                             </Button>
@@ -364,13 +351,13 @@ class EditTransporterPanel extends Component{
                                             <Container>
                                                 <Row style={{textAlign: 'center'}}>
                                                     <Col>
-                                                        <label className='Edit-Warehouse-Modal-Header'>Czy na pewno chcesz wprowadzić zmiany?</label>
+                                                        <label className='Edit-Transporter-Modal-Header'>Czy na pewno chcesz wprowadzić zmiany?</label>
                                                     </Col>
                                                 </Row>
                                                 <Row style={{marginTop: '45px', textAlign: 'center'}}>
                                                     <Col>
                                                     <Button 
-                                                        className="Confirm-Edit-Warehouse-Button" 
+                                                        className="Confirm-Edit-Transporter-Button" 
                                                         variant="light"
                                                         onClick={() => {
                                                             close()
@@ -383,10 +370,10 @@ class EditTransporterPanel extends Component{
                                                     </Col>
                                                     <Col>
                                                         <Button 
-                                                            className="Confirm-Edit-Warehouse-Button" 
+                                                            className="Confirm-Edit-Transporter-Button" 
                                                             variant="light"
                                                             onClick={() => {
-                                                                this.updateWarehouse();
+                                                                this.updateTransporter();
                                                                 close();
                                                             }}
                                                             >

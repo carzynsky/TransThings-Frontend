@@ -1,0 +1,90 @@
+.Vehicle-Info-Stats-Sub{
+    font-size: 14px;
+    font-family: 'Overpass', sans-serif;
+    color:#da55f1;
+}
+
+.Vehicle-Info-Stats{
+    font-size:50px;
+    font-family: 'Overpass', sans-serif;
+    color:#da55f1;
+}
+
+.Vehicles-Data-Table-Container{
+    margin-top: 15px;
+    height: 65vh;
+    background-color: #202125;
+    color: whitesmoke;
+    padding-top: 15px;
+    border-radius: 15px;
+    font-family: 'Overpass', sans-serif;
+}
+
+.Vehicle-Table-Header{
+    padding-left: 10px;
+    padding-top: 15px;
+    font-size: 26px;
+    font-family: 'Overpass', sans-serif;
+    color: #da55f1;
+}
+
+.Add-Vehicle-Redirect-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 90px;
+    height: 35px;
+    font-size: 13px;
+    background-color: #da55f1;
+    box-shadow: 2px 2px 15px -4px #da55f1;
+    border: solid 3px #da55f1;
+    color: #202125;
+    margin-top: 15px;
+    margin-right: 15px;
+}
+
+.Vehicles-Data-Table{
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 13px;
+    font-family: 'Overpass', sans-serif;
+}
+
+.Vehicles-Redirect-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    height: 40px;
+    font-size: 12px;
+    text-align: center;
+    background-color: #da55f1;
+    border: solid 3px #da55f1;
+    color: #202125;
+    box-shadow: 2px 2px 15px -4px #da55f1;
+}
+
+.Vehicle-Details-Icon{
+    color: #da55f1;
+    size: 1.0em;
+}
+
+.Vehicle-Details-Icon:hover{
+    color: whitesmoke;
+    cursor: pointer;
+}
+
+.Delete-Vehicle-Modal-Header{
+    padding-top: 25px;
+    font-size: 20px;
+    font-family: 'Overpass', sans-serif;
+    color:#da55f1;
+}
+
+.Confirm-Delete-Vehicle-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    font-size: 13px;
+    background-color: #da55f1;
+    box-shadow: 2px 2px 15px -4px #da55f1;
+    border: solid 3px #da55f1;
+    color: #202125;
+    margin-top: 5px;
+    padding-top: 10px;
+}

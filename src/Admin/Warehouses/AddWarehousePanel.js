@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
-import { MdAdd, MdEdit } from 'react-icons/md';
-import { HiOutlineRefresh } from 'react-icons/hi';
-import { CgMoreO } from 'react-icons/cg';
 import { AiFillPhone, AiOutlineMail } from 'react-icons/ai';
 import { IoMdContact } from 'react-icons/io';
 import { FaFax, FaWarehouse, FaCity } from 'react-icons/fa';
