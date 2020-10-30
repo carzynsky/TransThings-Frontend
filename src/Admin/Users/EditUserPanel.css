@@ -1,53 +1,73 @@
-@import url('https://fonts.googleapis.com/css2?family=Overpass:wght@700&display=swap');
-.Add-User-Tile{
+.Edit-User-Header{
+    padding-top: 15px;
+    font-size: 40px;
+    font-family: 'Overpass', sans-serif;
+    color:#5CDB95;
+}
+
+.Edit-User-Container{
     padding-top: 15px;
     background-color: #202125;
-    height: 100%;
+    height: 92vh;
     width: 100%;
     border-radius: 15px;
     margin-top: 50px;
-}
-
-.Add-User-Title{
-    
-    padding-left: 5px;
-    padding-top: 15px;
-    font-size: 30px;
-    color:#5CDB95;
-    font-family: 'Overpass', sans-serif;
-}
-
-.Small-Calendar-Tile{
-    margin-top: 50px;
-    padding-top: 15px;
-    background-color: #202125;
-    height: 40vh;
-    width: 30vw;
-    border-radius: 15px;
-}
-
-.Calendar-Style{
-    font-size: 9px;
-    color:#202125;
-}
-
-.My-Form-Add-User{
-    width: 250px;
-    background-color: transparent;
-    border: solid 2px #5cdb95;
-    color: white;
-    height: 40px;
     padding-left: 15px;
 }
-
-.My-Form-Add-User:hover{
-    background-color: transparent;
+.Edit-User-Modal-Header{
+    padding-top: 25px;
+    font-size: 20px;
+    font-family: 'Overpass', sans-serif;
+    color:#5CDB95;
 }
 
-.My-Form-Add-User:focus,
-.My-Form-Add-User:active{
-    background-color: transparent;
-    border: solid 2px #5cdb95;;
-    outline: none;
-    color: white;
+.Edit-User-Redirect-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    font-size: 13px;
+    background-color: #5CDB95;
+    box-shadow: 2px 2px 15px -4px #5CDB95;
+    border: solid 3px #5CDB95;
+    color: #202125;
+    margin-top: 25px;
+    padding-top: 10px;
+}
+
+.Confirm-Edit-User-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    font-size: 13px;
+    background-color: #5CDB95;
+    box-shadow: 2px 2px 15px -4px #5CDB95;
+    border: solid 3px #5CDB95;
+    color: #202125;
+    margin-top: 5px;
+    padding-top: 10px;
+}
+
+#selectUserGender{
+    color:#5CDB95;
+}
+
+#user-date-picker-dialog{
+    color: #5CDB95;
+}
+.MuiPickersToolbar-toolbar{
+    background-color: #5CDB95 !important;
+}
+
+.MuiPickersDay-daySelected{
+    background-color: #5CDB95 !important;
+}
+
+.MuiButton-textPrimary{
+    color: black !important;
+}
+
+.MuiButton-textPrimary:hover{
+    background-color: #5CDB95 !important;
+}
+
+.MuiTypography-colorPrimary{
+    color: #5CDB95 !important;
 }

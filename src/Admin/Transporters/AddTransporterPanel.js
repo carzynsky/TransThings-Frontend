@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
 import { MdDone } from 'react-icons/md';
-import { AiFillPhone, AiOutlineMail } from 'react-icons/ai';
+import { AiOutlineMail } from 'react-icons/ai';
 import { ImCross } from 'react-icons/im';
 import { FaRoute, FaCity } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';

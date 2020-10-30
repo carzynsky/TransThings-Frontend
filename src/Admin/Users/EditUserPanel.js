@@ -1,28 +1,46 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import { Row, Col, Container, Button } from 'react-bootstrap';
+import { MdDone } from 'react-icons/md';
+import { ImCross } from 'react-icons/im';
+import { AiOutlineUser } from 'react-icons/ai';
 import { NavLink } from 'react-router-dom';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
-import './AddUserPanel.css';
+import { TextField, Select, FormControl, MenuItem, InputLabel } from '@material-ui/core';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import { getSessionCookie } from '../../sessions';
+import Popup from 'reactjs-popup';
 import axios from 'axios';
+import DateFnsUtils from '@date-io/date-fns';
+import 'reactjs-popup/dist/index.css';
+import './EditUserPanel.css';
 
 class EditUserPanel extends Component{
     constructor(props){
         super(props);
+
         this.state = {
-            userId: this.props.location.userProps,
-            birthdate: new Date(),
-            dateOfEmployment: new Date(),
             token: getSessionCookie(),
-            user: ''
+            userRoles: [],
+            id: '',
+            firstName: '',
+            lastName: '',
+            peselNumber: '',
+            dateOfEmployment: null,
+            birthDate: null,
+            gender: '',
+            phoneNumber: '',
+            mail: '',
+            login: '',
+            userRoleId: '',
+            serverResponse: '',
+            isServerResponseModalOpen: false,
+            isModalOpen: false
         }
     }
 
-    async getUserById(){
-        try
-        {
-            const response = await axios.get('https://localhost:44394/users/' + this.state.userId, {
+    // GET call to API fo user-roles
+    async getUserRoles(){
+        try{
+            const response = await axios.get('https://localhost:44394/user-roles/', {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json;charset=UTF-8',
@@ -31,9 +49,42 @@ class EditUserPanel extends Component{
             });
 
             const data = await response.data;
-            console.log(data)
             this.setState({
-                user: data
+                userRoles: data
+            })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+    // GET call to API for user
+    async getUserById(userId){
+        try{
+            const response = await axios.get('https://localhost:44394/users/' + userId, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            });
+
+            const data = await response.data;
+            let tIndex = data.birthDate.indexOf('T');
+            let bDate = data.birthDate?.substring(0, tIndex);
+            let eDate = data.dateOfEmployment?.substring(0, tIndex);
+
+            this.setState({
+                id: data.id,
+                firstName: data.firstName,
+                lastName: data.lastName,
+                peselNumber: data.peselNumber,
+                birthDate: bDate,
+                dateOfEmployment: eDate,
+                login: data.login,
+                gender: data.gender,
+                phoneNumber: data.phoneNumber,
+                mail: data.mail,
+                userRoleId: data.userRoleId
             })
         }
         catch(error){
@@ -41,168 +92,425 @@ class EditUserPanel extends Component{
         }
     }
 
+    // PUT call to api
+    async updateUser(){
+        try
+        {
+            const response = await axios.put('https://localhost:44394/users/' + this.state.id,
+            {
+                'firstName': this.state.firstName === '' ? null : this.state.firstName,
+                'lastName': this.state.lastName === '' ? null : this.state.lastName,
+                'peselNumber': this.state.peselNumber === '' ? null : this.state.peselNumber,
+                'birthDate': this.state.birthDate === '' ? null : this.state.birthDate,
+                'login': this.state.login,
+                'dateOfEmployment': this.state.dateOfEmployment === '' ? null : this.state.dateOfEmployment,
+                'gender': this.state.gender === '' ? null : this.state.gender,
+                'phoneNumber': this.state.phoneNumber === '' ? null : this.state.phoneNumber,
+                'mail': this.state.mail === '' ? null : this.state.mail,
+                'userRoleId': this.state.userRoleId
+            },
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
+                
+            });
+            this.setState({
+                serverResponse: response.data.message,
+                isServerResponseModalOpen: true
+            })
+        }
+        catch(error){
+            this.setState({
+                serverResponse: "Nie można było zaaktualizować użytkownika.",
+                isServerResponseModalOpen: true
+            })
+            console.log(error);
+        }
+    }
+
+    // handle change of text fields
+    handleChange = (name) => (event) => {
+        this.setState({
+            [name]: event.target.value
+        });
+      };
+
+    handleBirthDateChange = (date) =>{
+        this.setState({
+            birthDate: date
+        })
+    }
+    handleEmploymentDateChange = (date) =>{
+        this.setState({
+            dateOfEmployment: date
+        })
+    }
+      
+    // handle open/close modal
+    handleOpenModal = () => {
+        this.setState({
+            isModalOpen: true
+        })
+    }
+
+    handleCloseModal = () => {
+        this.setState({
+            isModalOpen: false
+        })
+    }
+
+    // Server response pop up
+    handleCloseServerResponseModal = () =>{
+        this.setState({
+            isServerResponseModalOpen: false
+        })
+    }
+
     async componentDidMount(){
-        await this.getUserById();
+        await this.getUserRoles();
+        await this.getUserById(this.props.match.params.id)
     }
 
     render(){
         return(
             <Container>
                 <Row>
-                    <Col xs='8'>
-                        <Row>
-                            <div className='Add-User-Tile'>
-                            <Container>
-                                <Row>
-                                    <Col>
-                                    <label className='Add-User-Title'>Dane osobowe</label>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                    <Form style={{paddingLeft: '10px'}}>
-                                        <Form.Group controlId="formGroupNewUserFirstName">
-                                            <Form.Label style={{color: 'white'}}>Imię</Form.Label>
-                                            <Form.Control defaultValue={this.state.user.firstName} className="My-Form-Add-User" autoComplete="off"/>
-                                            <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
-                                        </Form.Group>
-                                    </Form>
-                                    </Col>
-                                    <Col>
-                                    <Form style={{paddingLeft: '10px'}}>
-                                        <Form.Group controlId="formGroupNewUserFirstName">
-                                            <Form.Label style={{color: 'white'}}>Nazwisko</Form.Label>
-                                            <Form.Control  defaultValue={this.state.user.lastName} className="My-Form-Add-User" autoComplete="off"/>
-                                            <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
-                                        </Form.Group>
-                                    </Form>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <Form>
-                                            <Form.Group controlId="exampleForm.SelectCustom">
-                                                <Form.Label style={{color: 'white'}}>Płeć</Form.Label>
-                                                <Form.Control as="select" custom>
-                                                    <option>Mężczyzna</option>
-                                                    <option>Kobieta</option>
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Form>
-                                    </Col>
-                                    <Col>
-                                    <Form style={{paddingLeft: '10px'}}>
-                                        <Form.Group controlId="formGroupNewUserFirstName">
-                                            <Form.Label style={{color: 'white'}}>Pesel</Form.Label>
-                                            <Form.Control defaultValue={this.state.user.peselNumber} className="My-Form-Add-User" autoComplete="off"/>
-                                            <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
-                                        </Form.Group>
-                                    </Form>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <Form style={{paddingLeft: '10px'}}>
-                                            <Form.Group controlId="formGroupNewUserFirstName">
-                                                <Form.Label style={{color: 'white'}}>Login:</Form.Label>
-                                                <Form.Control defaultValue={this.state.user.login} className="My-Form-Add-User" autoComplete="off"/>
-                                                <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
-                                            </Form.Group>
-                                        </Form>
-                                    </Col>
-                                    <Col>
-                                        <Form style={{paddingLeft: '10px'}}>
-                                            <Form.Group controlId="formGroupNewUserFirstName">
-                                                <Form.Label style={{color: 'white'}}>Mail:</Form.Label>
-                                                <Form.Control defaultValue={this.state.user.mail} className="My-Form-Add-User" autoComplete="off"/>
-                                                <Form.Text className="text-muted" style={{color: 'white'}}></Form.Text>
-                                            </Form.Group>
-                                        </Form>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <Form>
-                                            <Form.Group controlId="exampleForm.SelectCustom">
-                                                <Form.Label style={{color: 'white'}}>Rola</Form.Label>
-                                                <Form.Control as="select" custom>
-                                                    <option>Administrator</option>
-                                                    <option>Pracownik zamówień</option>
-                                                    <option>Spedytor</option>
-                                                </Form.Control>
-                                            </Form.Group>
-                                        </Form>
-                                    </Col>
-                                </Row>
-                            </Container>
-                            </div>
-                        </Row>
-                        <Row style={{marginTop: '25px'}}>
-                            <Col xs='2'>
-                            <NavLink className="Admin-Nav-Link" push to= '/admin/uzytkownicy/'>
-                                <Button 
-                                    className="Edit-User-Redirect-Button" 
-                                    variant="light">WRÓĆ</Button>
-                            </NavLink>
-                            </Col>
-                            
-                            <Col xs='2'>
-                            <NavLink className="Admin-Nav-Link" push to= '/admin/uzytkownicy/'>
-                                <Button 
-                                    className="Edit-User-Redirect-Button" 
-                                    variant="light">ZAPISZ</Button>
-                            </NavLink>
-                            </Col>
-                            <Col xs='8'></Col>
-                        </Row>
-                    </Col>
-                    <Col xs='4' style={{paddingLeft: '50px'}}>
-                        <Row>
-                            <div className='Small-Calendar-Tile'>
-                                <Container>
-                                    <Row>
-                                        <Col>
-                                        <label className='Add-User-Title'>Data urodzenia</label>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                        <Calendar className='Calendar-Style'
-                                            // onChange={}
-                                            value={this.state.birthdate}/>
-                                        </Col>
-                                    </Row>
-                                </Container>
-                            </div>
-                        </Row>
-                        <Row>
-                            <div className='Small-Calendar-Tile'>
-                                <Container>
-                                    <Row>
-                                        <Col>
-                                        <label className='Add-User-Title'>Data zatrudnienia</label>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                        <Calendar className='Calendar-Style'
-                                            // onChange={}
-                                            value={this.state.birthdate}/>
-                                        </Col>
-                                    </Row>
-                                </Container>
-                            </div>
-                        </Row>
-                        
-                    </Col>
-                </Row>
-                <Row>
                     <Col>
+                    <div className='Edit-User-Container'>
+                        <Container>
+                            <Row>
+                                <Col>
+                                    <div className='Edit-User-Header'>
+                                        <AiOutlineUser size='2.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Edycja użytkownika</span>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '10px'}}>
+                                <Col>
+                                    <label className='Edit-Transporter-Sub-Header' style={{color: '#5CDB95', fontSize: '26px'}}>Dane personalne</label>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <FormControl  noValidate autoComplete="off">
+                                        <TextField 
+                                            id="userFirstName" 
+                                            label="Imię" 
+                                            color="primary"
+                                            onChange={this.handleChange('firstName')}
+                                            autoComplete="new-password"
+                                            value={this.state.firstName}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: '#5CDB95'
+                                                }
+                                            }} />
+                                    </FormControl>
+                                </Col>
+                                <Col>
+                                    <FormControl  noValidate autoComplete="off">
+                                        <TextField 
+                                            id="driverLastName" 
+                                            label="Nazwisko" 
+                                            color="primary"
+                                            onChange={this.handleChange('lastName')}
+                                            autoComplete="new-password"
+                                            value={this.state.lastName}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: '#5CDB95'
+                                                }
+                                            }} />
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '10px'}}>
+                                <Col>
+                                    <FormControl>
+                                        <InputLabel id="genderLabel">Płeć</InputLabel>
+                                            <Select
+                                                id="selectUserGender"
+                                                color="primary"
+                                                value={this.state.gender}
+                                                InputLabelProps={{
+                                                    style:{
+                                                        color: 'whitesmoke'
+                                                    },
+                                                }}
+                                                onChange={this.handleChange('gender')}>
+                                                    <MenuItem value={'M'}>Mężczyzna</MenuItem>
+                                                    <MenuItem value={'K'}>Kobieta</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Col>
+                                <Col>
+                                    <FormControl  noValidate autoComplete="off">
+                                        <TextField 
+                                            id="userPeselNumber" 
+                                            label="Pesel" 
+                                            color="primary"
+                                            autoComplete="new-password"
+                                            value={this.state.peselNumber}
+                                            onChange={this.handleChange('peselNumber')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: '#5CDB95'
+                                                }
+                                            }} />
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '10px'}}>
+                                <Col>
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                        <KeyboardDatePicker
+                                            margin="normal"
+                                            id="user-date-picker-dialog"
+                                            label="Data urodzenia"
+                                            format="MM/dd/yyyy"
+                                            color="primary"
+                                            value={this.state.birthDate}
+                                            onChange={this.handleBirthDateChange.bind(this)}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change date'
+                                            }}
+                                            style={{color: '#5CDB95'}}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            />
+                                    </MuiPickersUtilsProvider>
+                                </Col>
+                                <Col>
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                        <KeyboardDatePicker
+                                            margin="normal"
+                                            id="user-date-picker-dialog"
+                                            label="Data zatrudnienia"
+                                            format="MM/dd/yyyy"
+                                            color="primary"
+                                            value={this.state.dateOfEmployment}
+                                            onChange={this.handleEmploymentDateChange.bind(this)}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change date'
+                                            }}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            />
+                                    </MuiPickersUtilsProvider>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '10px'}}>
+                                <Col>
+                                    <FormControl>
+                                        <InputLabel id="genderLabel">Rola</InputLabel>
+                                            <Select
+                                                id="selectUserGender"
+                                                color="primary"
+                                                value={this.state.userRoleId}
+                                                InputLabelProps={{
+                                                    style:{
+                                                        color: 'whitesmoke'
+                                                    },
+                                                }}
+                                                onChange={this.handleChange('userRoleId')}>
+                                                    {this.state.userRoles.map((userRole) => (
+                                                        <MenuItem key={userRole.id} value={userRole.id}>{userRole.roleName}</MenuItem>
+                                                    ))}
+                                        </Select>
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '20px'}}>
+                                <Col>
+                                <label className='Edit-Transporter-Sub-Header' style={{color: '#5CDB95', fontSize: '26px'}}>Dane kontaktowe</label>
+                                </Col>
+                            </Row>
+                            <Row >
+                                <Col>
+                                    <form  noValidate autoComplete="off">
+                                        <TextField 
+                                            id="userMail" 
+                                            label="Adres email" 
+                                            color="primary"
+                                            autoComplete="new-password"
+                                            value={this.state.mail}
+                                            onChange={this.handleChange('mail')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: '#5CDB95'
+                                                }
+                                            }} />
+                                    </form>
+                                </Col>
+                                <Col>
+                                    <form  noValidate autoComplete="off">
+                                        <TextField 
+                                            id="userPhoneNumber" 
+                                            label="Nr. telefonu" 
+                                            color="primary"
+                                            autoComplete="new-password"
+                                            value={this.state.phoneNumber}
+                                            onChange={this.handleChange('phoneNumber')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: '#5CDB95'
+                                                }
+                                            }} />
+                                    </form>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '15px'}}>
+                                <Col>
+                                    <NavLink className="Admin-Nav-Link" to={{
+                                        pathname: '/admin/uzytkownicy'
+                                    }}>
+                                        <Button 
+                                            className="Edit-User-Redirect-Button" 
+                                            variant="light">Wróć
+                                        </Button>
+                                    </NavLink>
+                                </Col>
+                                <Col>
+                                    <Popup 
+                                        trigger={
+                                            <Button 
+                                                className="Edit-User-Redirect-Button" 
+                                                variant="light"
+                                                style={{marginLeft: '30px'}}>
+                                                    Zatwierdź
+                                            </Button>
+                                        }
+                                        modal
+                                        open={this.state.isModalOpen}
+                                        onOpen={this.handleOpenModal}
+                                        contentStyle={{
+                                            width: '30vw',
+                                            height: '25vh',
+                                            backgroundColor: '#202125',
+                                            borderColor: '#202125',
+                                            borderRadius: '15px',
+                                        }}
+                                        >
+                                        { close => (<div>
+                                            <Container>
+                                                <Row style={{textAlign: 'center'}}>
+                                                    <Col>
+                                                        <label className='Edit-User-Modal-Header'>Czy na pewno chcesz wprowadzić zmiany?</label>
+                                                    </Col>
+                                                </Row>
+                                                <Row style={{marginTop: '45px', textAlign: 'center'}}>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Confirm-Edit-User-Button" 
+                                                            variant="light"
+                                                            onClick={() => {
+                                                                close()
+                                                            }}
+                                                            >
+                                                                <div>
+                                                                <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
+                                                                </div>
+                                                        </Button>
+                                                    </Col>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Confirm-Edit-User-Button" 
+                                                            variant="light"
+                                                            onClick={() => {
+                                                                this.updateUser();
+                                                                close();
+                                                            }}
+                                                            >
+                                                                <div>
+                                                                <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
+                                                                </div>
+                                                        </Button>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        </div>
+                                        )}
+                                    </Popup>
+
+                                    <Popup 
+                                        modal
+                                        open={this.state.isServerResponseModalOpen}
+                                        contentStyle={{
+                                            width: '30vw',
+                                            height: '25vh',
+                                            backgroundColor: '#202125',
+                                            borderColor: '#202125',
+                                            borderRadius: '15px',
+                                            }}>
+                                        {
+                                            close => (
+                                                    <Container>
+                                                        <Row style={{textAlign: 'center'}}>
+                                                            <Col>
+                                                                <label className='Edit-User-Modal-Header'>{this.state.serverResponse}</label>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row style={{textAlign: 'center', marginTop: '30px'}}>
+                                                            <Col>
+                                                                <Button 
+                                                                    className="Confirm-Edit-User-Button" 
+                                                                    variant="light"
+                                                                    onClick={() => {
+                                                                        this.handleCloseServerResponseModal();
+                                                                        close();
+                                                                    }}>
+                                                                    Zamknij
+                                                                </Button>
+                                                            </Col>
+                                                        </Row>
+                                                    </Container>
+                                                )
+                                            }
+                                    </Popup>
+                                </Col>
+                                <Col xs='8'>
+                                </Col>
+                            </Row>
+                        </Container>
+                    </div>
                     </Col>
                 </Row>
             </Container>
         );
     }
-
 }
-export default EditUserPanel
+export default EditUserPanel;

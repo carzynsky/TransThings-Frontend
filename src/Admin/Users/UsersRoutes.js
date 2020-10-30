@@ -11,7 +11,7 @@ class UsersRoutes extends Component {
                 <Switch>
                     <Route path='/admin/uzytkownicy' exact component={UsersPanel}></Route>
                     <Route path='/admin/uzytkownicy/dodaj' component={AddUserPanel}></Route>
-                    <Route path='/admin/uzytkownicy/edytuj' component={EditUserPanel}></Route>
+                    <Route path='/admin/uzytkownicy/edytuj/:id' component={EditUserPanel}></Route>
                 </Switch>
             </BrowserRouter>
         );

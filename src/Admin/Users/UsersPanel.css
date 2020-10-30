@@ -100,6 +100,42 @@
     color: '#5cdb95';
     size: 1em;
 }
+
 .User-Details-Icon:hover{
     color: white;
+}
+
+.User-Details-Icon-Delete-Redirect{
+    color: #e64b62;
+}
+
+.User-Details-Icon-Delete-Redirect:hover{
+    color: whitesmoke;
+    cursor: pointer;
+}
+
+.User-Details-Icon-Password-Redirect{
+    color: #e6914b;
+}
+.User-Details-Icon-Password-Redirect:hover{
+    color: whitesmoke;
+}
+
+.Confirm-Delete-User-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    font-size: 13px;
+    background-color: #5CDB95;
+    box-shadow: 2px 2px 15px -4px #5CDB95;
+    border: solid 3px #5CDB95;
+    color: #202125;
+    margin-top: 5px;
+    padding-top: 10px;
+}
+
+.Delete-User-Modal-Header{
+    padding-top: 25px;
+    font-size: 20px;
+    font-family: 'Overpass', sans-serif;
+    color: #5CDB95;
 }

@@ -6,7 +6,7 @@ import { getSessionCookie } from '../../sessions';
 import { FaTruckMoving} from 'react-icons/fa';
 import { MdEdit, MdAdd, MdDone } from 'react-icons/md';
 import { ImCross } from 'react-icons/im';
-import { RiDeleteBin6Line} from 'react-icons/ri';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 import { BiArrowBack } from 'react-icons/bi';
 import { HiOutlineRefresh } from 'react-icons/hi';
 import axios from 'axios';
@@ -66,6 +66,7 @@ class VehiclesPanel extends Component{
         }
     }
 
+    // DELETE call to api for removing vehicle
     async deleteVehicle(){
         try
         {
@@ -127,17 +128,6 @@ class VehiclesPanel extends Component{
         return(
             <Container>
                 <Row style={{marginTop: '50px'}}>
-                    {/* <Col style={{textAlign: 'center'}}>
-                        <div className='Transporter-Tile' style={{backgroundColor: 'transparent'}}>
-                            <Container>
-                                <Row>
-                                    <Col style={{textAlign: 'left', paddingTop: '20px', paddingBottom: '20px', color: '#da55f1'}}>
-                                        <FaTruckMoving size='7.0em'/>
-                                    </Col>
-                                </Row>
-                            </Container>
-                        </div>
-                    </Col> */}
                     <Col>
                         <div className='Transporter-Tile'>
                             <Container>

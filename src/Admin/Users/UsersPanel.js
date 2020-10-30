@@ -5,8 +5,12 @@ import { getSessionCookie } from '../../sessions';
 import { MDBDataTable } from 'mdbreact';
 import { Doughnut } from 'react-chartjs-2';
 import { HiUserAdd, HiOutlineRefresh } from 'react-icons/hi';
+import { RiLockPasswordLine, RiDeleteBin6Line } from 'react-icons/ri';
 import { CgMoreO }from 'react-icons/cg';
-import { MdEdit } from 'react-icons/md';
+import { MdEdit, MdDone } from 'react-icons/md';
+import { ImCross } from 'react-icons/im';
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
 import Circle from 'react-circle';
 import axios from 'axios';
 import './UsersPanel.css';
@@ -18,6 +22,9 @@ class UsersPanel extends Component{
             token: getSessionCookie(),
             users: [],
             userRoles: [],
+            serverResponse: '',
+            isServerResponseModalOpen: false,
+            isModalOpen: false,
             addUserRedirect: false,
             initials: '',
             selectedUser: {
@@ -103,22 +110,83 @@ class UsersPanel extends Component{
                 });
                 return;
             }
+
             let ini = data[0].firstName[0].toUpperCase() + data[0].lastName[0].toUpperCase();
+            let tIndex = data[0].birthDate.indexOf('T');
+            let bDate = data[0].birthDate?.substring(0, tIndex);
+            let eDate = data[0].dateOfEmployment?.substring(0, tIndex);
+
             this.setState({
                 users: data,
-                selectedUser: data[0],
+                selectedUser: {
+                    id: data[0].id,
+                    firstName: data[0].firstName,
+                    lastName: data[0].lastName,
+                    gender: data[0].gender,
+                    login: data[0].login,
+                    mail: data[0].mail,
+                    phoneNumber: data[0].phoneNumber,
+                    userRole: data[0].userRole,
+                    birthDate: bDate,
+                    dateOfEmployment: eDate
+                },
                 initials: ini
             })
         }
         catch(error){
             console.log(error);
         }
-        
     }
 
-    componentDidMount(){
-        this.getUserRoles();
-        this.getUsers();
+     // DELETE call to api for removing selected user
+     async deleteUser(){
+        await this.deleteUserLoginHistory();
+        try
+        {
+            const response = await axios.delete('https://localhost:44394/users/' + this.state.selectedUser.id, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            });
+
+            this.setState({
+                serverResponse: response.data.message,
+                isServerResponseModalOpen: true
+            })
+
+            await this.getUsers();
+        }
+        catch(error){
+            this.setState({
+                serverResponse: 'Nie można usunąć użytkownika.',
+                isServerResponseModalOpen: false
+            })
+            console.log(error);
+        }
+    }
+
+    // DELETE call to api for removing selected user's all login history
+     async deleteUserLoginHistory(){
+        try
+        {
+            await axios.delete('https://localhost:44394/login-histories/users/' + this.state.selectedUser.id, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            });
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    async componentDidMount(){
+        await this.getUserRoles();
+        await this.getUsers();
     }
 
     handleDetailsClick = (data) => {
@@ -142,6 +210,25 @@ class UsersPanel extends Component{
             },
             initials: ini,
             isSelected: true
+        })
+    }
+
+    // handle modal open/close
+    handleOpenModal = () => {
+        this.setState({
+            isModalOpen: true
+        })
+    }
+
+    handleCloseModal = () => {
+        this.setState({
+            isModalOpen: false
+        })
+    }
+
+    handleCloseServerResponseModal = () =>{
+        this.setState({
+            isServerResponseModalOpen: false
         })
     }
 
@@ -303,33 +390,131 @@ class UsersPanel extends Component{
                         <div className='Short-Details-User-Tile'>
                             <Container>
                             <Row>
-                                <Col>
+                                <Col xs='4'>
                                     <label className="User-Details-Header">Użytkownik</label>
                                 </Col>
-                                <Col>
+                                <Col xs='4'>
                                 </Col>
-                                <Col style={{paddingTop: '10px'}}>
+                                <Col xs ='1'style={{paddingTop: '15px'}}>
                                     <NavLink className="Add-User-Nav-Link" to={{
-                                        pathname: '/admin/uzytkownicy/edytuj',
-                                        userProps: this.state.selectedUser.id
+                                        pathname: '/admin/uzytkownicy/edytuj/' + this.state.selectedUser.id
                                     }}>
-                                        <Button 
-                                            className="Edit-User-Redirect-Button" 
-                                            variant="light"
-                                        ><MdEdit size='1.1em'/><span>&nbsp;</span><span>Edytuj</span>
-                                        </Button>
+                                      <MdEdit size='1.5em' className='User-Details-Icon'/>
                                     </NavLink>
+                                </Col>
+                                <Col xs ='1' style={{paddingTop: '15px'}}>
+                                    <NavLink className="Add-User-Nav-Link" to={{
+                                        pathname: '/admin/uzytkownicy/edytuj/' + this.state.selectedUser.id
+                                    }}>
+                                      <RiLockPasswordLine size='1.5em' className='User-Details-Icon-Password-Redirect'/>
+                                    </NavLink>
+                                </Col>
+                                <Col xs ='1' style={{paddingTop: '15px'}}>
+                                    {/* <NavLink className="Add-User-Nav-Link" to={{
+                                        pathname: '/admin/uzytkownicy/edytuj/' + this.state.selectedUser.id
+                                    }}>
+                                      <RiDeleteBin6Line size='1.5em' className='User-Details-Icon-Delete-Redirect'/>
+                                    </NavLink> */}
+                                    <div>
+                                        <Popup 
+                                            trigger={
+                                                        <div>
+                                                            <RiDeleteBin6Line size='1.5em' className='User-Details-Icon-Delete-Redirect'/>
+                                                        </div>
+                                                    }
+                                            modal
+                                            open={this.state.isModalOpen}
+                                            onOpen={this.handleOpenModal}
+                                            contentStyle={{
+                                                width: '35vw',
+                                                height: '30vh',
+                                                backgroundColor: '#202125',
+                                                borderColor: '#202125',
+                                                borderRadius: '15px',
+                                            }}>
+                                            { close => (<div>
+                                                            <Container>
+                                                                <Row style={{textAlign: 'center'}}>
+                                                                    <Col>
+                                                                        <label className='Delete-User-Modal-Header'>Czy na pewno chcesz usunąć użytkownika {this.state.selectedUser.firstName} {this.state.selectedUser.lastName}?</label>
+                                                                    </Col>
+                                                                </Row>
+                                                                <Row style={{marginTop: '25px', textAlign: 'center'}}>
+                                                                    <Col>
+                                                                        <Button 
+                                                                            className="Confirm-Delete-User-Button" 
+                                                                            variant="light"
+                                                                            onClick={() => {
+                                                                                close()
+                                                                            }}>
+                                                                            <div>
+                                                                                <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
+                                                                            </div>
+                                                                        </Button>
+                                                                    </Col>
+                                                                    <Col>
+                                                                        <Button 
+                                                                            className="Confirm-Delete-User-Button" 
+                                                                            variant="light"
+                                                                            onClick={() => {
+                                                                                this.deleteUser();
+                                                                                    close();
+                                                                            }}>
+                                                                            <div>
+                                                                                <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
+                                                                            </div>
+                                                                        </Button>
+                                                                    </Col>
+                                                                </Row>
+                                                            </Container>
+                                                        </div>
+                                            )}
+                                        </Popup>
+                                       
+                                    </div>
+                                    <Popup 
+                                            modal
+                                            open={this.state.isServerResponseModalOpen}
+                                            contentStyle={{
+                                                width: '30vw',
+                                                height: '25vh',
+                                                backgroundColor: '#202125',
+                                                borderColor: '#202125',
+                                                borderRadius: '15px',
+                                                }}>
+                                            {
+                                                close => (
+                                                        <Container>
+                                                            <Row style={{textAlign: 'center'}}>
+                                                                <Col>
+                                                                    <label className='Delete-User-Modal-Header'>{this.state.serverResponse}</label>
+                                                                </Col>
+                                                            </Row>
+                                                            <Row style={{textAlign: 'center', marginTop: '30px'}}>
+                                                                <Col>
+                                                                    <Button 
+                                                                        className="Confirm-Delete-User-Button" 
+                                                                        variant="light"
+                                                                        onClick={() => {
+                                                                            this.handleCloseServerResponseModal();
+                                                                            close();
+                                                                        }}>
+                                                                        Zamknij
+                                                                    </Button>
+                                                                </Col>
+                                                            </Row>
+                                                        </Container>
+                                                )
+                                            }
+                                        </Popup>
                                 </Col>
                             </Row>
                             <Row style={{marginTop: '10px'}}>
                                 <Col xs='2'>
                                     <div className='Icon-Avatar'>{this.state.initials}</div>
                                 </Col>
-                                <Col xs='3' style={{paddingTop: '10px'}}>
-                                    <label className="User-Details-SubMessage">{this.state.selectedUser.firstName}</label>
-                                </Col>
-                                <Col xs='3' style={{paddingTop: '10px'}}>
-                                    <label className="User-Details-SubMessage">{this.state.selectedUser.lastName}</label>
+                                <Col style={{paddingTop: '10px'}}>
+                                    <label className="User-Details-SubMessage">{this.state.selectedUser.firstName}<span>&nbsp;&nbsp;</span>{this.state.selectedUser.lastName}</label>
                                 </Col>
                             </Row>
                             <Row style={{paddingTop: '25px'}}>
@@ -339,22 +524,22 @@ class UsersPanel extends Component{
                             </Row>
                             <Row>
                                 <Col>
-                    <label className="User-Details-SubMessage">{this.state.selectedUser.gender === 'K' ? 'Kobieta' : 'Mężczyzna'}</label>
+                                    <label className="User-Details-SubMessage">{this.state.selectedUser.gender === 'K' ? 'Kobieta' : 'Mężczyzna'}</label>
                                 </Col>
                             </Row>
                             <Row>
                                 <Col>
-                                <label className="User-Details-SubMessage">Rola: {this.state.selectedUser.userRole}</label>
+                                    <label className="User-Details-SubMessage">Rola: {this.state.selectedUser.userRole}</label>
                                 </Col>
                             </Row>
                             <Row>
                                 <Col>
-                                <label className="User-Details-SubMessage">Data urodzenia: {this.state.selectedUser.birthDate}</label>
+                                    <label className="User-Details-SubMessage">Data urodzenia: {this.state.selectedUser.birthDate}</label>
                                 </Col>
                             </Row>
                             <Row>
                                 <Col>
-                                <label className="User-Details-SubMessage">Data zatrudnienia: {this.state.selectedUser.dateOfEmployment}</label>
+                                    <label className="User-Details-SubMessage">Data zatrudnienia: {this.state.selectedUser.dateOfEmployment}</label>
                                 </Col>
                             </Row>
                             <Row>

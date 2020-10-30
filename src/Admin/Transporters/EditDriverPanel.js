@@ -4,10 +4,13 @@ import { MdDone } from 'react-icons/md';
 import { GiFullMotorcycleHelmet } from 'react-icons/gi';
 import { ImCross } from 'react-icons/im';
 import { NavLink } from 'react-router-dom';
-import axios from 'axios';
 import { TextField, Select, FormControl, MenuItem, InputLabel } from '@material-ui/core';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import { getSessionCookie } from '../../sessions';
 import Popup from 'reactjs-popup';
+import axios from 'axios';
+import DateFnsUtils from '@date-io/date-fns';
+
 import 'reactjs-popup/dist/index.css';
 import './EditDriverPanel.css';
 
@@ -20,7 +23,7 @@ class EditDriverPanel extends Component{
             firstName: '',
             lastName: '',
             peselNumber: '',
-            birthDate: '',
+            birthDate: null,
             gender: '',
             contactPhoneNumber: '',
             mail: '',
@@ -106,6 +109,12 @@ class EditDriverPanel extends Component{
             [name]: event.target.value
         });
       };
+
+    handleDateChange = (date) =>{
+        this.setState({
+            birthDate: date
+        })
+    }
       
     // handle open/close modal
     handleOpenModal = () => {
@@ -143,6 +152,11 @@ class EditDriverPanel extends Component{
                                     <div className='Edit-Driver-Header'>
                                         <GiFullMotorcycleHelmet size='2.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Edycja kierowcy</span>
                                     </div>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '10px'}}>
+                                <Col>
+                                    <label className='Edit-Transporter-Sub-Header' style={{color: '#e6e947', fontSize: '26px'}}>Dane personalne</label>
                                 </Col>
                             </Row>
                             <Row style={{marginTop: '15px'}}>
@@ -232,30 +246,30 @@ class EditDriverPanel extends Component{
                             </Row>
                             <Row style={{marginTop: '10px'}}>
                                 <Col>
-                                    <form  noValidate autoComplete="off">
-                                        <TextField 
-                                            id="driverBirthdate" 
-                                            label='Data urodzenia'
+                                    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                        <KeyboardDatePicker
+                                            margin="normal"
+                                            id="date-picker-dialog"
+                                            label="Data urodzenia"
+                                            format="MM/dd/yyyy"
                                             color="secondary"
-                                            autoComplete="new-password"
                                             value={this.state.birthDate}
-                                            onChange={this.handleChange('birthDate')}
+                                            onChange={this.handleDateChange.bind(this)}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change date'
+                                            }}
                                             InputLabelProps={{
                                                 style:{
                                                     color: 'whitesmoke'
                                                 },
                                             }}
-                                            InputProps={{
-                                                style: {
-                                                    color: '#e6e947'
-                                                }
-                                            }} />
-                                    </form>
+                                            />
+                                    </MuiPickersUtilsProvider>
                                 </Col>
                             </Row>
                             <Row style={{marginTop: '25px'}}>
                                 <Col>
-                                    <label className='Edit-Transporter-Sub-Header'>Dane kontaktowe</label>
+                                <label className='Edit-Transporter-Sub-Header' style={{color: '#e6e947', fontSize: '26px'}}>Dane kontaktowe</label>
                                 </Col>
                             </Row>
                             <Row >
@@ -302,8 +316,8 @@ class EditDriverPanel extends Component{
                                     </form>
                                 </Col>
                             </Row>
-                            <Row style={{marginTop: '35px'}}>
-                                <Col xs='1'>
+                            <Row style={{marginTop: '15px'}}>
+                                <Col>
                                     <NavLink className="Admin-Nav-Link" to={{
                                         pathname: '/admin/przewoznicy/' + this.props.match.params.name + '/kierowcy',
                                         transporterId: this.state.transporterId,
@@ -315,7 +329,7 @@ class EditDriverPanel extends Component{
                                         </Button>
                                     </NavLink>
                                 </Col>
-                                <Col xs='1'>
+                                <Col>
                                     <Popup 
                                         trigger={
                                             <Button 
@@ -412,6 +426,8 @@ class EditDriverPanel extends Component{
                                                 )
                                             }
                                     </Popup>
+                                </Col>
+                                <Col xs='8'>
                                 </Col>
                             </Row>
                         </Container>

@@ -1,11 +1,62 @@
-.Edit-Customer-Container{
-    margin-top: 50px;
-    height: 88vh;
-    background-color: #202125;
-    color: #5cdb95;
+.Edit-Costumer-Container{
     padding-top: 15px;
-    padding-bottom: 20px;
+    background-color: #202125;
+    height: 90vh;
+    width: 100%;
     border-radius: 15px;
-    font-family: 'Overpass', sans-serif;
+    margin-top: 50px;
+    padding-left: 15px;
 }
 
+.Edit-Customer-Header{
+    padding-top: 15px;
+    font-size: 40px;
+    font-family: 'Overpass', sans-serif;
+    color:#e27543;
+}
+
+.Edit-Customer-Sub-Header{
+    padding-top: 15px;
+    font-size: 26px;
+    font-family: 'Overpass', sans-serif;
+    color:#e27543;
+}
+
+.Edit-Customer-Redirect-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    font-size: 13px;
+    background-color: #e27543;
+    box-shadow: 2px 2px 15px -4px #e27543;
+    border: solid 3px #e27543;
+    color: #202125;
+    margin-top: 35px;
+    padding-top: 10px;
+}
+
+.Confirm-Edit-Customer-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 110px;
+    font-size: 13px;
+    background-color: #e27543;
+    box-shadow: 2px 2px 15px -4px #e27543;
+    border: solid 3px #e27543;
+    color: #202125;
+    margin-top: 5px;
+    padding-top: 10px;
+}
+
+.Edit-Customer-Modal-Header{
+    padding-top: 25px;
+    font-size: 20px;
+    font-family: 'Overpass', sans-serif;
+    color: #e27543;
+}
+
+#selectCustomerGender{
+    color: #e27543;
+}
+
+#customer-date-picker-dialog{
+    color: #e27543;
+}

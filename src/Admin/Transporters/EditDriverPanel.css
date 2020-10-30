@@ -32,7 +32,7 @@
     box-shadow: 2px 2px 15px -4px #e6e947;
     border: solid 3px #e6e947;
     color: #202125;
-    margin-top: 5px;
+    margin-top: 25px;
     padding-top: 10px;
 }
 
@@ -47,7 +47,7 @@
 .Edit-Driver-Container{
     padding-top: 15px;
     background-color: #202125;
-    height: 75vh;
+    height: 85vh;
     width: 100%;
     border-radius: 15px;
     margin-top: 50px;
