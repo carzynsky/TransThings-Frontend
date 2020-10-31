@@ -1,0 +1,52 @@
+.Profile-Panel-Icon-Avatar{
+    margin-left: auto;
+    margin-right: auto;
+    width: 100px;
+    height: 100px;
+    background-color: #5CDB95;
+    border-radius: 100%;
+    font-family: 'Overpass', sans-serif;
+    font-size: 30px;
+    color: #1a1a1d;
+    text-align: center;
+    padding-top: 30px;
+    box-shadow: 2px 2px 15px -2px rgba(92,219,149,1);
+}
+
+.Profile-First-Last-Name{
+    font-family: 'Overpass', sans-serif;
+    font-size: 26px;
+    color: #5CDB95;
+    padding-top: 15px;
+}
+
+.Profile-Small-Header{
+    font-family: 'Overpass', sans-serif;
+    font-size: 18px;
+    color: #5CDB95;
+}
+
+.Profile-Tile{
+    padding-top: 15px;
+    background-color: #202125;
+    height: 260px;
+    border-radius: 15px;
+}
+
+.Change-Password-User-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 125px;
+    font-size: 13px;
+    background-color: #5cdb95;
+    box-shadow: 2px 2px 15px -4px rgba(92,219,149,1);
+    border: solid 3px #5cdb95;
+    color: #202125;
+    margin-top: 15px;
+    padding-top: 10px;
+}
+
+.Profile-Data-Label{
+    font-family: 'Overpass', sans-serif;
+    font-size: 14px;
+    color: #dcdada;
+}

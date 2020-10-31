@@ -104,8 +104,9 @@ class DriversPanel extends Component{
         })
     }
 
-    handleOpenModal = () => {
+    handleOpenModal = (driver) => {
         this.setState({
+            selectedDriver: driver,
             isModalOpen: true
         })
     }
@@ -298,21 +299,17 @@ class DriversPanel extends Component{
                                                             <MdEdit className='Driver-Details-Icon' size='1.4em'/>
                                                         </NavLink>,
                                                         delete:
-                                                        <div>
-                                                            <Popup 
-                                                            trigger={
-                                                                <div>
-                                                                     <RiDeleteBin6Line 
-                                                                        size='1.4em'
-                                                                        className='Driver-Details-Icon'
-                                                                        onClick={this.handleDetailsClick.bind(this, driver)}
-                                                                    />
-                                                                </div>
-                                                               
-                                                            }
+                                                            <RiDeleteBin6Line 
+                                                                size='1.4em'
+                                                                className='Driver-Details-Icon'
+                                                                onClick={this.handleOpenModal.bind(this, driver)}/>
+                                                    }
+                                                ))
+                                        }}
+                                        />
+                                         <Popup 
                                                             modal
                                                             open={this.state.isModalOpen}
-                                                            onOpen={this.handleOpenModal}
                                                             contentStyle={{
                                                                 width: '35vw',
                                                                 height: '30vh',
@@ -361,11 +358,6 @@ class DriversPanel extends Component{
                                                             </div>
                                                             )}
                                                         </Popup>
-                                                        </div>
-                                                    }
-                                                ))
-                                        }}
-                                        />
                                         <Popup 
                                             modal
                                             open={this.state.isServerResponseModalOpen}

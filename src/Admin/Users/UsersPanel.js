@@ -313,11 +313,13 @@ class UsersPanel extends Component{
                 </Row>
                 <Row style={{marginTop: '15px'}}>
                     <Col xs='2'>
-                        <NavLink className="Add-User-Nav-Link" to= '/admin/uzytkownicy/dodaj'><Button 
-                            className="Add-User-Redirect-Button" 
-                            variant="light"
-                            ><HiUserAdd size='1.2em'/><span>&nbsp;</span><span>Dodaj</span>
-                        </Button></NavLink>
+                        <NavLink className="Add-User-Nav-Link" to= '/admin/uzytkownicy/dodaj'>
+                            <Button 
+                                className="Add-User-Redirect-Button" 
+                                variant="light"
+                                ><HiUserAdd size='1.2em'/><span>&nbsp;</span><span>Dodaj</span>
+                            </Button>
+                        </NavLink>
                     </Col>
                     <Col xs='2'>
                     <Button
@@ -397,7 +399,8 @@ class UsersPanel extends Component{
                                 </Col>
                                 <Col xs ='1'style={{paddingTop: '15px'}}>
                                     <NavLink className="Add-User-Nav-Link" to={{
-                                        pathname: '/admin/uzytkownicy/edytuj/' + this.state.selectedUser.id
+                                        pathname: '/admin/uzytkownicy/edytuj/' + this.state.selectedUser.id,
+                                        state: { from: this.props.location.pathname }
                                     }}>
                                       <MdEdit size='1.5em' className='User-Details-Icon'/>
                                     </NavLink>

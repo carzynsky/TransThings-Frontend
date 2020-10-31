@@ -11,7 +11,6 @@ import history from './history';
 import { getSessionCookie } from './sessions';
 
 export const Routes = () => {
-
   const admin = 'Admin';
   const forwarder = 'Forwarder';
   const orderer = 'Orderer';
@@ -27,6 +26,7 @@ export const Routes = () => {
             <Route path='/admin/kontrahenci' component={getSessionCookie().role === admin ? AdminMainPanel : NotFound }></Route>
             <Route path='/admin/przewoznicy' component={getSessionCookie().role === admin ? AdminMainPanel : NotFound }></Route>
             <Route path='/admin/magazyny' component={getSessionCookie().role === admin ? AdminMainPanel : NotFound }></Route>
+            <Route path='/admin/profil' component={getSessionCookie().role === admin ? AdminMainPanel : NotFound }></Route>
             <Route path='/spedytor/zlecenia' component={getSessionCookie().role === forwarder ? ForwarderMainPanel : NotFound }></Route>
             <Route path='/pracownik-zamowien/zamowienia' component={getSessionCookie().role === orderer ? OrdererMainPanel : NotFound }></Route>
             <Route component={NotFound}/>

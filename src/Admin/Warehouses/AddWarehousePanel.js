@@ -169,7 +169,7 @@ class AddWarehousePanel extends Component{
                             </Row>
                             <Row style={{marginTop: '25px'}}>
                                 <Col>
-                                    <label className='Warehouse-Table-Header'>Dane osoby do kontaktu</label>
+                                    <label className='Edit-Warehouse-Sub-Header'>Dane osoby do kontaktu</label>
                                 </Col>
                             </Row>
                             <Row>
@@ -238,7 +238,7 @@ class AddWarehousePanel extends Component{
                             </Row>
                             <Row style={{marginTop: '25px'}}>
                                 <Col>
-                                    <label className='Warehouse-Table-Header'>Pozostałe dane kontaktowe</label>
+                                    <label className='Edit-Warehouse-Sub-Header'>Pozostałe dane kontaktowe</label>
                                 </Col>
                             </Row>
                             <Row>

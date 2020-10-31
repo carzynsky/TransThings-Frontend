@@ -21,6 +21,7 @@ class CustomersDashboard extends Component{
             customersCount: '',
             token: getSessionCookie(),
             selectedCustomerId: '',
+            selectedCustomer: '',
             serverResponse: '',
             isServerResponseModalOpen: false,
             isModalOpen: false,
@@ -86,8 +87,9 @@ class CustomersDashboard extends Component{
     }
 
      // handle modal open/close
-     handleOpenModal = () => {
+    handleOpenModal = (customer) => {
         this.setState({
+            selectedCustomer: customer,
             isModalOpen: true
         })
     }
@@ -250,70 +252,64 @@ class CustomersDashboard extends Component{
                                                         </NavLink>,
                                                     delete:
                                                         <div>
-                                                            <Popup 
-                                                                trigger={
-                                                                            <div>
-                                                                                <RiDeleteBin6Line 
-                                                                                    size='1.3em' 
-                                                                                    className='Customer-Details-Icon'
-                                                                                    onClick={this.handleSelectedCustomer.bind(this, customer.id)}/>
-                                                                            </div>
-                                                                        }
-                                                                modal
-                                                                open={this.state.isModalOpen}
-                                                                onOpen={this.handleOpenModal}
-                                                                contentStyle={{
-                                                                    width: '35vw',
-                                                                    height: '30vh',
-                                                                    backgroundColor: '#202125',
-                                                                    borderColor: '#202125',
-                                                                    borderRadius: '15px',
-                                                                }}>
-                                                            { close => (<div>
-                                                                <Container>
-                                                                    <Row style={{textAlign: 'center'}}>
-                                                                        <Col>
-                                                                            <label className='Delete-Customer-Modal-Header'>Czy na pewno chcesz usunąć kontrahenta {customer.clientFirstName} {customer.clientLastName}?</label>
-                                                                        </Col>
-                                                                    </Row>
-                                                                    <Row style={{marginTop: '25px', textAlign: 'center'}}>
-                                                                        <Col>
-                                                                            <Button 
-                                                                                className="Confirm-Delete-Customer-Button" 
-                                                                                variant="light"
-                                                                                onClick={() => {
-                                                                                    close()
-                                                                                }}>
-                                                                                <div>
-                                                                                    <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
-                                                                                </div>
-                                                                            </Button>
-                                                                        </Col>
-                                                                        <Col>
-                                                                            <Button 
-                                                                                className="Confirm-Delete-Customer-Button" 
-                                                                                variant="light"
-                                                                                onClick={() => {
-                                                                                    this.deleteCustomer();
-                                                                                    close();
-                                                                                }}>
-                                                                                <div>
-                                                                                    <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
-                                                                                </div>
-                                                                            </Button>
-                                                                        </Col>
-                                                                    </Row>
-                                                                </Container>
-                                                            </div>
-                                                            )}
-                                                            </Popup>    
+                                                            <RiDeleteBin6Line 
+                                                                size='1.3em' 
+                                                                className='Customer-Details-Icon'
+                                                                onClick={this.handleOpenModal.bind(this, customer)}/>
                                                         </div>
-                                   
                                                 }
                                             ))
                                     }}
                                 />
                                 </Row>
+                                <Popup 
+                                    modal
+                                    open={this.state.isModalOpen}
+                                    contentStyle={{
+                                        width: '35vw',
+                                        height: '30vh',
+                                        backgroundColor: '#202125',
+                                        borderColor: '#202125',
+                                        borderRadius: '15px',
+                                    }}>
+                                    { close => (<div>
+                                            <Container>
+                                                <Row style={{textAlign: 'center'}}>
+                                                    <Col>
+                                                        <label className='Delete-Customer-Modal-Header'>Czy na pewno chcesz usunąć kontrahenta {this.state.selectedCustomer.clientFirstName} {this.state.selectedCustomer.clientLastName}?</label>
+                                                    </Col>
+                                                </Row>
+                                                <Row style={{marginTop: '25px', textAlign: 'center'}}>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Confirm-Delete-Customer-Button" 
+                                                            variant="light"
+                                                            onClick={() => {
+                                                                close();
+                                                            }}>
+                                                            <div>
+                                                                <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
+                                                            </div>
+                                                        </Button>
+                                                    </Col>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Confirm-Delete-Customer-Button" 
+                                                            variant="light"
+                                                            onClick={() => {
+                                                                this.deleteCustomer();
+                                                                close();
+                                                            }}>
+                                                            <div>
+                                                                <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
+                                                            </div>
+                                                        </Button>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        </div>
+                                    )}
+                                </Popup>
                                 <Popup 
                                     modal
                                     open={this.state.isServerResponseModalOpen}

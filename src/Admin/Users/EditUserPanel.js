@@ -96,6 +96,20 @@ class EditUserPanel extends Component{
     async updateUser(){
         try
         {
+            const datta =
+            {
+                'firstName': this.state.firstName === '' ? null : this.state.firstName,
+                'lastName': this.state.lastName === '' ? null : this.state.lastName,
+                'peselNumber': this.state.peselNumber === '' ? null : this.state.peselNumber,
+                'birthDate': this.state.birthDate === '' ? null : this.state.birthDate,
+                'login': this.state.login,
+                'dateOfEmployment': this.state.dateOfEmployment === '' ? null : this.state.dateOfEmployment,
+                'gender': this.state.gender === '' ? null : this.state.gender,
+                'phoneNumber': this.state.phoneNumber === '' ? null : this.state.phoneNumber,
+                'mail': this.state.mail === '' ? null : this.state.mail,
+                'userRoleId': this.state.userRoleId
+            };
+            console.log(datta)
             const response = await axios.put('https://localhost:44394/users/' + this.state.id,
             {
                 'firstName': this.state.firstName === '' ? null : this.state.firstName,
@@ -331,6 +345,7 @@ class EditUserPanel extends Component{
                                                 id="selectUserGender"
                                                 color="primary"
                                                 value={this.state.userRoleId}
+                                                disabled={this.props.location.state.from !== '/admin/uzytkownicy'}
                                                 InputLabelProps={{
                                                     style:{
                                                         color: 'whitesmoke'
@@ -396,7 +411,7 @@ class EditUserPanel extends Component{
                             <Row style={{marginTop: '15px'}}>
                                 <Col>
                                     <NavLink className="Admin-Nav-Link" to={{
-                                        pathname: '/admin/uzytkownicy'
+                                        pathname: this.props.location.state.from
                                     }}>
                                         <Button 
                                             className="Edit-User-Redirect-Button" 

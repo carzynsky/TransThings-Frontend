@@ -99,15 +99,16 @@ class VehiclesPanel extends Component{
         await this.getVehicles();
     }
 
-    handleDetailsClick = (driver) => {
+    handleDetailsClick = (vehicle) => {
         this.setState({
-            selectedVehicle: driver
+            selectedVehicle: vehicle
         })
     }
 
     // handle modal open/close
-    handleOpenModal = () => {
+    handleOpenModal = (vehicle) => {
         this.setState({
+            selectedVehicle: vehicle,
             isModalOpen: true
         })
     }
@@ -286,73 +287,61 @@ class VehiclesPanel extends Component{
                                                             <MdEdit className='Vehicle-Details-Icon' size='1.4em'/>
                                                         </NavLink>,
                                                         delete:
-                                                        <div>
-                                                            <Popup 
-                                                            trigger={
-                                                                <div>
-                                                                     <RiDeleteBin6Line 
-                                                                        size='1.4em'
-                                                                        className='Vehicle-Details-Icon'
-                                                                        onClick={this.handleDetailsClick.bind(this, vehicle)}
-                                                                    />
-                                                                </div>
-                                                            }
-                                                            modal
-                                                            open={this.state.isModalOpen}
-                                                            onOpen={this.handleOpenModal}
-                                                            contentStyle={{
-                                                                width: '35vw',
-                                                                height: '30vh',
-                                                                backgroundColor: '#202125',
-                                                                borderColor: '#202125',
-                                                                borderRadius: '15px',
-                                                            }}
-                                                            >
-                                                            { close => (<div>
-                                                                <Container>
-                                                                    <Row style={{textAlign: 'center'}}>
-                                                                        <Col>
-                                                                            <label className='Delete-Vehicle-Modal-Header'>Czy na pewno chcesz usunąć pojazd {this.state.selectedVehicle.brand} {this.state.selectedVehicle.model}?</label>
-                                                                        </Col>
-                                                                    </Row>
-                                                                    <Row style={{marginTop: '45px', textAlign: 'center'}}>
-                                                                        <Col>
-                                                                        <Button 
-                                                                            className="Confirm-Delete-Vehicle-Button" 
-                                                                            variant="light"
-                                                                            onClick={() => {
-                                                                                close()
-                                                                            }}
-                                                                            >
-                                                                                <div>
-                                                                                <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
-                                                                                </div>
-                                                                        </Button>
-                                                                        </Col>
-                                                                        <Col>
-                                                                            <Button 
-                                                                                className="Confirm-Delete-Vehicle-Button" 
-                                                                                variant="light"
-                                                                                onClick={() => {
-                                                                                    this.deleteVehicle();
-                                                                                    close();
-                                                                                }}
-                                                                                >
-                                                                                    <div>
-                                                                                    <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
-                                                                                    </div>
-                                                                            </Button>
-                                                                        </Col>
-                                                                    </Row>
-                                                                </Container>
-                                                            </div>
-                                                            )}
-                                                        </Popup>
-                                                        </div>
+                                                            <RiDeleteBin6Line 
+                                                                size='1.4em'
+                                                                className='Vehicle-Details-Icon'
+                                                                onClick={this.handleOpenModal.bind(this, vehicle)}/>
                                                     }
                                                 ))
                                         }}
                                     />
+                                    <Popup 
+                                        modal
+                                        open={this.state.isModalOpen}
+                                        contentStyle={{
+                                            width: '35vw',
+                                            height: '30vh',
+                                            backgroundColor: '#202125',
+                                            borderColor: '#202125',
+                                            borderRadius: '15px',
+                                        }}>
+                                        { close => (<div>
+                                            <Container>
+                                                <Row style={{textAlign: 'center'}}>
+                                                    <Col>
+                                                        <label className='Delete-Vehicle-Modal-Header'>Czy na pewno chcesz usunąć pojazd {this.state.selectedVehicle.brand} {this.state.selectedVehicle.model}?</label>
+                                                    </Col>
+                                                </Row>
+                                                <Row style={{marginTop: '45px', textAlign: 'center'}}>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Confirm-Delete-Vehicle-Button" 
+                                                            variant="light"
+                                                            onClick={() => {
+                                                                close()
+                                                            }}>
+                                                            <div>
+                                                                <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
+                                                            </div>
+                                                        </Button>
+                                                    </Col>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Confirm-Delete-Vehicle-Button" 
+                                                            variant="light"
+                                                            onClick={() => {
+                                                                this.deleteVehicle();
+                                                                close();
+                                                            }}>
+                                                                <div>
+                                                                    <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
+                                                                </div>
+                                                            </Button>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        </div>)}
+                                    </Popup>
                                     <Popup 
                                             modal
                                             open={this.state.isServerResponseModalOpen}

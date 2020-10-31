@@ -300,10 +300,10 @@ class AddVehiclePanel extends Component{
                                             <Container>
                                                 <Row style={{textAlign: 'center'}}>
                                                     <Col>
-                                                        <label className='Edit-Vehicle-Modal-Header'>Czy na pewno chcesz wprowadzić zmiany?</label>
+                                                        <label className='Edit-Vehicle-Modal-Header'>Czy na pewno chcesz dodać pojazd {this.state.brand} {this.state.model}?</label>
                                                     </Col>
                                                 </Row>
-                                                <Row style={{marginTop: '45px', textAlign: 'center'}}>
+                                                <Row style={{marginTop: '25px', textAlign: 'center'}}>
                                                     <Col>
                                                         <Button 
                                                             className="Confirm-Edit-Vehicle-Button" 

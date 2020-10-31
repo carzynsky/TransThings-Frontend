@@ -9,6 +9,8 @@ import UsersRoutes from './Users/UsersRoutes';
 import CustomerRoutes from './Customers/CustomersRoutes';
 import TransportersRoutes from './Transporters/TransportersRoutes';
 import WarehousesRoutes from './Warehouses/WarehousesRoutes';
+import Profile from '../Profile';
+import EditUserPanel from './Users/EditUserPanel';
 
 function AdminMainPanel() {
     return (
@@ -25,7 +27,8 @@ function AdminMainPanel() {
                         <Route path='/admin/kontrahenci' component={CustomerRoutes}></Route>
                         <Route path='/admin/magazyny' component={WarehousesRoutes}></Route>
                         <Route path='/admin/statystyki' component={LoadingPage}></Route>
-                        <Route path='/admin/profil' component={LoadingPage}></Route>
+                        <Route path='/admin/profil/edycja/:id' component={EditUserPanel}></Route>
+                        <Route path='/admin/profil' component={Profile}></Route>
                         <Route path='/admin/przewoznicy' component={TransportersRoutes}></Route>
                     </Switch>
                 </Col>

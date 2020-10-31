@@ -87,8 +87,9 @@ class WarehousesDashboard extends Component{
         })
     }
 
-    handleOpenModal = () => {
+    handleOpenModal = (warehouse) => {
         this.setState({
+            selectedWarehouse: warehouse,
             isModalOpen: true
         })
     }
@@ -256,74 +257,67 @@ class WarehousesDashboard extends Component{
                                                                     </div>
                                                                 </NavLink>,
                                                             delete:
-                                                            <div>
-                                                            <Popup 
-                                                            trigger={
-                                                                <div className='User-Details-Button' >
+                                                                <div className='User-Details-Button'>
                                                                     <RiDeleteBin6Line 
                                                                         className='Warehouse-Details-Icon'
-                                                                        onClick={this.handleDetailsClick.bind(this, warehouse)}
+                                                                        onClick={this.handleOpenModal.bind(this, warehouse)}
                                                                     />
                                                                 </div>
-                                                            }
-                                                            modal
-                                                            open={this.state.isModalOpen}
-                                                            onOpen={this.handleOpenModal}
-                                                            contentStyle={{
-                                                                width: '35vw',
-                                                                height: '30vh',
-                                                                backgroundColor: '#202125',
-                                                                borderColor: '#202125',
-                                                                borderRadius: '15px',
-                                                            }}
-                                                            >
-                                                            { close => (<div>
-                                                                <Container>
-                                                                    <Row style={{textAlign: 'center'}}>
-                                                                        <Col>
-                                                                            <label className='Edit-Warehouse-Modal-Header'>Czy na pewno chcesz usunąć magazyn {this.state.selectedWarehouse.name} ?</label>
-                                                                        </Col>
-                                                                    </Row>
-                                                                    <Row style={{marginTop: '45px', textAlign: 'center'}}>
-                                                                        <Col>
-                                                                        <Button 
-                                                                            className="Confirm-Edit-Warehouse-Button" 
-                                                                            variant="light"
-                                                                            onClick={() => {
-                                                                                close()
-                                                                            }}
-                                                                            >
-                                                                                <div>
-                                                                                <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
-                                                                                </div>
-                                                                        </Button>
-                                                                        </Col>
-                                                                        <Col>
-                                                                            <Button 
-                                                                                className="Confirm-Edit-Warehouse-Button" 
-                                                                                variant="light"
-                                                                                onClick={() => {
-                                                                                    this.deleteWarehouse();
-                                                                                    close();
-                                                                                }}
-                                                                                >
-                                                                                    <div>
-                                                                                    <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
-                                                                                    </div>
-                                                                            </Button>
-                                                                        </Col>
-                                                                    </Row>
-                                                                </Container>
-                                                            </div>
-                                                            )}
-                                                        </Popup>
-                                                            </div>
-                                                            
                                                         }
                                                     ))
                                             }}
                                     />
                                 </Col>
+                                    <Popup 
+                                        modal
+                                        open={this.state.isModalOpen}
+                                        contentStyle={{
+                                            width: '35vw',
+                                            height: '30vh',
+                                            backgroundColor: '#202125',
+                                            borderColor: '#202125',
+                                            borderRadius: '15px',
+                                        }}
+                                    >
+                                    { close => (
+                                        <div>
+                                            <Container>
+                                                <Row style={{textAlign: 'center'}}>
+                                                    <Col>
+                                                        <label className='Edit-Warehouse-Modal-Header'>Czy na pewno chcesz usunąć magazyn {this.state.selectedWarehouse.name} ?</label>
+                                                    </Col>
+                                                </Row>
+                                                <Row style={{marginTop: '45px', textAlign: 'center'}}>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Confirm-Edit-Warehouse-Button" 
+                                                            variant="light"
+                                                            onClick={() => {
+                                                                close()
+                                                            }}>
+                                                            <div>
+                                                                <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
+                                                            </div>
+                                                        </Button>
+                                                    </Col>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Confirm-Edit-Warehouse-Button" 
+                                                            variant="light"
+                                                            onClick={() => {
+                                                                this.deleteWarehouse();
+                                                                close();
+                                                            }}>
+                                                            <div>
+                                                                <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
+                                                            </div>
+                                                        </Button>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        </div>
+                                    )}
+                                </Popup>
                             </Row>
                         </Container>
                     </div>
