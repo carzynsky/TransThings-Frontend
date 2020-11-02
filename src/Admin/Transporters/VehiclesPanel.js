@@ -87,10 +87,13 @@ class VehiclesPanel extends Component{
             await this.getVehicles();
         }
         catch(error){
-            this.setState({
-                serverResponse: 'Nie można usunąć pojazdu.',
-                isServerResponseModalOpen: false
-            })
+            if(error.response){
+                this.setState({
+                    serverResponse: error.response.data.message,
+                    isServerResponseModalOpen: false
+                })
+            }
+            
             console.log(error);
         }
     }

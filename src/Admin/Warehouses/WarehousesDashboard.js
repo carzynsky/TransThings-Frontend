@@ -170,6 +170,7 @@ class WarehousesDashboard extends Component{
                                     <label className='Warehouse-Table-Header'>Lista magazynów</label>
                                 </Col>
                                 <Col xs='1'>
+                                {this.state.token.role === 'Admin' &&
                                         <NavLink className="Add-User-Nav-Link" to='/admin/magazyny/dodaj'>
                                             <Button 
                                                 className="Add-Warehouse-Redirect-Button" 
@@ -177,8 +178,9 @@ class WarehousesDashboard extends Component{
                                                     <MdAdd size='1.0em'/><span>&nbsp;</span><span>Dodaj</span>
                                             </Button>
                                         </NavLink>
+    }
                                 </Col>
-                                <Col xs='1' style={{marginLeft: '25px'}}>
+                                <Col xs='1'style={{marginLeft: '25px'}}>
                                     <Button 
                                         className="Add-Warehouse-Redirect-Button" 
                                         variant="light"
@@ -248,20 +250,26 @@ class WarehousesDashboard extends Component{
                                                             select: <div className='User-Details-Button' onClick={this.handleDetailsClick.bind(this, warehouse)}>
                                                                         <CgMoreO className='Warehouse-Details-Icon'/>
                                                                     </div>,
-                                                            edit: 
-                                                                <NavLink className="Add-User-Nav-Link" to={{
-                                                                    pathname: '/admin/magazyny/edytuj',
-                                                                    warehouseProps: warehouse}}>
-                                                                    <div className='User-Details-Button'>
-                                                                        <MdEdit className='Warehouse-Details-Icon' size='1.0em'/>
-                                                                    </div>
-                                                                </NavLink>,
+                                                            edit:
+                                                                <div>
+                                                                    {this.state.token.role === 'Admin' && 
+                                                                    <NavLink className="Add-User-Nav-Link" to={{
+                                                                        pathname: '/admin/magazyny/edytuj',
+                                                                        warehouseProps: warehouse}}>
+                                                                        <div className='User-Details-Button'>
+                                                                            <MdEdit className='Warehouse-Details-Icon' size='1.0em'/>
+                                                                        </div>
+                                                                    </NavLink>
+                                                                    }
+                                                                </div>,
                                                             delete:
                                                                 <div className='User-Details-Button'>
+                                                                    {this.state.token.role === 'Admin' &&
                                                                     <RiDeleteBin6Line 
                                                                         className='Warehouse-Details-Icon'
                                                                         onClick={this.handleOpenModal.bind(this, warehouse)}
                                                                     />
+                                                                }
                                                                 </div>
                                                         }
                                                     ))

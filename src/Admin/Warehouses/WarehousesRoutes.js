@@ -10,6 +10,7 @@ class WarehousesRoutes extends Component {
             <BrowserRouter>
                 <Switch>
                     <Route path='/admin/magazyny' exact component={WarehousesDashboard}></Route>
+                    <Route path='/pracownik-zamowien/magazyny' exact component={WarehousesDashboard}></Route>
                     <Route path='/admin/magazyny/dodaj' component={AddWarehousePanel}></Route>
                     <Route path='/admin/magazyny/edytuj' component={EditWarehousePanel}></Route>
                 </Switch>

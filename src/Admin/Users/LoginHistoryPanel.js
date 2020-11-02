@@ -3,36 +3,41 @@ import { Row, Col, Container, Button} from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
-import { MdEdit, MdDone } from 'react-icons/md';
-import { HiUserAdd } from 'react-icons/hi';
-import { FaUserTie } from 'react-icons/fa';
+import { MdDone } from 'react-icons/md';
+import { BsCheck, BsX } from 'react-icons/bs';
+import { AiOutlineUser } from 'react-icons/ai';
+import { BiArrowBack } from 'react-icons/bi';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { ImCross } from 'react-icons/im';
+import Circle from 'react-circle';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import axios from 'axios';
-import './CustomersDashboard.css';
+import './LoginHistoryPanel.css';
 
-class CustomersDashboard extends Component{
+class LoginHistoryPanel extends Component{
     constructor(props){
         super(props);
         this.state = {
-            customers: [],
-            customersCount: '',
             token: getSessionCookie(),
-            selectedCustomerId: '',
-            selectedCustomer: '',
+            loginHistory: [],
+            loginHistoryCount: 0,
+            loginHistorySuccessfulCount: 0,
+            userId: '',
+            userFirstName: '',
+            userLastName: '',
+            userLogin:'',
             serverResponse: '',
             isServerResponseModalOpen: false,
             isModalOpen: false,
         }
     }
 
-    // GET call to api for customers
-    async getCustomers(){
+    // GET call to api for user 
+    async getUserById(userId){
         try
         {
-            const response = await axios.get('https://localhost:44394/clients', {
+            const response = await axios.get('https://localhost:44394/users/' + userId, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json;charset=UTF-8',
@@ -42,8 +47,10 @@ class CustomersDashboard extends Component{
 
             const data = await response.data;
             this.setState({
-                customers: data,
-                customersCount: data.length
+                userId: data.id,
+                userFirstName: data.firstName,
+                userLastName: data.lastName,
+                userLogin: data.login
             })
         }
         catch(error){
@@ -51,11 +58,47 @@ class CustomersDashboard extends Component{
         }
     }
 
-      // DELETE call to api for removing selected customer
-    async deleteCustomer(){
+    // GET call to api for user's login history
+    async getLoginHistory(userId){
         try
         {
-            const response = await axios.delete('https://localhost:44394/clients/' + this.state.selectedCustomerId, {
+            const response = await axios.get('https://localhost:44394/login-histories/users/' + userId, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            });
+
+            const data = await response.data;
+            console.log(data)
+            let successfulPercent = 0;
+            if(data.length > 0){
+                successfulPercent = ((data.filter(x => x.isSuccessful).length / data.length) * 100).toFixed(0);
+                this.setState({
+                    loginHistory: data,
+                    loginHistoryCount: data.length,
+                    loginHistorySuccessfulCount: successfulPercent
+                })
+                return;
+            }
+
+            this.setState({
+                loginHistory: [],
+                loginHistoryCount: 0,
+                loginHistorySuccessfulCount: 0
+            })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    // DELETE call to api for removing all login history of user
+    async deleteLoginHistory(){
+        try
+        {
+            const response = await axios.delete('https://localhost:44394/login-histories/users/' + this.state.userId, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json;charset=UTF-8',
@@ -68,7 +111,7 @@ class CustomersDashboard extends Component{
                 isServerResponseModalOpen: true
             })
 
-            await this.getCustomers();
+            await this.getLoginHistory(this.props.match.params.id);
         }
         catch(error){
             if(error.response){
@@ -81,17 +124,9 @@ class CustomersDashboard extends Component{
         }
     }
 
-    // Handle id for selected customer
-    handleSelectedCustomer = (data) => {
+    // handle modal open/close
+    handleOpenModal = () => {
         this.setState({
-            selectedCustomerId: data
-        })
-    }
-
-     // handle modal open/close
-    handleOpenModal = (customer) => {
-        this.setState({
-            selectedCustomer: customer,
             isModalOpen: true
         })
     }
@@ -109,7 +144,9 @@ class CustomersDashboard extends Component{
     }
 
     async componentDidMount(){
-        await this.getCustomers();
+        await this.getUserById(this.props.match.params.id);
+        await this.getLoginHistory(this.props.match.params.id);
+
     }
 
     render(){
@@ -117,38 +154,65 @@ class CustomersDashboard extends Component{
             <Container>
                 <Row>
                     <Col>
-                        <div className='Customer-Tile' style={{backgroundColor: 'transparent'}}>
+                        <div className='Login-History-Tile' >
                             <Container>
-                                <Row className='Customers-Huge-Icon'>
+                                <Row>
                                     <Col>
-                                        <FaUserTie size='6.0em'/>
+                                        <div className="Login-History-Info-Header">
+                                            <AiOutlineUser size='1.3em'/><span>&nbsp;&nbsp;</span><span>Użytkownik</span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <label className="Login-History-Info-Header" style={{color: 'whitesmoke'}}>{this.state.userFirstName} {this.state.userLastName}</label>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <label className="Login-History-Info-Header" style={{color: '#dcdada', fontSize: '14px'}}>{this.state.userLogin}</label>
                                     </Col>
                                 </Row>
                             </Container>
                         </div>
                     </Col>
                     <Col>
-                        <div className='Customer-Tile'>
+                        <div className='Login-History-Tile'>
                             <Container>
                                 <Row>
                                     <Col>
-                                        <label className="Customer-Info-Header">Wszystkich</label>
+                                        <label className="Login-History-Info-Header">Poprawnych logowań</label>
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row style={{textAlign: 'center'}}>
                                     <Col>
-                                        <label className="Customer-Info-Header" style={{color: 'white', fontSize: '30px'}}>{this.state.customersCount}</label>
+                                        <Circle
+                                            size={100}
+                                            animate={true}
+                                            progress={this.state.loginHistorySuccessfulCount}
+                                            animationDuration="1.5s"
+                                            textColor="whitesmoke"
+                                            bgColor="#4a2e56"
+                                            lineWidth={40}
+                                            progressColor="#ca57ff"
+                                            showPercentageSymbol={true}
+                                        />
                                     </Col>
                                 </Row>
                             </Container>
                         </div>
                     </Col>
                     <Col>
-                        <div className='Customer-Tile'>
+                        <div className='Login-History-Tile'>
                         <Container>
                                 <Row>
                                     <Col>
-                                        <label className="Customer-Info-Header">Inne</label>
+                                        <label className="Login-History-Info-Header">Wszystkich prób</label>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <label className="Login-History-Info-Header" style={{color: 'white', fontSize: '36px'}}>{this.state.loginHistoryCount}</label>
                                     </Col>
                                 </Row>
                             </Container>
@@ -158,107 +222,59 @@ class CustomersDashboard extends Component{
 
                 <Row>
                     <Col>
-                        <div className='Customers-Data-Table-Container'>
+                        <div className='Login-History-Data-Table-Container'>
                             <Container>
                                 <Row>
-                                    <Col>
-                                        <label className="Customer-Info-Header">Lista kontrahentów</label>
+                                    <Col xs='8'>
+                                        <label className="Login-History-Info-Header">Lista logowań</label>
                                     </Col>
-                                    <Col style={{textAlign: 'right', paddingRight: '30px'}}>
-                                        <NavLink className="Add-User-Nav-Link" to= '/admin/kontrahenci/dodaj'>
+                                    <Col>
+                                        <NavLink className="Add-User-Nav-Link" to= '/admin/uzytkownicy'>
                                             <Button 
-                                                className="Add-Customer-Redirect-Button" 
-                                                variant="light">
-                                                <HiUserAdd size='1.2em'/><span>&nbsp;</span><span>Dodaj</span>
+                                                className="Login-History-Redirect-Button" 
+                                                variant="light"
+                                                style={{width: '100px'}}>
+                                                <BiArrowBack /><span>&nbsp;</span><span>Wróć</span>
                                             </Button>
                                         </NavLink>
+                                    </Col>
+                                    <Col>
+                                        <Button 
+                                            className="Login-History-Redirect-Button" 
+                                            variant="light"
+                                            onClick={this.handleOpenModal.bind(this)}
+                                            style={{width: '160px'}}>
+                                            <RiDeleteBin6Line /><span>&nbsp;</span><span>Usuń całą historie</span>
+                                        </Button>
                                     </Col>
                                 </Row>
                                 <Row>
                                 <MDBDataTable
                                     className='Customers-Data-Table'
                                     style={{color: '#bdbbbb'}}
-                                    maxHeight="35vh"
+                                    maxHeight="30vh"
                                     scrollY
                                     small
                                     data={{
                                         columns: [
                                             {
-                                                label: 'Imię',
-                                                field: 'firstName',
+                                                label: 'Data',
+                                                field: 'attemptDate',
                                                 sort: 'asc',
-                                                width: 150
+                                                width: 800
                                             },
                                             {
-                                                label: 'Nazwisko',
-                                                field: 'lastName',
+                                                label: 'Rezultat',
+                                                field: 'result',
                                                 sort: 'asc',
-                                                width: 150
-                                            },
-                                            {
-                                                label: 'Firma',
-                                                field: 'companyFullName',
-                                                sort: 'asc',
-                                                width: 150
-                                            },
-                                            {
-                                                label: 'NIP',
-                                                field: 'nip',
-                                                sort: 'asc',
-                                                width: 150
-                                            },
-                                            {
-                                                label: 'Miasto',
-                                                field: 'city',
-                                                sort: 'asc',
-                                                width: 150
-                                            },
-                                            {
-                                                label: 'Adres',
-                                                field: 'streetName',
-                                                sort: 'asc',
-                                                width: 150
-                                            },
-                                            {
-                                                label: 'Nr. kontaktowy',
-                                                field: 'phoneNumber1',
-                                                sort: 'asc',
-                                                width: 150
-                                            },
-                                            {
-                                                label: '',
-                                                field: 'edit',
-                                                width: 50
-                                            },
-                                            {
-                                                label: '',
-                                                field: 'delete',
-                                                width: 50
+                                                width: 400
                                             }
                                         ],
-                                        rows: this.state.customers.map((customer) => (
-                                            
+                                        rows: this.state.loginHistory.map((lh) => (
                                                 {
-                                                    firstName: customer.clientFirstName,
-                                                    lastName: customer.clientLastName,
-                                                    companyFullName: customer.companyFullName,
-                                                    nip: customer.nip,
-                                                    city: customer.city,
-                                                    streetName: customer.streetName,
-                                                    phoneNumber1: customer.contactPhoneNumber1,
-                                                    edit:
-                                                        <NavLink className="Add-User-Nav-Link" push to={{
-                                                            pathname: '/admin/kontrahenci/edytuj/' + customer.id
-                                                        }}>
-                                                            <MdEdit size='1.3em' className='Customer-Details-Icon'/>
-                                                        </NavLink>,
-                                                    delete:
-                                                        <div>
-                                                            <RiDeleteBin6Line 
-                                                                size='1.3em' 
-                                                                className='Customer-Details-Icon'
-                                                                onClick={this.handleOpenModal.bind(this, customer)}/>
-                                                        </div>
+                                                    attemptDate: lh.attemptDate,
+                                                    result: lh.isSuccessful ? <BsCheck size='1.8em' style={{color: '#67f05a'}}/> 
+                                                        : <BsX size='1.8em' style={{color: '#ff4a4a'}} />
                                                 }
                                             ))
                                     }}
@@ -267,6 +283,7 @@ class CustomersDashboard extends Component{
                                 <Popup 
                                     modal
                                     open={this.state.isModalOpen}
+                                    onClose={this.handleCloseModal.bind(this)}
                                     contentStyle={{
                                         width: '35vw',
                                         height: '30vh',
@@ -278,13 +295,13 @@ class CustomersDashboard extends Component{
                                             <Container>
                                                 <Row style={{textAlign: 'center'}}>
                                                     <Col>
-                                                        <label className='Delete-Customer-Modal-Header'>Czy na pewno chcesz usunąć kontrahenta {this.state.selectedCustomer.clientFirstName} {this.state.selectedCustomer.clientLastName}?</label>
+                                                        <label className='Delete-Login-History-Modal-Header'>Czy na pewno chcesz usunąć historię logowań użytkownika {this.state.userLogin}?</label>
                                                     </Col>
                                                 </Row>
                                                 <Row style={{marginTop: '25px', textAlign: 'center'}}>
                                                     <Col>
                                                         <Button 
-                                                            className="Confirm-Delete-Customer-Button" 
+                                                            className="Confirm-Delete-Login-History-Button" 
                                                             variant="light"
                                                             onClick={() => {
                                                                 close();
@@ -296,10 +313,10 @@ class CustomersDashboard extends Component{
                                                     </Col>
                                                     <Col>
                                                         <Button 
-                                                            className="Confirm-Delete-Customer-Button" 
+                                                            className="Confirm-Delete-Login-History-Button" 
                                                             variant="light"
                                                             onClick={() => {
-                                                                this.deleteCustomer();
+                                                                this.deleteLoginHistory();
                                                                 close();
                                                             }}>
                                                             <div>
@@ -326,13 +343,13 @@ class CustomersDashboard extends Component{
                                             <Container>
                                                 <Row style={{textAlign: 'center'}}>
                                                     <Col>
-                                                        <label className='Delete-Customer-Modal-Header'>{this.state.serverResponse}</label>
+                                                        <label className='Delete-Login-History-Modal-Header'>{this.state.serverResponse}</label>
                                                     </Col>
                                                 </Row>
                                                 <Row style={{textAlign: 'center', marginTop: '30px'}}>
                                                     <Col>
                                                         <Button 
-                                                            className="Confirm-Delete-Customer-Button" 
+                                                            className="Confirm-Delete-Login-History-Button" 
                                                             variant="light"
                                                             onClick={() => {
                                                                 this.handleCloseServerResponseModal();
@@ -354,4 +371,4 @@ class CustomersDashboard extends Component{
         );
     }
 }
-export default CustomersDashboard;
+export default LoginHistoryPanel;

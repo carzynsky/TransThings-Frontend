@@ -1,30 +1,37 @@
 import React from 'react';
-import {Row, Col, Container} from 'react-bootstrap';
-import {BrowserRouter, Switch, Route} from 'react-router-dom';
+import { Row, Col, Container } from 'react-bootstrap';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import OrdererNavigationSidebar from './OrdererNavigationSidebar';
 import LoadingPage from '../LoadingPage';
+import WarehousesRoutes from '../Admin/Warehouses/WarehousesRoutes';
+import Profile from '../Profile';
+import EditUserPanel from '../Admin/Users/EditUserPanel';
+import CustomerRoutes from '../Admin/Customers/CustomersRoutes';
 import './OrdererMainPanel.css';
 
-function OrdererMainPanel() {
+
+function AdminMainPanel() {
     return (
         <BrowserRouter>
-                <Container className="Orderer-Panel-Container">
-            <Row>
-                <Col xs='3'>
-                    <OrdererNavigationSidebar />
-                </Col>
-                <Col xs='9'>
-                    <Switch>
-                        <Route path='/pracownik-zamowien/zamowienia' exact component={LoadingPage}></Route>
-                        <Route path='/pracownik-zamowien/kontrahenci' component={LoadingPage}></Route>
-                        <Route path='/pracownik-zamowien/spedytorzy' component={LoadingPage}></Route>
-                        <Route path='/pracownik-zamowien/magazyny' component={LoadingPage}></Route>
-                        <Route path='/pracownik-zamowien/profil' component={LoadingPage}></Route>
-                    </Switch>
-                </Col>
-            </Row>
-        </Container>
+            <Container className="Panel-Container" fluid>
+                <Row>
+                    <Col xs='2'>
+                        <OrdererNavigationSidebar />
+                    </Col>
+                    <Col xs='10'>
+                        <Switch>
+                            <Route path='/pracownik-zamowien/zamowienia' exact component={LoadingPage}></Route>
+                            <Route path='/pracownik-zamowien/zlecenia-spedycji' component={LoadingPage}></Route>
+                            <Route path='/pracownik-zamowien/spedytorzy' component={LoadingPage}></Route>
+                            <Route path='/pracownik-zamowien/kontrahenci' component={CustomerRoutes}></Route>
+                            <Route path='/pracownik-zamowien/magazyny' component={WarehousesRoutes}></Route>
+                            <Route path='/pracownik-zamowien/profil/edycja/:id' component={EditUserPanel}></Route>
+                            <Route path='/pracownik-zamowien/profil' component={Profile}></Route>
+                        </Switch>
+                    </Col>
+                </Row>
+            </Container>
         </BrowserRouter>
     );
 }
-export default OrdererMainPanel;
+export default AdminMainPanel;

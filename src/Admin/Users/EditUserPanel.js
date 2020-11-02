@@ -3,7 +3,7 @@ import { Row, Col, Container, Button } from 'react-bootstrap';
 import { MdDone } from 'react-icons/md';
 import { ImCross } from 'react-icons/im';
 import { AiOutlineUser } from 'react-icons/ai';
-import { NavLink } from 'react-router-dom';
+import { NavLink, Redirect } from 'react-router-dom';
 import { TextField, Select, FormControl, MenuItem, InputLabel } from '@material-ui/core';
 import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import { getSessionCookie } from '../../sessions';
@@ -137,10 +137,12 @@ class EditUserPanel extends Component{
             })
         }
         catch(error){
-            this.setState({
-                serverResponse: "Nie można było zaaktualizować użytkownika.",
-                isServerResponseModalOpen: true
-            })
+            if(error.response){
+                this.setState({
+                    serverResponse: error.response.data.message,
+                    isServerResponseModalOpen: true
+                })
+            }
             console.log(error);
         }
     }
@@ -189,6 +191,18 @@ class EditUserPanel extends Component{
     }
 
     render(){
+        if(this.props.match.params.id != this.state.token.userId){
+            if(this.state.token.role === 'Orderer'){
+                return <Redirect to='/pracownik-zamowien/profil' />
+            }
+            else if(this.state.token.role === 'Forwarder'){
+                return <Redirect to='/spedytor/profil' />
+            }
+            else if(window.location.href.includes('/admin/profil/edycja')){
+                return <Redirect to='/admin/profil' />
+            }
+        }
+
         return(
             <Container>
                 <Row>
@@ -345,7 +359,9 @@ class EditUserPanel extends Component{
                                                 id="selectUserGender"
                                                 color="primary"
                                                 value={this.state.userRoleId}
-                                                disabled={this.props.location.state.from !== '/admin/uzytkownicy'}
+                                                disabled={this.props.location.state?.from === undefined 
+                                                    || this.props.location.state.from !== '/admin/uzytkownicy'
+                                                    || this.state.token.userId === this.state.id}
                                                 InputLabelProps={{
                                                     style:{
                                                         color: 'whitesmoke'
@@ -411,7 +427,10 @@ class EditUserPanel extends Component{
                             <Row style={{marginTop: '15px'}}>
                                 <Col>
                                     <NavLink className="Admin-Nav-Link" to={{
-                                        pathname: this.props.location.state.from
+                                         pathname: this.state.token.role === 'Admin' ?
+                                         (window.location.href.includes('/admin/profil/edycja') ?  ('/admin/profil') : ('/admin/uzytkownicy')) : 
+                                         this.state.token.role === 'Orderer' ? ('/pracownik-zamowien/profil') :
+                                         '/spedytor/profil'
                                     }}>
                                         <Button 
                                             className="Edit-User-Redirect-Button" 

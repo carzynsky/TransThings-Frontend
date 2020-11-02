@@ -12,14 +12,13 @@
     margin-left: auto;
     margin-right: auto;
     color:#5CDB95;
-    font-size: 14px;
+    font-size: 13px;
     font-family: 'Overpass', sans-serif;
     padding-top: 10px;
     height: 35px;
-    border-radius: 20px;
-    margin-top: 25px;
-    width: 150px;
-    text-align: center;
+    margin-top: 20px;
+    width: 160px;
+    text-align: left;
 }
 
 .Orderer-Nav-Link:hover{

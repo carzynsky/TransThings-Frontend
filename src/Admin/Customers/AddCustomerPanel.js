@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
 import { MdDone } from 'react-icons/md';
-import { FaUserNurse } from 'react-icons/fa';
+import { FaUserTie } from 'react-icons/fa';
 import { ImCross } from 'react-icons/im';
 import { NavLink } from 'react-router-dom';
 import { TextField, Select, FormControl, MenuItem, InputLabel } from '@material-ui/core';
@@ -50,25 +50,6 @@ class AddCustomerPanel extends Component{
     async addCustomer(){
         try
         {
-            const data = {
-                'clientFirstName': this.state.clientFirstName === '' ? null : this.state.clientFirstName,
-                'clientLastName': this.state.clientLastName === '' ? null : this.state.clientLastName,
-                'companyFullName': this.state.companyFullName === '' ? null : this.state.companyFullName,
-                'companyShortName':this.state.companyShortName === '' ? null : this.state.companyShortName,
-                'clientPeselNumber': this.state.clientPeselNumber === '' ? null : this.state.clientPeselNumber,
-                'birthDate': this.state.birthDate === '' ? null : this.state.birthDate,
-                'gender': this.state.gender === '' ? null : this.state.gender,
-                'contactPhoneNumber1': this.state.contactPhoneNumber1 === '' ? null : this.state.contactPhoneNumber1,
-                'contactPhoneNumber2': this.state.contactPhoneNumber2 === '' ? null : this.state.contactPhoneNumber2,
-                'streetName': this.state.streetName === '' ? null : this.state.streetName,
-                'city': this.state.city === '' ? null : this.state.city,
-                'country': this.state.country === '' ? null : this.state.country,
-                'nip': this.state.nip === '' ? null : this.state.nip,
-                'buildingNumber': this.state.buildingNumber === '' ? null : this.state.buildingNumber,
-                'apartmentNumber': this.state.apartmentNumber === '' ? null : this.state.apartmentNumber,
-                'zipCode': this.state.zipCode === '' ? null : this.state.zipCode
-            }
-            console.log(data)
             const response = await axios.post('https://localhost:44394/clients',
             {
                 'clientFirstName': this.state.clientFirstName === '' ? null : this.state.clientFirstName,
@@ -102,10 +83,12 @@ class AddCustomerPanel extends Component{
             })
         }
         catch(error){
-            this.setState({
-                serverResponse: "Nie można było dodać kontrahenta.",
-                isServerResponseModalOpen: true
-            })
+            if(error.response){
+                this.setState({
+                    serverResponse: error.response.data.message,
+                    isServerResponseModalOpen: true
+                })
+            }
             console.log(error);
         }
     }
@@ -153,7 +136,7 @@ class AddCustomerPanel extends Component{
                             <Row>
                                 <Col xs='8'>
                                     <div className='Edit-Customer-Header'>
-                                        <FaUserNurse size='2.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Dodawanie kontrahenta</span>
+                                        <FaUserTie size='2.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Dodawanie kontrahenta</span>
                                     </div>
                                 </Col>
                                 <Col>

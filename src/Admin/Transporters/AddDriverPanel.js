@@ -70,10 +70,13 @@ class AddDriverPanel extends Component{
             })
         }
         catch(error){
-            this.setState({
-                serverResponse: "Nie można dodać kierowcę.",
-                isServerResponseModalOpen: true
-            })
+            if(error.response){
+                this.setState({
+                    serverResponse: error.response.data.message,
+                    isServerResponseModalOpen: true
+                })
+            }
+           
             console.log(error);
         }
     }

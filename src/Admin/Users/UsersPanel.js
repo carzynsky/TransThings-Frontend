@@ -5,7 +5,7 @@ import { getSessionCookie } from '../../sessions';
 import { MDBDataTable } from 'mdbreact';
 import { Doughnut } from 'react-chartjs-2';
 import { HiUserAdd, HiOutlineRefresh } from 'react-icons/hi';
-import { RiLockPasswordLine, RiDeleteBin6Line } from 'react-icons/ri';
+import { RiFileHistoryLine, RiDeleteBin6Line } from 'react-icons/ri';
 import { CgMoreO }from 'react-icons/cg';
 import { MdEdit, MdDone } from 'react-icons/md';
 import { ImCross } from 'react-icons/im';
@@ -159,10 +159,12 @@ class UsersPanel extends Component{
             await this.getUsers();
         }
         catch(error){
-            this.setState({
-                serverResponse: 'Nie można usunąć użytkownika.',
-                isServerResponseModalOpen: false
-            })
+            if(error.response){
+                this.setState({
+                    serverResponse: error.response.data.message,
+                    isServerResponseModalOpen: false
+                })
+            }
             console.log(error);
         }
     }
@@ -407,17 +409,13 @@ class UsersPanel extends Component{
                                 </Col>
                                 <Col xs ='1' style={{paddingTop: '15px'}}>
                                     <NavLink className="Add-User-Nav-Link" to={{
-                                        pathname: '/admin/uzytkownicy/edytuj/' + this.state.selectedUser.id
+                                        pathname: '/admin/uzytkownicy/historia-logowan/' + this.state.selectedUser.id
                                     }}>
-                                      <RiLockPasswordLine size='1.5em' className='User-Details-Icon-Password-Redirect'/>
+                                      <RiFileHistoryLine size='1.5em' className='User-Details-Icon-Login-History-Redirect'/>
                                     </NavLink>
                                 </Col>
                                 <Col xs ='1' style={{paddingTop: '15px'}}>
-                                    {/* <NavLink className="Add-User-Nav-Link" to={{
-                                        pathname: '/admin/uzytkownicy/edytuj/' + this.state.selectedUser.id
-                                    }}>
-                                      <RiDeleteBin6Line size='1.5em' className='User-Details-Icon-Delete-Redirect'/>
-                                    </NavLink> */}
+                                    {this.state.selectedUser.login !== this.state.token.login &&
                                     <div>
                                         <Popup 
                                             trigger={
@@ -474,7 +472,7 @@ class UsersPanel extends Component{
                                             )}
                                         </Popup>
                                        
-                                    </div>
+                                    </div>}
                                     <Popup 
                                             modal
                                             open={this.state.isServerResponseModalOpen}

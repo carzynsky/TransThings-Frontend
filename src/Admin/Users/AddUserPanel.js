@@ -90,10 +90,12 @@ class AddUserPanel extends Component{
             })
         }
         catch(error){
-            this.setState({
-                serverResponse: "Nie można było dodać użytkownika.",
-                isServerResponseModalOpen: true
-            })
+            if(error.response){
+                this.setState({
+                    serverResponse: error.response.data.message,
+                    isServerResponseModalOpen: true
+                })
+            }
             console.log(error);
         }
     }

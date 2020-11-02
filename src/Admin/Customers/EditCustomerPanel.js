@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
 import { MdDone } from 'react-icons/md';
-import { FaUserNurse } from 'react-icons/fa';
+import { FaUserTie } from 'react-icons/fa';
 import { ImCross } from 'react-icons/im';
 import { NavLink } from 'react-router-dom';
 import { TextField, Select, FormControl, MenuItem, InputLabel } from '@material-ui/core';
@@ -117,10 +117,12 @@ class EditCustomerPanel extends Component{
             })
         }
         catch(error){
-            this.setState({
-                serverResponse: "Nie można było zaaktualizować kontrahenta.",
-                isServerResponseModalOpen: true
-            })
+            if(error.response){
+                this.setState({
+                    serverResponse: error.response.message,
+                    isServerResponseModalOpen: true
+                })
+            }
             console.log(error);
         }
     }
@@ -172,7 +174,7 @@ class EditCustomerPanel extends Component{
                             <Row>
                                 <Col xs='8'>
                                     <div className='Edit-Customer-Header'>
-                                        <FaUserNurse size='2.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Edycja kontrahenta</span>
+                                        <FaUserTie size='2.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Edycja kontrahenta</span>
                                     </div>
                                 </Col>
                                 <Col>

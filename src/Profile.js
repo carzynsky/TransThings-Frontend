@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { MdEdit } from 'react-icons/md';
-import { RiLockPasswordLine, RiPassportLine } from 'react-icons/ri';
+import { RiLockPasswordLine } from 'react-icons/ri';
+import { SiKeepassxc } from 'react-icons/si';
 import { AiFillPhone, AiOutlineMail } from 'react-icons/ai';
+import { VscWarning } from 'react-icons/vsc';
 import { TextField, FormControl } from '@material-ui/core';
 import { getSessionCookie } from './sessions';
 import Popup from 'reactjs-popup';
@@ -22,14 +24,18 @@ class Profile extends Component{
             initials: '',
             bDate: '',
             eDate: '',
-            password1: '',
-            password2: '',
+            oldPassword: '',
+            newPassword1: '',
+            newPassword2: '',
             isModalOpen: false,
             serverResponse: '',
-            isServerResponseModalOpen: false,
+            isServerResponseBad: false,
             errorText: '',
+            errorTextOldPassword: '',
+            oldPasswordIsValid: false,
             isValid: false,
-            afterChange: false
+            afterChange: false,
+            isChangePasswordSuccessful: false
         }
     }
 
@@ -65,54 +71,74 @@ class Profile extends Component{
         }
     }
 
+    // Validation of provided passwords
     async validation(){
-         // validation
-         if(this.state.password1 === '' || this.state.password2 === ''){
+        let isError = false;
+
+        if(this.state.oldPassword === ''){
+            this.setState({
+                oldPasswordIsValid: false,
+                errorTextOldPassword: 'Pole nie mogą być puste.'
+            });
+            isError = true;
+        }
+         
+        if(this.state.newPassword1 === '' || this.state.newPassword2 === ''){
             this.setState({
                 isValid: false,
                 errorText: 'Pola nie mogą być puste.'
             })
-            return;
+            isError = true;
         }
 
-        else if(this.state.password1 != this.state.password2){
+
+
+        else if(this.state.newPassword1 !== this.state.newPassword2){
             this.setState({
                 isValid: false,
                 errorText: 'Podane hasła się różnią.'
             })
-            return;
+            isError = true;
         }
+
+        if(isError) return;
         await this.updatePassword();
     }
     // PUT call to API to get user by id
     async updatePassword(){
-       
-
         try{
             const response = await axios.put('https://localhost:44394/users/' + this.state.token.userId + '/change-password',
             {
-                'newPassword': this.state.password1,
-                'newPasswordAgain': this.state.password2
+                'newPassword': this.state.newPassword1,
+                'newPasswordAgain': this.state.newPassword2,
+                'oldPassword': this.state.oldPassword
             },
             {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json;charset=UTF-8',
-                    'Authorization': 'Bearer ' + this.state.token.token
+                    'Authorization': 'Bearer ' + this.state.token.token,
+                    'responseType': "application/json"
                 },
                 
             });
 
             this.setState({
                 serverResponse: response.data.message,
-                isServerResponseModalOpen: true
+                isServerResponseModalOpen: true,
+                isChangePasswordSuccessful: true
             })
         }
         catch(error){
-            this.setState({
-                serverResponse: "Zmiana hasła nie powiodła się.",
-                isServerResponseModalOpen: true
-            })
+            if(error.response){
+                this.setState({
+                    serverResponse: error.response.data.message,
+                    isServerResponseBad: true
+                })
+                console.log(error.response.data); // => the response payload 
+                return;
+            }
+
             console.log(error);
         }
     }
@@ -142,8 +168,18 @@ class Profile extends Component{
         if(!this.state.isValid){
             this.setState({
                 isValid: true,
-                errorText: '',
-                afterChange: true
+                errorText: ''
+            })
+        }
+        if(this.state.isServerResponseBad){
+            this.setState({
+                isServerResponseBad: false
+            })
+        }
+        if(!this.state.oldPasswordIsValid){
+            this.setState({
+                oldPasswordIsValid: true,
+                errorTextOldPassword: ''
             })
         }
         this.setState({
@@ -172,7 +208,9 @@ class Profile extends Component{
                                     </Col>
                                     <Col xs='2'>
                                         <NavLink className="Add-User-Nav-Link" to={{
-                                            pathname: '/admin/profil/edycja/' + this.state.user.id,
+                                            pathname: this.state.token.role === 'Admin' ? ('/admin/profil/edycja/' + this.state.user.id) : 
+                                            this.state.token.role === 'Orderer' ? ('/pracownik-zamowien/profil/edycja/' + this.state.user.id) :
+                                            '/spedytor/profil/edycja/' + this.state.user.id,
                                             state: { from: this.props.location.pathname }
                                         }}>
                                             <Button 
@@ -292,10 +330,10 @@ class Profile extends Component{
                     onClose={this.handleCloseModal.bind(this)}
                     contentStyle={{
                         width: '45vw',
-                        height: '50vh',
+                        height: '60vh',
                         backgroundColor: '#202125',
                         borderColor: '#202125',
-                        borderRadius: '15px',
+                        borderRadius: '25px',
                     }}>
                     {
                         close => (
@@ -303,7 +341,7 @@ class Profile extends Component{
                                 <Row style={{textAlign: 'center'}}>
                                     <Col>
                                         <div className='Delete-User-Modal-Header' style={{fontSize: '36px'}}>
-                                            <RiPassportLine size='1.3em' /><span>&nbsp;&nbsp;</span><span>Zmiana hasła</span>
+                                            <SiKeepassxc size='1.1em' /><span>&nbsp;&nbsp;</span><span>Zmiana hasła</span>
                                         </div>
                                     </Col>
                                 </Row>
@@ -312,13 +350,44 @@ class Profile extends Component{
                                         <FormControl noValidate autoComplete="off">
                                             <TextField 
                                                 type="password"
-                                                id="password1" 
+                                                id="newPassword1" 
                                                 label=
                                                 {<div>
-                                                    <RiLockPasswordLine /><span>&nbsp;</span><span>Hasło ponownie</span>
+                                                    <RiLockPasswordLine style={{color: '#e6914b'}}/><span>&nbsp;</span><span>Podaj stare hasło</span>
                                                 </div>}
                                                 color="primary"
-                                                onChange={this.handleChange('password1')}
+                                                onChange={this.handleChange('oldPassword')}
+                                                autoComplete="new-password"
+                                                error ={
+                                                    (!this.state.oldPasswordIsValid && this.state.errorTextOldPassword !== '') ? true : false 
+                                                }
+                                                helperText={this.state.errorTextOldPassword}
+                                                style={{minWidth: '250px'}}
+                                                InputLabelProps={{
+                                                    style:{
+                                                        color: '#dcdada'
+                                                    },
+                                                }}
+                                                InputProps={{
+                                                    style: {
+                                                        color: '#e6914b'
+                                                    }
+                                                }} />
+                                        </FormControl>
+                                    </Col>
+                                </Row>
+                                <Row style={{textAlign: 'center', marginTop: '15px'}}>
+                                    <Col>
+                                        <FormControl noValidate autoComplete="off">
+                                            <TextField 
+                                                type="password"
+                                                id="newPassword1" 
+                                                label=
+                                                {<div>
+                                                    <RiLockPasswordLine style={{color: '#5CDB95'}}/><span>&nbsp;</span><span>Nowe hasło</span>
+                                                </div>}
+                                                color="primary"
+                                                onChange={this.handleChange('newPassword1')}
                                                 autoComplete="new-password"
                                                 style={{minWidth: '250px'}}
                                                 InputLabelProps={{
@@ -342,14 +411,14 @@ class Profile extends Component{
                                                 id="password1" 
                                                 label= 
                                                     {<div>
-                                                        <RiLockPasswordLine /><span>&nbsp;</span><span>Nowe hasło ponownie</span>
+                                                        <RiLockPasswordLine style={{color: '#5CDB95'}}/><span>&nbsp;</span><span>Nowe hasło ponownie</span>
                                                     </div>}
                                                 error ={
                                                     (!this.state.isValid && this.state.errorText !== '') ? true : false 
                                                 }
                                                 helperText={this.state.errorText}
                                                 color="primary"
-                                                onChange={this.handleChange('password2')}
+                                                onChange={this.handleChange('newPassword2')}
                                                 autoComplete="new-password"
                                                 style={{minWidth: '250px'}}
                                                 InputLabelProps={{
@@ -365,7 +434,16 @@ class Profile extends Component{
                                         </FormControl>
                                     </Col>
                                 </Row>
-                                <Row style={{textAlign: 'center', marginTop: '65px'}}>
+                                <Row style={{textAlign: 'center'}}>
+                                    <Col>
+                                        {this.state.isServerResponseBad && 
+                                        <div className='Delete-User-Modal-Header' style={{fontSize: '14px', color: '#e64b62'}}>
+                                            <VscWarning size='1.3em' /><span>&nbsp;&nbsp;&nbsp;</span><span>{this.state.serverResponse}</span>
+                                        </div>
+                                        }
+                                    </Col>
+                                </Row>
+                                <Row style={{textAlign: 'center', marginTop: '45px'}}>
                                     <Col>
                                         <Button 
                                             className="Confirm-Delete-User-Button" 
@@ -383,7 +461,7 @@ class Profile extends Component{
                                             variant="light"
                                             onClick={() => {
                                                 this.validation();
-                                                if(this.state.isValid && !this.state.afterChange){
+                                                if(this.state.isChangePasswordSuccessful){
                                                     this.handleCloseModal();
                                                     close();
                                                 }
@@ -399,7 +477,7 @@ class Profile extends Component{
                 
                 <Popup 
                     modal
-                    open={this.state.isServerResponseModalOpen}
+                    open={this.state.isChangePasswordSuccessful}
                     contentStyle={{
                         width: '30vw',
                         height: '25vh',

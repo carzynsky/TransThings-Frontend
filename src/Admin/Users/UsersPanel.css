@@ -114,10 +114,10 @@
     cursor: pointer;
 }
 
-.User-Details-Icon-Password-Redirect{
-    color: #e6914b;
+.User-Details-Icon-Login-History-Redirect{
+    color: #6672f1;
 }
-.User-Details-Icon-Password-Redirect:hover{
+.User-Details-Icon-Login-History-Redirect:hover{
     color: whitesmoke;
 }
 
