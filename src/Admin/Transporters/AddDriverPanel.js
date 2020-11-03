@@ -19,17 +19,13 @@ class AddDriverPanel extends Component{
         super(props);
 
         const transporterId = this.props.location.transporterIdProps;
-        const today = new Date();
-        const month = today.getMonth()+1;
-        const day = today.getDate();
-        const year = today.getFullYear();
 
         this.state = {
             token: getSessionCookie(),
             firstName: null,
             lastName: null,
             peselNumber: null,
-            birthDate: month + '/' + day + '/' + year,
+            birthDate: null,
             gender: 'M',
             contactPhoneNumber: null,
             mail: null,
@@ -71,12 +67,19 @@ class AddDriverPanel extends Component{
         }
         catch(error){
             if(error.response){
-                this.setState({
-                    serverResponse: error.response.data.message,
-                    isServerResponseModalOpen: true
-                })
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie podano danych kierowcy.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
             }
-           
             console.log(error);
         }
     }

@@ -87,10 +87,18 @@ class AddVehiclePanel extends Component{
         }
         catch(error){
             if(error.response){
-                this.setState({
-                    serverResponse: error.response.data.message,
-                    isServerResponseModalOpen: true
-                })
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie podano danych pojazdu.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
             }
             console.log(error);
         }

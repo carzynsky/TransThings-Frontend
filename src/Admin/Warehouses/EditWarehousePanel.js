@@ -32,6 +32,8 @@ class EditWarehousePanel extends Component{
             contactPersonLastName: warehouse !== undefined ? warehouse.contactPersonLastName : null,
             mail: warehouse !== undefined ? warehouse.mail : null,
             fax: warehouse !== undefined ? warehouse.fax : null,
+            serverResponse: '',
+            isServerResponseModalOpen: false,
             isModalOpen: false
         }
     }
@@ -60,10 +62,27 @@ class EditWarehousePanel extends Component{
                 },
                 
             });
-            if(response.status === 200)
-                alert('Zaktualizowano magazyn.')
+            
+            this.setState({
+                serverResponse: response.data.message,
+                isServerResponseModalOpen: true
+            })
         }
         catch(error){
+            if(error.response){
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie podano danych magazynu!",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
+            }
             console.log(error);
         }
     }
@@ -92,6 +111,13 @@ class EditWarehousePanel extends Component{
     handleCloseModal = () => {
         this.setState({
             isModalOpen: false
+        })
+    }
+
+    // Server response pop up
+    handleCloseServerResponseModal = () =>{
+        this.setState({
+            isServerResponseModalOpen: false
         })
     }
 
@@ -401,6 +427,41 @@ class EditWarehousePanel extends Component{
                                     
                                 </Col>
                             </Row>
+                            <Popup 
+                                        modal
+                                        open={this.state.isServerResponseModalOpen}
+                                        contentStyle={{
+                                            width: '30vw',
+                                            height: '25vh',
+                                            backgroundColor: '#202125',
+                                            borderColor: '#202125',
+                                            borderRadius: '15px',
+                                            }}>
+                                        {
+                                            close => (
+                                                    <Container>
+                                                        <Row style={{textAlign: 'center'}}>
+                                                            <Col>
+                                                                <label className='Edit-Warehouse-Modal-Header'>{this.state.serverResponse}</label>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row style={{textAlign: 'center', marginTop: '30px'}}>
+                                                            <Col>
+                                                                <Button 
+                                                                    className="Confirm-Edit-Warehouse-Button" 
+                                                                    variant="light"
+                                                                    onClick={() => {
+                                                                        this.handleCloseServerResponseModal();
+                                                                        close();
+                                                                    }}>
+                                                                    Zamknij
+                                                                </Button>
+                                                            </Col>
+                                                        </Row>
+                                                    </Container>
+                                                )
+                                            }
+                                    </Popup>
                         </Container>
                     </div>
                     </Col>

@@ -81,9 +81,9 @@ class Home extends Component {
         })
 
         const options = {
-            url: 'https://localhost:44394/auth',
             method: 'POST',
-            timeout: 4000,
+            timeout: 5000,
+            url: 'https://localhost:44394/auth',
             headers: {
               'Accept': 'application/json',
               'Content-Type': 'application/json;charset=UTF-8'

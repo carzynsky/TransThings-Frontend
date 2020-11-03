@@ -23,10 +23,13 @@ class TransportersDashboard extends Component{
             transporters: [],
             selectedTransporter: '',
             transportersQuantity: '',
+            serverResponse: '',
+            isServerResponseModalOpen: false,
             isModalOpen: false
         }
     }
 
+    // GET call to api to get transporters
     async getTransporters(){
         try
         {
@@ -57,19 +60,40 @@ class TransportersDashboard extends Component{
         }
     }
 
+    // DELETE call to api to remove selected transporter
     async deleteTransporter(){
         try
         {
-            await axios.delete('https://localhost:44394/transporters/' + this.state.selectedTransporter.id, {
+            const response = await axios.delete('https://localhost:44394/transporters/' + this.state.selectedTransporter.id, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json;charset=UTF-8',
                     'Authorization': 'Bearer ' + this.state.token.token
                 }
             });
-            this.getTransporters();
+
+            await this.getTransporters();
+
+            this.setState({
+                serverResponse: response.data.message,
+                isServerResponseModalOpen: true
+            })
         }
         catch(error){
+            if(error.response){
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie można usunąć przewoźnika!",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
+            }
             console.log(error);
         }
     }
@@ -86,6 +110,7 @@ class TransportersDashboard extends Component{
         })
     }
 
+    // handle open/close modal popup
     handleOpenModal = () => {
         this.setState({
             isModalOpen: true
@@ -95,6 +120,13 @@ class TransportersDashboard extends Component{
     handleCloseModal = () => {
         this.setState({
             isModalOpen: false
+        })
+    }
+
+    // Server response pop up
+    handleCloseServerResponseModal = () =>{
+        this.setState({
+            isServerResponseModalOpen: false
         })
     }
 
@@ -110,9 +142,6 @@ class TransportersDashboard extends Component{
                                         <label className='Transporter-Table-Header'>Lista przewoźników</label>
                                     </Col>
                                     <Col style={{textAlign: 'right'}}>
-                                        {/* <NavLink className="Add-User-Nav-Link" push to='admin/przewoznicy/dodaj'>
-                                            <label className="Add-Customer-Redirect">+ Dodaj</label>
-                                        </NavLink> */}
                                         <NavLink className="Add-User-Nav-Link" to='/admin/przewoznicy/dodaj'>
                                             <Button 
                                                 className="Add-Tranporter-Redirect-Button" 
@@ -238,7 +267,7 @@ class TransportersDashboard extends Component{
                                                                             }}
                                                                             >
                                                                                 <div>
-                                                                                <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
+                                                                                    <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
                                                                                 </div>
                                                                         </Button>
                                                                         </Col>
@@ -252,7 +281,7 @@ class TransportersDashboard extends Component{
                                                                                 }}
                                                                                 >
                                                                                     <div>
-                                                                                    <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
+                                                                                        <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
                                                                                     </div>
                                                                             </Button>
                                                                         </Col>
@@ -268,6 +297,43 @@ class TransportersDashboard extends Component{
                                 />
                                     </Col>
                                 </Row>
+                                <Popup 
+                                    modal
+                                    open={this.state.isServerResponseModalOpen}
+                                    onClose={this.handleCloseServerResponseModal}
+                                    contentStyle={{
+                                        width: '30vw',
+                                        height: '25vh',
+                                        backgroundColor: '#202125',
+                                        borderColor: '#202125',
+                                        borderRadius: '15px',
+                                    }}
+                                >
+                                    {
+                                        close => (
+                                            <Container>
+                                                <Row style={{textAlign: 'center'}}>
+                                                    <Col>
+                                                        <label className='Delete-Transporter-Modal-Header'>{this.state.serverResponse}</label>
+                                                    </Col>
+                                                </Row>
+                                                <Row style={{textAlign: 'center', marginTop: '30px'}}>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Confirm-Delete-Transporter-Button" 
+                                                            variant="light"
+                                                            onClick={() => {
+                                                                this.handleCloseServerResponseModal();
+                                                                close();
+                                                            }}>
+                                                            Zamknij
+                                                        </Button>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        )
+                                    }
+                                </Popup>
                             </Container>
                         </div>
                     </Col>

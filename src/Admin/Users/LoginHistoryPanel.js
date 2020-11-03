@@ -115,10 +115,18 @@ class LoginHistoryPanel extends Component{
         }
         catch(error){
             if(error.response){
-                this.setState({
-                    serverResponse: error.response.data.message,
-                    isServerResponseModalOpen: false
-                })
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie można było usunąć historii logowań.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
             }
             console.log(error);
         }

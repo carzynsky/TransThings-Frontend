@@ -31,6 +31,8 @@ class EditTransporterPanel extends Component{
             country: transporter !== undefined ? transporter.country : null,
             supportedPathsDescription: transporter !== undefined ? transporter.supportedPathsDescriptions : null,
             mail: transporter !== undefined ? transporter.mail : null,
+            serverResponse: '',
+            isServerResponseModalOpen: false,
             isModalOpen: false
         }
     }
@@ -59,10 +61,27 @@ class EditTransporterPanel extends Component{
                 },
                 
             });
-            if(response.status === 200)
-                alert('Zaktualizowano przewoźnika.')
+            
+            this.setState({
+                serverResponse: response.data.message,
+                isServerResponseModalOpen: true
+            })
         }
         catch(error){
+            if(error.response){
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie podano danych przewoźnika.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
+            }
             console.log(error);
         }
     }
@@ -83,6 +102,13 @@ class EditTransporterPanel extends Component{
     handleCloseModal = () => {
         this.setState({
             isModalOpen: false
+        })
+    }
+
+    // Server response pop up
+    handleCloseServerResponseModal = () =>{
+        this.setState({
+            isServerResponseModalOpen: false
         })
     }
 
@@ -387,9 +413,43 @@ class EditTransporterPanel extends Component{
                                         </div>
                                         )}
                                     </Popup>
-                                    
                                 </Col>
                             </Row>
+                            <Popup 
+                                modal
+                                open={this.state.isServerResponseModalOpen}
+                                onClose={this.handleCloseServerResponseModal}
+                                contentStyle={{
+                                    width: '30vw',
+                                    height: '25vh',
+                                    backgroundColor: '#202125',
+                                    borderColor: '#202125',
+                                    borderRadius: '15px',
+                                }}>
+                            {
+                                close => (
+                                    <Container>
+                                        <Row style={{textAlign: 'center'}}>
+                                            <Col>
+                                                <label className='Delete-Transporter-Modal-Header'>{this.state.serverResponse}</label>
+                                            </Col>
+                                        </Row>
+                                        <Row style={{textAlign: 'center', marginTop: '30px'}}>
+                                            <Col>
+                                                <Button 
+                                                    className="Confirm-Delete-Transporter-Button" 
+                                                    variant="light"
+                                                    onClick={() => {
+                                                        this.handleCloseServerResponseModal();
+                                                        close();
+                                                    }}>Zamknij
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    </Container>
+                                )
+                            }
+                        </Popup>
                         </Container>
                     </div>
                     </Col>

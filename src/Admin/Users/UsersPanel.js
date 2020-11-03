@@ -160,10 +160,18 @@ class UsersPanel extends Component{
         }
         catch(error){
             if(error.response){
-                this.setState({
-                    serverResponse: error.response.data.message,
-                    isServerResponseModalOpen: false
-                })
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie można było usunąć użytkownika.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
             }
             console.log(error);
         }

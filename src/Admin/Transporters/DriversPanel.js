@@ -86,10 +86,18 @@ class DriversPanel extends Component{
         }
         catch(error){
             if(error.response){
-                this.setState({
-                    serverResponse: error.response.data.message,
-                    isServerResponseModalOpen: true
-                })
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie można było usunąć kierowcy.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
             }
             console.log(error);
         }

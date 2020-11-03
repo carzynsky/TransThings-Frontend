@@ -8,6 +8,8 @@ import Profile from '../Profile';
 import EditUserPanel from '../Admin/Users/EditUserPanel';
 import CustomerRoutes from '../Admin/Customers/CustomersRoutes';
 import './OrdererMainPanel.css';
+import ForwardersPanel from './Forwarders/ForwardersPanel';
+import OrdersDashboard from './Orders/OrdersDashboard';
 
 
 function AdminMainPanel() {
@@ -20,9 +22,9 @@ function AdminMainPanel() {
                     </Col>
                     <Col xs='10'>
                         <Switch>
-                            <Route path='/pracownik-zamowien/zamowienia' exact component={LoadingPage}></Route>
+                            <Route path='/pracownik-zamowien/zamowienia' exact component={OrdersDashboard}></Route>
                             <Route path='/pracownik-zamowien/zlecenia-spedycji' component={LoadingPage}></Route>
-                            <Route path='/pracownik-zamowien/spedytorzy' component={LoadingPage}></Route>
+                            <Route path='/pracownik-zamowien/spedytorzy' component={ForwardersPanel}></Route>
                             <Route path='/pracownik-zamowien/kontrahenci' component={CustomerRoutes}></Route>
                             <Route path='/pracownik-zamowien/magazyny' component={WarehousesRoutes}></Route>
                             <Route path='/pracownik-zamowien/profil/edycja/:id' component={EditUserPanel}></Route>

@@ -138,10 +138,18 @@ class EditUserPanel extends Component{
         }
         catch(error){
             if(error.response){
-                this.setState({
-                    serverResponse: error.response.data.message,
-                    isServerResponseModalOpen: true
-                })
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie podano danych użytkownika.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
             }
             console.log(error);
         }
@@ -377,7 +385,7 @@ class EditUserPanel extends Component{
                             </Row>
                             <Row style={{marginTop: '20px'}}>
                                 <Col>
-                                <label className='Edit-Transporter-Sub-Header' style={{color: '#5CDB95', fontSize: '26px'}}>Dane kontaktowe</label>
+                                    <label className='Edit-Transporter-Sub-Header' style={{color: '#5CDB95', fontSize: '26px'}}>Dane kontaktowe</label>
                                 </Col>
                             </Row>
                             <Row >

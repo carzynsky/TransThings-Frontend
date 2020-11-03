@@ -17,11 +17,6 @@ class AddCustomerPanel extends Component{
     constructor(props){
         super(props);
 
-        const today = new Date();
-        const month = today.getMonth()+1;
-        const day = today.getDate();
-        const year = today.getFullYear();
-
         this.state = {
             token: getSessionCookie(),
             clientFirstName: '',
@@ -29,7 +24,7 @@ class AddCustomerPanel extends Component{
             companyFullName: '',
             companyShortName: '',
             clientPeselNumber: '',
-            birthDate: month + '/' + day + '/' + year,
+            birthDate: null,
             gender: 'M',
             contactPhoneNumber1: '',
             contactPhoneNumber2: '',
@@ -84,10 +79,18 @@ class AddCustomerPanel extends Component{
         }
         catch(error){
             if(error.response){
-                this.setState({
-                    serverResponse: error.response.data.message,
-                    isServerResponseModalOpen: true
-                })
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie podano danych kontrahenta!",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
             }
             console.log(error);
         }
@@ -155,8 +158,8 @@ class AddCustomerPanel extends Component{
                                             <Button 
                                                 className="Edit-Customer-Redirect-Button" 
                                                 variant="light"
-                                                style={{marginLeft: '30px'}}>
-                                                    Zatwierdź
+                                                style={{marginLeft: '25px'}}>
+                                                    Utwórz
                                             </Button>
                                         }
                                         modal
@@ -174,7 +177,7 @@ class AddCustomerPanel extends Component{
                                             <Container>
                                                 <Row style={{textAlign: 'center'}}>
                                                     <Col>
-                                                        <label className='Edit-Customer-Modal-Header'>Czy na pewno chcesz dodać klienta {this.state.clientFirstName} {this.state.clientLastName}?</label>
+                                                        <label className='Edit-Customer-Modal-Header'>Czy na pewno chcesz dodać kontrahenta {this.state.clientFirstName} {this.state.clientLastName}?</label>
                                                     </Col>
                                                 </Row>
                                                 <Row style={{marginTop: '25px', textAlign: 'center'}}>

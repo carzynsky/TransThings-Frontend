@@ -55,7 +55,7 @@ class CustomersDashboard extends Component{
     async deleteCustomer(){
         try
         {
-            const response = await axios.delete('https://localhost:44394/clients/' + this.state.selectedCustomerId, {
+            const response = await axios.delete('https://localhost:44394/clients/' + this.state.selectedCustomer.id, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json;charset=UTF-8',
@@ -63,19 +63,27 @@ class CustomersDashboard extends Component{
                 }
             });
 
+            await this.getCustomers();
             this.setState({
                 serverResponse: response.data.message,
                 isServerResponseModalOpen: true
             })
 
-            await this.getCustomers();
         }
         catch(error){
             if(error.response){
-                this.setState({
-                    serverResponse: error.response.data.message,
-                    isServerResponseModalOpen: false
-                })
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie można usunąć kontrahenta!",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
             }
             console.log(error);
         }
@@ -88,7 +96,7 @@ class CustomersDashboard extends Component{
         })
     }
 
-     // handle modal open/close
+    // handle modal open/close
     handleOpenModal = (customer) => {
         this.setState({
             selectedCustomer: customer,
@@ -267,6 +275,7 @@ class CustomersDashboard extends Component{
                                 <Popup 
                                     modal
                                     open={this.state.isModalOpen}
+                                    onClose={this.handleCloseModal}
                                     contentStyle={{
                                         width: '35vw',
                                         height: '30vh',
@@ -315,6 +324,7 @@ class CustomersDashboard extends Component{
                                 <Popup 
                                     modal
                                     open={this.state.isServerResponseModalOpen}
+                                    onClose={this.handleCloseServerResponseModal.bind(this)}
                                     contentStyle={{
                                     width: '30vw',
                                     height: '25vh',

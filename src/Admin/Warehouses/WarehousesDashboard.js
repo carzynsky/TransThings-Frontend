@@ -25,7 +25,9 @@ class WarehousesDashboard extends Component{
             warehousesQuantity: '',
             selectedWarehouse: '',
             selected: true,
-            isModalOpen: false
+            isModalOpen: false,
+            serverResponse: '',
+            isServerResponseModalOpen: false,
         }
     }
 
@@ -63,16 +65,34 @@ class WarehousesDashboard extends Component{
     async deleteWarehouse(){
         try
         {
-            await axios.delete('https://localhost:44394/warehouses/' + this.state.selectedWarehouse.id, {
+            const response = await axios.delete('https://localhost:44394/warehouses/' + this.state.selectedWarehouse.id, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json;charset=UTF-8',
                     'Authorization': 'Bearer ' + this.state.token.token
                 }
             });
-            this.getWarehouses();
+            await this.getWarehouses();
+            this.setState({
+                serverResponse: response.data.message,
+                isServerResponseModalOpen: true
+            })
         }
         catch(error){
+            if(error.response){
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie można usunąć magazynu!",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
+            }
             console.log(error);
         }
     }
@@ -100,6 +120,12 @@ class WarehousesDashboard extends Component{
         })
     }
 
+    handleCloseServerResponseModal = () =>{
+        this.setState({
+            isServerResponseModalOpen: false
+        })
+    }
+
     render(){
         return(
             <Container>
@@ -114,7 +140,7 @@ class WarehousesDashboard extends Component{
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <label className='Warehouse-Stats-Header'>{this.state.warehousesQuantity}</label>
+                                        <label className='Warehouse-Stats-Header' style={{fontSize: '36px'}}>{this.state.warehousesQuantity}</label>
                                     </Col>
                                 </Row>
                             </Container>
@@ -279,6 +305,7 @@ class WarehousesDashboard extends Component{
                                     <Popup 
                                         modal
                                         open={this.state.isModalOpen}
+                                        onClose={this.handleCloseModal}
                                         contentStyle={{
                                             width: '35vw',
                                             height: '30vh',
@@ -327,6 +354,40 @@ class WarehousesDashboard extends Component{
                                     )}
                                 </Popup>
                             </Row>
+                            <Popup 
+                                    modal
+                                    open={this.state.isServerResponseModalOpen}
+                                    contentStyle={{
+                                    width: '30vw',
+                                    height: '25vh',
+                                    backgroundColor: '#202125',
+                                    borderColor: '#202125',
+                                    borderRadius: '15px',}}>
+                                    {
+                                        close => (
+                                            <Container>
+                                                <Row style={{textAlign: 'center'}}>
+                                                    <Col>
+                                                        <label className='Edit-Warehouse-Modal-Header'>{this.state.serverResponse}</label>
+                                                    </Col>
+                                                </Row>
+                                                <Row style={{textAlign: 'center', marginTop: '30px'}}>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Confirm-Edit-Warehouse-Button" 
+                                                            variant="light"
+                                                            onClick={() => {
+                                                                this.handleCloseServerResponseModal();
+                                                                close();
+                                                            }}>
+                                                            Zamknij
+                                                        </Button>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        )
+                                    }
+                                </Popup>
                         </Container>
                     </div>
                     </Col>

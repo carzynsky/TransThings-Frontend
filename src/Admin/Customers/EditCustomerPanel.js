@@ -111,6 +111,7 @@ class EditCustomerPanel extends Component{
                 },
                 
             });
+            
             this.setState({
                 serverResponse: response.data.message,
                 isServerResponseModalOpen: true
@@ -118,10 +119,18 @@ class EditCustomerPanel extends Component{
         }
         catch(error){
             if(error.response){
-                this.setState({
-                    serverResponse: error.response.message,
-                    isServerResponseModalOpen: true
-                })
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie podano danych kontrahenta!",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
             }
             console.log(error);
         }

@@ -1,0 +1,17 @@
+.Orders-Data-Table{
+    padding-left: 25px;
+    padding-right: 25px;
+    font-size: 13px;
+    font-family: 'Overpass', sans-serif;
+}
+
+.Orders-Table-Container{
+    margin-top: 15px;
+    height: 80vh;
+    background-color: #202125;
+    color: whitesmoke;
+    padding-top: 15px;
+    padding-bottom: 20px;
+    border-radius: 15px;
+    font-family: 'Overpass', sans-serif;
+}

@@ -28,6 +28,8 @@ class AddTransporterPanel extends Component{
             country: null,
             supportedPathsDescription: null,
             mail: null,
+            serverResponse: '',
+            isServerResponseModalOpen: false,
             isModalOpen: false
         }
     }
@@ -56,10 +58,27 @@ class AddTransporterPanel extends Component{
                 },
                 
             });
-            if(response.status === 200)
-                alert('Dodano przewoźnika.')
+
+            this.setState({
+                serverResponse: response.data.message,
+                isServerResponseModalOpen: true
+            })
         }
         catch(error){
+             if(error.response){
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie podano danych przewoźnika.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
+            }
             console.log(error);
         }
     }
@@ -80,6 +99,13 @@ class AddTransporterPanel extends Component{
     handleCloseModal = () => {
         this.setState({
             isModalOpen: false
+        })
+    }
+
+    // Server response pop up
+    handleCloseServerResponseModal = () =>{
+        this.setState({
+            isServerResponseModalOpen: false
         })
     }
 
@@ -120,48 +146,49 @@ class AddTransporterPanel extends Component{
                                 </form>
                                 </Col>
                                 <Col>
-                                <form  noValidate autoComplete="off">
-                                    <TextField 
-                                        id="transporterShortName" 
-                                        label="Krótka nazwa" 
-                                        color="secondary"
-                                        onChange={this.handleChange('shortName')}
-                                        autoComplete="new-password"
-                                        defaultValue={this.state.shortName}
-                                        InputLabelProps={{
-                                            style:{
-                                                color: 'whitesmoke'
-                                            },
-                                        }}
-                                        InputProps={{
-                                            style: {
-                                                color: '#e64b62'
-                                            }
-                                        }} />
-                                </form>
+                                    <form  noValidate autoComplete="off">
+                                        <TextField 
+                                            id="transporterShortName" 
+                                            label="Krótka nazwa" 
+                                            color="secondary"
+                                            onChange={this.handleChange('shortName')}
+                                            autoComplete="new-password"
+                                            defaultValue={this.state.shortName}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: '#e64b62'
+                                                }
+                                            }} />
+                                    </form>
                                 </Col>
                             </Row>
                             <Row style={{marginTop: '5px'}}>
-                            <Col>
-                                <form  noValidate autoComplete="off">
-                                    <TextField 
-                                        id="transporterNip" 
-                                        label="NIP" 
-                                        color="secondary"
-                                        autoComplete="new-password"
-                                        defaultValue={this.state.nip}
-                                        onChange={this.handleChange('nip')}
-                                        InputLabelProps={{
-                                            style:{
-                                                color: 'whitesmoke'
-                                            },
-                                        }}
-                                        InputProps={{
-                                            style: {
-                                                color: '#e64b62'
-                                            }
-                                        }} />
-                                </form>
+                                <Col>
+                                    <form  noValidate autoComplete="off">
+                                        <TextField 
+                                            id="transporterNip" 
+                                            label="NIP" 
+                                            color="secondary"
+                                            autoComplete="new-password"
+                                            defaultValue={this.state.nip}
+                                            onChange={this.handleChange('nip')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: '#e64b62'
+                                                }
+                                            }} 
+                                        />
+                                    </form>
                                 </Col>
                             </Row>
                             <Row style={{marginTop: '20px'}}>
@@ -171,25 +198,26 @@ class AddTransporterPanel extends Component{
                             </Row>
                             <Row >
                                 <Col>
-                                <form  noValidate autoComplete="off">
-                                    <TextField 
-                                        id="transporterStreetAddress" 
-                                        label="Adres" 
-                                        color="secondary"
-                                        autoComplete="new-password"
-                                        defaultValue={this.state.streetAddress}
-                                        onChange={this.handleChange('streetAddress')}
-                                        InputLabelProps={{
-                                            style:{
-                                                color: 'whitesmoke'
-                                            },
-                                        }}
-                                        InputProps={{
-                                            style: {
-                                                color: '#e64b62'
-                                            }
-                                        }} />
-                                </form>
+                                    <form  noValidate autoComplete="off">
+                                        <TextField 
+                                            id="transporterStreetAddress" 
+                                            label="Adres" 
+                                            color="secondary"
+                                            autoComplete="new-password"
+                                            defaultValue={this.state.streetAddress}
+                                            onChange={this.handleChange('streetAddress')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: '#e64b62'
+                                                }
+                                            }} 
+                                        />
+                                    </form>
                                 </Col>
                                 <Col>
                                 <form  noValidate autoComplete="off">
@@ -384,9 +412,43 @@ class AddTransporterPanel extends Component{
                                         </div>
                                         )}
                                     </Popup>
-                                    
                                 </Col>
                             </Row>
+                            <Popup 
+                                modal
+                                open={this.state.isServerResponseModalOpen}
+                                onClose={this.handleCloseServerResponseModal}
+                                contentStyle={{
+                                    width: '30vw',
+                                    height: '25vh',
+                                    backgroundColor: '#202125',
+                                    borderColor: '#202125',
+                                    borderRadius: '15px',
+                                }}>
+                            {
+                                close => (
+                                    <Container>
+                                        <Row style={{textAlign: 'center'}}>
+                                            <Col>
+                                                <label className='Delete-Transporter-Modal-Header'>{this.state.serverResponse}</label>
+                                            </Col>
+                                        </Row>
+                                        <Row style={{textAlign: 'center', marginTop: '30px'}}>
+                                            <Col>
+                                                <Button 
+                                                    className="Confirm-Delete-Transporter-Button" 
+                                                    variant="light"
+                                                    onClick={() => {
+                                                        this.handleCloseServerResponseModal();
+                                                        close();
+                                                    }}>Zamknij
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    </Container>
+                                )
+                            }
+                        </Popup>
                         </Container>
                     </div>
                     </Col>

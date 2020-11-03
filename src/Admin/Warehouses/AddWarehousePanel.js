@@ -2,12 +2,15 @@ import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
 import { AiFillPhone, AiOutlineMail } from 'react-icons/ai';
 import { IoMdContact } from 'react-icons/io';
+import { ImCross } from 'react-icons/im';
+import { MdDone } from 'react-icons/md';
 import { FaFax, FaWarehouse, FaCity } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
-import axios from 'axios';
 import { TextField } from '@material-ui/core';
-import './AddWarehousePanel.css';
 import { getSessionCookie } from '../../sessions';
+import './AddWarehousePanel.css';
+import Popup from 'reactjs-popup';
+import axios from 'axios';
 
 class AddWarehousePanel extends Component{
     constructor(props){
@@ -22,7 +25,10 @@ class AddWarehousePanel extends Component{
             contactPersonFirstName: '',
             contactPersonLastName: '',
             mail: '',
-            fax: ''
+            fax: '',
+            serverResponse: '',
+            isServerResponseModalOpen: false,
+            isModalOpen: false
         }
     }
 
@@ -50,17 +56,43 @@ class AddWarehousePanel extends Component{
                 },
                 
             });
-            if(response.status === 200)
-                alert('Dodano magazyn.');
+            
+            this.setState({
+                serverResponse: response.data.message,
+                isServerResponseModalOpen: true
+            })
 
         }
         catch(error){
+            if(error.response){
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie podano danych magazynu!",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
+            }
             console.log(error);
         }
     }
 
+    // handle pop up open/close
     handleSaveButton = () => {
-        this.addWarehouse();
+        this.setState({
+            isModalOpen: true
+        })
+    }
+
+    handleCloseModal = () => {
+        this.setState({
+            isModalOpen: false
+        })
     }
 
     // handle change of text fields
@@ -68,7 +100,14 @@ class AddWarehousePanel extends Component{
         this.setState({
             [name]: event.target.value
         });
-      };
+    };
+
+    // Server response pop up
+    handleCloseServerResponseModal = () =>{
+        this.setState({
+            isServerResponseModalOpen: false
+        })
+    }
 
     render(){
         return(
@@ -302,6 +341,94 @@ class AddWarehousePanel extends Component{
                                     Zapisz</Button>
                                 </Col>
                             </Row>
+                                <Popup 
+                                        modal
+                                        open={this.state.isModalOpen}
+                                        onClose={this.handleCloseModal}
+                                        contentStyle={{
+                                            width: '30vw',
+                                            height: '25vh',
+                                            backgroundColor: '#202125',
+                                            borderColor: '#202125',
+                                            borderRadius: '15px',
+                                        }}
+                                        >
+                                        { close => (<div>
+                                            <Container>
+                                                <Row style={{textAlign: 'center'}}>
+                                                    <Col>
+                                                        <label className='Edit-Warehouse-Modal-Header'>Czy na pewno chcesz wprowadzić zmiany?</label>
+                                                    </Col>
+                                                </Row>
+                                                <Row style={{marginTop: '45px', textAlign: 'center'}}>
+                                                    <Col>
+                                                    <Button 
+                                                        className="Confirm-Edit-Warehouse-Button" 
+                                                        variant="light"
+                                                        onClick={() => {
+                                                            close()
+                                                        }}
+                                                        >
+                                                            <div>
+                                                            <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
+                                                            </div>
+                                                    </Button>
+                                                    </Col>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Confirm-Edit-Warehouse-Button" 
+                                                            variant="light"
+                                                            onClick={() => {
+                                                                this.addWarehouse();
+                                                                close();
+                                                            }}
+                                                            >
+                                                                <div>
+                                                                <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
+                                                                </div>
+                                                        </Button>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        </div>
+                                        )}
+                                    </Popup>
+
+                                    <Popup 
+                                        modal
+                                        open={this.state.isServerResponseModalOpen}
+                                        contentStyle={{
+                                            width: '30vw',
+                                            height: '25vh',
+                                            backgroundColor: '#202125',
+                                            borderColor: '#202125',
+                                            borderRadius: '15px',
+                                            }}>
+                                        {
+                                            close => (
+                                                    <Container>
+                                                        <Row style={{textAlign: 'center'}}>
+                                                            <Col>
+                                                                <label className='Edit-Warehouse-Modal-Header'>{this.state.serverResponse}</label>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row style={{textAlign: 'center', marginTop: '30px'}}>
+                                                            <Col>
+                                                                <Button 
+                                                                    className="Confirm-Edit-Warehouse-Button" 
+                                                                    variant="light"
+                                                                    onClick={() => {
+                                                                        this.handleCloseServerResponseModal();
+                                                                        close();
+                                                                    }}>
+                                                                    Zamknij
+                                                                </Button>
+                                                            </Col>
+                                                        </Row>
+                                                    </Container>
+                                                )
+                                            }
+                                    </Popup>
                         </Container>
                     </div>
                     </Col>

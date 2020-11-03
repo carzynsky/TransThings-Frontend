@@ -1,0 +1,9 @@
+.Forwarder-Details-Icon{
+    font-size: 20px;
+    color:#5cdb95;
+}
+
+.Forwarder-Details-Icon:hover{
+    color:whitesmoke;
+    cursor: pointer;
+}
