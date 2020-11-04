@@ -391,8 +391,8 @@ class UsersPanel extends Component{
                                         mail: user.mail,
                                         role: user.userRole,
                                         select: <label className='User-Details-Button' onClick={this.handleDetailsClick.bind(this, user)}>
-                                            <CgMoreO className='User-Details-Icon'/>
-                                        </label>
+                                                    <CgMoreO className='User-Details-Icon'/>
+                                                </label>
                                     }
                                 ))
                         }}

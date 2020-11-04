@@ -10,6 +10,8 @@ import CustomerRoutes from '../Admin/Customers/CustomersRoutes';
 import './OrdererMainPanel.css';
 import ForwardersPanel from './Forwarders/ForwardersPanel';
 import OrdersDashboard from './Orders/OrdersDashboard';
+import AddOrderPanel from './Orders/AddOrderPanel';
+import OrdersRoutes from './Orders/OrdersRoutes';
 
 
 function AdminMainPanel() {
@@ -17,18 +19,19 @@ function AdminMainPanel() {
         <BrowserRouter>
             <Container className="Panel-Container" fluid>
                 <Row>
-                    <Col xs='2'>
+                    <Col xs='2' style={{position: 'fixed'}}>
                         <OrdererNavigationSidebar />
                     </Col>
-                    <Col xs='10'>
+                    <Col xs='10' style={{marginLeft: '250px'}}>
                         <Switch>
-                            <Route path='/pracownik-zamowien/zamowienia' exact component={OrdersDashboard}></Route>
+                            <Route path='/pracownik-zamowien/zamowienia' exact component={OrdersRoutes}></Route>
                             <Route path='/pracownik-zamowien/zlecenia-spedycji' component={LoadingPage}></Route>
                             <Route path='/pracownik-zamowien/spedytorzy' component={ForwardersPanel}></Route>
                             <Route path='/pracownik-zamowien/kontrahenci' component={CustomerRoutes}></Route>
                             <Route path='/pracownik-zamowien/magazyny' component={WarehousesRoutes}></Route>
                             <Route path='/pracownik-zamowien/profil/edycja/:id' component={EditUserPanel}></Route>
                             <Route path='/pracownik-zamowien/profil' component={Profile}></Route>
+                            <Route component={LoadingPage}></Route>
                         </Switch>
                     </Col>
                 </Row>

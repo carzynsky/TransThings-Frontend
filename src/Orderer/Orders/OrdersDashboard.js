@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
+import { NavLink } from 'react-router-dom';
 import { HiOutlineRefresh } from 'react-icons/hi';
-import { MdAdd } from 'react-icons/md';
+import { MdAdd, MdEdit, MdShowChart } from 'react-icons/md';
+import { FiChevronDown } from 'react-icons/fi';
+import { FaRegFilePdf } from 'react-icons/fa';
+import { RiDeleteBin6Line } from 'react-icons/ri';
 import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
+import { Select, FormControl, MenuItem, InputLabel } from '@material-ui/core';
 import axios from 'axios';
 import './OrdersDashboard.css';
 
@@ -57,27 +62,86 @@ class OrdersDashboard extends Component{
         return(
             <Container>
                 <Row style={{marginTop: '50px'}}>
-                    <Col xs='8'>
-                        <label className='Warehouse-Stats-Header'>Zamówienia transportu</label>
+                    <Col xs='9' style={{minWidth: '450px'}}>
+                        <div className='Orders-Header'>Zamówienia transportu</div>
                     </Col>
 
-                    <Col xs='2' style={{minWidth: '120px'}}>
+                    <Col xs='1' style={{minWidth: '120px', marginTop: '10px'}}>
                         <Button 
-                            className="Add-Warehouse-Redirect-Button" 
+                            className="Orders-Button" 
                             variant="light"
                             onClick={this.getOrders}>
                                 <HiOutlineRefresh size='1.0em'/><span>&nbsp;</span><span>Odśwież</span>
                         </Button>
                     </Col>
-                    <Col xs='2' style={{minWidth: '120px'}}>
-                        <Button 
-                            className="Add-Warehouse-Redirect-Button" 
-                            variant="light">
-                                <MdAdd size='1.0em'/><span>&nbsp;</span><span>Dodaj</span>
-                        </Button>
+                    <Col xs='1' style={{minWidth: '120px', marginTop: '10px'}}>
+                        <NavLink className='Orderer-Nav-Link' to={{
+                            pathname: '/pracownik-zamowien/zamowienia/dodaj',
+                            state: { from: this.props.location.pathname }
+                            }}>
+                            <Button 
+                                className="Orders-Button" 
+                                variant="light">
+                                    <MdAdd size='1.0em'/><span>&nbsp;</span><span>Dodaj</span>
+                            </Button>
+                        </NavLink>
                     </Col>
                 </Row>
-                <Row>
+                <Row style={{marginTop: '15px'}}>
+                    <Col>
+                        <Container>
+                            <Row>
+                                <div className='Orders-Sub-Header'>
+                                    <FiChevronDown size='1.2em'/><span>&nbsp;</span><span>Filtry</span>
+                                </div>
+                            </Row>
+                            <Row style={{marginTop: '15px'}}>
+                                <Col>
+                                    <FormControl variant="outlined">
+                                        <InputLabel id="genderLabel">Status zamówienia</InputLabel>
+                                        <Select
+                                            id="selectUserGender"
+                                            color="primary"
+                                            value='A'
+                                            style={{minWidth: '150px'}}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}>
+                                            <MenuItem value={'A'}>Wszystkie</MenuItem>
+                                            <MenuItem value={'M'}>Utworzone</MenuItem>
+                                            <MenuItem value={'K'}>Zaakceptowane</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                        </Container>
+                    </Col>
+                    <Col>
+                        <div className='Orders-Sub-Tile'>
+                            <Container>
+                                <Row>
+                                    <Col>
+                                        <div className='Orders-Stats-Header' style={{fontSize: '14px'}}>
+                                            <MdShowChart size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Wszystkich zamówień</span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row style={{textAlign: 'center'}}>
+                                    <Col>
+                                        <div className='Orders-Stats-Number'>{this.state.ordersQuantity}</div>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </div>
+                    </Col>
+                    <Col>
+                    </Col>
+                    <Col>
+                    </Col>
+                </Row>
+                <Row style={{marginTop: '30px'}}>
                     <Col>
                         <div className='Orders-Table-Container'>
                             <Container>
@@ -107,31 +171,25 @@ class OrdersDashboard extends Component{
                                                         label: 'Klient',
                                                         field: 'client',
                                                         sort: 'asc',
-                                                        width: '180'
+                                                        width: '150'
                                                     },
                                                     {
                                                         label: 'Trasa',
                                                         field: 'path',
                                                         sort: 'asc',
-                                                        width: '220'
+                                                        width: '200'
                                                     },
                                                     {
                                                         label: 'Data zlecenia',
                                                         field: 'expectedDate',
                                                         sort: 'asc',
-                                                        width: '100'
+                                                        width: '120'
                                                     },
                                                     {
                                                         label: 'Status',
                                                         field: 'orderStatus',
-                                                        sort: 'asc',
-                                                        width: '100'
+                                                        sort: 'asc'
                                                     },
-                                                    {
-                                                        label: '',
-                                                        field: 'select',
-                                                        sort: 'asc',
-                                                    }
                                                 ],
                                                 rows: this.state.orders.map((order) => (
                                                     {
@@ -140,7 +198,38 @@ class OrdersDashboard extends Component{
                                                         client: order.client.clientFirstName + ' ' + order.client.clientLastName,
                                                         path: order.warehouse.city + '-' + order.destinationCity,
                                                         expectedDate: order.orderExpectedDate.split('T')[0],
-                                                        orderStatus: order.orderStatus?.statusName
+                                                        orderStatus: 
+                                                        <div>
+                                                            <div 
+                                                                className='Order-Status-Block'
+                                                                style={{
+                                                                    backgroundColor: order.orderStatus?.statusName === 'Utworzone' ? ' #fff134' 
+                                                                    : '#34ff4c',
+                                                                    boxShadow: order.orderStatus?.statusName === 'Utworzone' ? '2px 2px 13px -4px #fff134'
+                                                                    : '2px 2px 13px -4px #34ff4c'}}>
+                                                                {order.orderStatus?.statusName}
+                                                            </div>
+                                                            <Container>
+                                                                <Row style={{marginTop: '5px'}}>
+                                                                    <Col xs='1'>
+                                                                        <div className='User-Details-Button' >
+                                                                            <MdEdit size='1.1em' className='User-Details-Icon'/>
+                                                                        </div>
+                                                                    </Col>
+                                                                    <Col xs='1'>
+                                                                        <div className='User-Details-Button'>
+                                                                            <FaRegFilePdf className='User-Details-Icon'/>
+                                                                        </div>
+                                                                    </Col>
+                                                                    <Col>
+                                                                        <div className='User-Details-Button'>
+                                                                            <RiDeleteBin6Line size='1.1em' className='User-Details-Icon'/>
+                                                                        </div>
+                                                                    </Col>
+                                                                </Row>
+                                                            </Container>
+                                                        </div>
+                                                           
                                                     }
                                                 ))
                                             }}

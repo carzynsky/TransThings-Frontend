@@ -1,0 +1,45 @@
+.Order-Client-Tile{
+    background-color: #202125;
+    min-height: 100px;
+    max-height: 50vh;
+    height: auto;
+    border-radius: 15px;
+    padding-bottom: 15px;
+}
+
+.Tile-Header{
+    padding-left: 5px;
+    padding-top: 15px;
+    font-size: 22px;
+    font-family: 'Overpass', sans-serif;
+}
+
+.Tile-Button{
+    margin-top: 10px;
+    font-family: 'Overpass', sans-serif;
+    width: 80px;
+    font-size: 13px;
+    background-color: #f75353;
+    border-radius: 5px;
+    box-shadow: 2px 2px 15px -4px #f75353;
+    border: solid 1px #f75353;
+    color: #202125;
+    padding-top: 10px;
+}
+
+.Tile-Data-Label{
+    padding-left: 5px;
+    padding-top: 15px;
+    font-size: 14px;
+    font-family: 'Overpass', sans-serif;
+    color: whitesmoke;
+}
+
+.Select-On-Popup{
+    color: #f75353;
+}
+
+.Select-On-Popup:hover{
+    color: #50ee9c;
+    cursor: pointer;
+}
