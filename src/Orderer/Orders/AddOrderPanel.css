@@ -43,3 +43,11 @@
     color: #50ee9c;
     cursor: pointer;
 }
+
+.Delete-Load-Icon{
+    color: #f75353;
+}
+.Delete-Load-Icon:hover{
+    color: whitesmoke;
+    cursor: pointer;
+}

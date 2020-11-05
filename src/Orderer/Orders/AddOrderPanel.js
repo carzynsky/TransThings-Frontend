@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
-import { MdDone, MdAdd, MdLocationOn } from 'react-icons/md';
-import { FaUserTie, FaWarehouse  } from 'react-icons/fa';
+import { MdDone, MdAdd, MdLocationOn, MdLocationCity, MdLocalPostOffice } from 'react-icons/md';
+import { FaUserTie, FaWarehouse, FaFlagUsa, FaAddressCard, FaWeightHanging, FaWeight, FaGlassWhiskey, FaRegMoneyBillAlt } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
-import { ImCheckboxChecked } from 'react-icons/im';
+import { HiOutlineOfficeBuilding } from 'react-icons/hi';
+import { ImCheckboxChecked, ImOffice } from 'react-icons/im';
 import { BiPackage, BiMessageAdd } from 'react-icons/bi';
 import { CgDetailsMore } from 'react-icons/cg';
+import { RiDeleteBin6Line } from 'react-icons/ri';
+import { AiFillPhone } from 'react-icons/ai';
 import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
-import { TextField, FormControl } from '@material-ui/core';
+import { TextField, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
+import DateFnsUtils from '@date-io/date-fns';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import axios from 'axios';
@@ -21,10 +26,37 @@ class AddOrderPanel extends Component{
             token: getSessionCookie(),
             clients: [],
             selectedClient: null,
+
             warehouses: [],
             selectedWarehouse: null,
+
+            loads: [],
+            addLoadAmount: 1,
+            addLoadWeight: 0,
+            newLoadName: null,
+            newLoadAmount: null,
+            newLoadNetWeight: null,
+            newLoadPackageWeight: 0,
+            newLoadGrossWeight: 0,
+            newLoadVolume: 0,
+            newLoadPackageType: null,
+
+            totalNetWeight: 0,
+            totalGrossWeight: 0,
+            totalVolume: 0,
+            orderExpectedDate: null,
+            destinationStreetAddress: null,
+            destinationZipCode: null,
+            destinationCity: null,
+            destinationCountry: null,
+            customerAdditionalInstructions: null,
+
+            paymentForms: [],
+            selectedPaymentFormId: '',
+
             isModalOpen: false,
-            selectedPopup: ''
+            selectedPopup: '',
+            isAddLoadModalOpen: false
         }
     }
 
@@ -83,6 +115,154 @@ class AddOrderPanel extends Component{
         }
     }
 
+    // GET call to API to get payment forms
+    async getPaymentForms(){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/payment-forms', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            });
+
+            const data = await response.data;
+            if(data.length === 0){
+                this.setState({
+                    paymentForms: []
+                })
+            }
+            this.setState({
+                paymentForms: data,
+                selectedPaymentFormId: data[0].id
+            })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    // POST call to API to add new order
+    async createOrder(){
+        try
+        {
+            const response = await axios.post('https://localhost:44394/orders',
+            {
+                'orderExpectedDate': this.state.orderExpectedDate,
+                'totalNetWeight': this.state.totalNetWeight,
+                'totalGrossWeight': this.state.totalGrossWeight,
+                'totalVolume': this.state.totalVolume,
+                'destinationStreetAddress': this.state.destinationStreetAddress,
+                'destinationCity': this.state.destinationCity,
+                'destinationZipCode': this.state.destinationZipCode,
+                'destinationCountry': this.state.destinationCountry,
+                'clientId': this.state.selectedClient?.id,
+                'ordererId': this.state.token.userId,
+                'paymentFormId': this.state.selectedPaymentFormId,
+                'warehouseId': this.state.selectedWarehouse?.id,
+                'customerAdditionalInstructions': this.state.customerAdditionalInstructions
+            },
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
+                
+            });
+            alert(response.data.message);
+            await this.addLoads(response.data.orderId)
+
+        }
+        catch(error){
+            // if(error.response){
+            //     if(error.response.data.message === undefined){
+            //         this.setState({
+            //             serverResponse: "Nie podano danych użytkownika.",
+            //             isServerResponseModalOpen: true
+            //         })
+            //     }
+            //     else{
+            //         this.setState({
+            //             serverResponse: error.response.data.message,
+            //             isServerResponseModalOpen: true
+            //         })
+            //     }
+            // }
+            console.log(error);
+        }
+    }
+
+    // POST call to API to add created loads
+    async addLoads(orderId){
+        try
+        {
+            var newLoads = [];
+            this.state.loads.map(x => {
+                newLoads.push({
+                    'name': x.name,
+                    'weight': parseFloat(x.grossWeight),
+                    'amount': parseInt(x.amount),
+                    'netWeight': parseFloat(x.netWeight),
+                    'packageType': x.packageType,
+                    'grossWeight': parseFloat(x.grossWeight),
+                    'volume': parseFloat(x.volume),
+                    'orderId': parseInt(orderId)
+                })
+            })
+
+            const data = 
+            {
+                'loads': newLoads
+            }
+
+            console.log(data)
+            const response = await axios.post('https://localhost:44394/loads',
+            {
+                'loads': newLoads
+            },
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
+                
+            });
+
+            alert(response.data.message);
+            
+            // this.setState({
+            //     serverResponse: response.data.message,
+            //     isServerResponseModalOpen: true
+            // })
+        }
+        catch(error){
+            // if(error.response){
+            //     if(error.response.data.message === undefined){
+            //         this.setState({
+            //             serverResponse: "Nie podano danych użytkownika.",
+            //             isServerResponseModalOpen: true
+            //         })
+            //     }
+            //     else{
+            //         this.setState({
+            //             serverResponse: error.response.data.message,
+            //             isServerResponseModalOpen: true
+            //         })
+            //     }
+            // }
+            console.log(error);
+        }
+    }
+
+    handleChange = (name) => (event) => {
+        this.setState({
+            [name]: event.target.value
+        })
+    }
+
     // handle open popup
     handleOpenModal = (data) => {
         this.setState({
@@ -112,10 +292,77 @@ class AddOrderPanel extends Component{
         })
     }
 
+    handleOpenAddLoadModal = () => {
+        this.setState({
+            isAddLoadModalOpen: true
+        })
+    }
+
+    handleCloseAddLoadModal = () => {
+        this.setState({
+            isAddLoadModalOpen: false
+        })
+    }
+
+    // handle add created load to table
+    handleConfirmAddLoad = () => {
+        var _loads = this.state.loads;
+        var len = _loads.length;
+        var newId = len === 0 ? 1 : _loads[len-1].id+1;
+        _loads.push({
+            'id': newId,
+            'name': this.state.newLoadName,
+            'amount': this.state.addLoadAmount,
+            'netWeight': this.state.addLoadAmount * this.state.addLoadWeight,
+            'grossWeight': this.state.addLoadAmount * this.state.addLoadWeight + parseInt(this.state.newLoadPackageWeight),
+            'volume': this.state.newLoadVolume,
+            'packageType': this.state.newLoadPackageType,
+            'orderId': 0
+        });
+        this.setState({
+            loads: _loads,
+            addLoadAmount: 1,
+            addLoadWeight: 0,
+            newLoadPackageWeight: 0,
+            newLoadVolume: 0,
+            newLoadPackageType: null,
+            totalNetWeight: parseInt(this.state.totalNetWeight) + this.state.addLoadAmount * this.state.addLoadWeight,
+            totalGrossWeight: parseInt(this.state.totalGrossWeight) + this.state.addLoadAmount * this.state.addLoadWeight + parseInt(this.state.newLoadPackageWeight),
+            totalVolume: parseInt(this.state.totalVolume) + parseInt(this.state.newLoadVolume)
+        })
+    }
+
+    handleDeleteSelectedLoad = (load) => {
+        var filteredLoads = this.state.loads.filter( x => x.id !== load.id);
+
+        var newTotalNetWeight = 0;
+        var newTotalGrossWeight = 0;
+        var newTotalVolume = 0;
+
+        filteredLoads.map((x) => {
+            newTotalNetWeight += x.netWeight;
+            newTotalGrossWeight += x.grossWeight;
+            newTotalVolume += x.volume;
+        });
+
+        this.setState({
+            loads: filteredLoads,
+            totalNetWeight: newTotalNetWeight,
+            totalGrossWeight: newTotalGrossWeight,
+            totalVolume: newTotalVolume
+        })
+    }
+
+    handleExpectedDate = (date) => {
+        this.setState({
+            orderExpectedDate: date
+        })
+    }
 
     async componentDidMount(){
         await this.getClients();
         await this.getWarehouses();
+        await this.getPaymentForms();
     };
 
     render(){
@@ -142,6 +389,7 @@ class AddOrderPanel extends Component{
                         <Button 
                             className="Orders-Button" 
                             variant="light"
+                            onClick={this.createOrder.bind(this)}
                             style={{width: '110px'}}>
                                 <MdDone size='1.0em'/><span>&nbsp;</span><span>Zatwierdź</span>
                         </Button>
@@ -187,14 +435,14 @@ class AddOrderPanel extends Component{
                                     <Row>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Pesel: </span>{this.state.selectedClient?.clientPeselNumber}
+                                                <span style={{color: '#f75353'}}> <FaAddressCard /><span>&nbsp;&nbsp;</span>Pesel: </span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.clientPeselNumber}
                                             </label>
                                         </Col>
                                     </Row>
                                     <Row>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Firma: </span>{this.state.selectedClient?.companyFullName === null ? 'brak danych' : this.state.selectedClient?.companyFullName}
+                                                <span style={{color: '#f75353'}}><ImOffice /> <span>&nbsp;&nbsp;</span>Firma:</span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.companyFullName === null ? 'brak danych' : this.state.selectedClient?.companyFullName}
                                             </label>
                                         </Col>
                                         <Col>
@@ -213,19 +461,19 @@ class AddOrderPanel extends Component{
                                     <Row>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Adres: </span>{this.state.selectedClient?.streetName} {this.state.selectedClient?.city} {this.state.selectedClient?.zipCode}
+                                                <span style={{color: '#f75353'}}><HiOutlineOfficeBuilding /><span>&nbsp;&nbsp;</span>Adres:</span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.streetName} {this.state.selectedClient?.city} {this.state.selectedClient?.zipCode}
                                             </label>
                                         </Col>
                                     </Row>
                                     <Row>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Nr. kontaktowy(1): </span>{this.state.selectedClient?.contactPhoneNumber1}
+                                                <span style={{color: '#f75353'}}> <AiFillPhone /><span>&nbsp;&nbsp;</span>Nr. kontaktowy(1):<span>&nbsp;&nbsp;</span></span>{this.state.selectedClient?.contactPhoneNumber1}
                                             </label>
                                         </Col>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Nr. kontaktowy(2): </span>{this.state.selectedClient?.contactPhoneNumber2}
+                                                <span style={{color: '#f75353'}}><AiFillPhone /><span>&nbsp;&nbsp;</span>Nr. kontaktowy(2):<span>&nbsp;&nbsp;</span></span>{this.state.selectedClient?.contactPhoneNumber2}
                                             </label>
                                         </Col>
                                     </Row>
@@ -330,10 +578,14 @@ class AddOrderPanel extends Component{
                                         <FormControl  noValidate autoComplete="off">
                                             <TextField 
                                                 id="destinationStreetAddress" 
-                                                label="Adres" 
+                                                label={
+                                                    <div>
+                                                        <HiOutlineOfficeBuilding /><span>&nbsp;&nbsp;</span><span>Adres</span>
+                                                    </div>
+                                                }
                                                 color="primary"
                                                 style={{minWidth: '300px'}}
-                                                // onChange={this.handleChange('name')}
+                                                onChange={this.handleChange('destinationStreetAddress')}
                                                 InputLabelProps={{
                                                     style:{
                                                         color: 'whitesmoke'
@@ -352,10 +604,14 @@ class AddOrderPanel extends Component{
                                         <FormControl  noValidate autoComplete="off">
                                             <TextField 
                                                 id="destinationZipCode" 
-                                                label="Kod pocztowy" 
+                                                label={
+                                                    <div>
+                                                        <MdLocalPostOffice /><span>&nbsp;&nbsp;</span><span>Kod pocztowy</span>
+                                                    </div>
+                                                }
                                                 color="primary"
                                                 style={{minWidth: '300px'}}
-                                                // onChange={this.handleChange('name')}
+                                                onChange={this.handleChange('destinationZipCode')}
                                                 InputLabelProps={{
                                                     style:{
                                                         color: 'whitesmoke'
@@ -374,9 +630,13 @@ class AddOrderPanel extends Component{
                                         <FormControl  noValidate autoComplete="off">
                                             <TextField 
                                                 id="destinationCity" 
-                                                label="Miasto" 
+                                                label={
+                                                    <div>
+                                                         <MdLocationCity /><span>&nbsp;&nbsp;</span><span>Miasto</span>
+                                                    </div>
+                                                }
                                                 color="primary"
-                                                // onChange={this.handleChange('name')}
+                                                onChange={this.handleChange('destinationCity')}
                                                 style={{minWidth: '300px'}}
                                                 InputLabelProps={{
                                                     style:{
@@ -396,9 +656,13 @@ class AddOrderPanel extends Component{
                                         <FormControl  noValidate autoComplete="off">
                                             <TextField 
                                                 id="destinationCountry" 
-                                                label="Kraj" 
+                                                label={
+                                                    <div>
+                                                        <FaFlagUsa /><span>&nbsp;&nbsp;</span><span>Kraj</span>
+                                                    </div>
+                                                }
                                                 color="primary"
-                                                // onChange={this.handleChange('name')}
+                                                onChange={this.handleChange('destinationCountry')}
                                                 style={{minWidth: '150px'}}
                                                 InputLabelProps={{
                                                     style:{
@@ -430,11 +694,47 @@ class AddOrderPanel extends Component{
                                         <Button 
                                             className="Tile-Button" 
                                             variant="light"
-                                            style={{width: '80px'}}>
+                                            style={{width: '80px'}}
+                                            onClick={this.handleOpenAddLoadModal}>
                                                  <MdAdd size='1.0em'/><span>&nbsp;</span><span>Dodaj</span>
                                         </Button>
                                     </Col>
                                 </Row>
+
+                                {this.state.loads.length === 0 && 
+                                    <Row>
+                                        <Col>
+                                            <label className='Tile-Data-Label' style={{fontSize: '18px'}}>Brak towarów</label>
+                                        </Col>
+                                    </Row>
+                                }
+
+                                {this.state.loads.length !== 0 && 
+                                    <MDBDataTable
+                                        className='Customers-Data-Table'
+                                        style={{color: '#bdbbbb'}}
+                                        maxHeight="35vh"
+                                        scrollY
+                                        small
+                                        data={{
+                                            columns: loadsColumns,
+                                            rows:
+                                                this.state.loads.map((load) => (
+                                                    {
+                                                        name: load.name,
+                                                        amount: load.amount,
+                                                        netWeight: load.netWeight,
+                                                        grossWeight: load.grossWeight,
+                                                        volume: load.volume,
+                                                        delete: <RiDeleteBin6Line 
+                                                                        size='1.3em' 
+                                                                        className='Delete-Load-Icon'
+                                                                        onClick={this.handleDeleteSelectedLoad.bind(this, load)}/>
+                                                    }
+                                                ))
+                                        }}
+                                    />
+                                }
                             </Container>
                         </div>
                     </Col>
@@ -448,6 +748,76 @@ class AddOrderPanel extends Component{
                                         <div className='Tile-Header' style={{color: '#f75353'}}>
                                             <CgDetailsMore size='1.5em'/><span>&nbsp;&nbsp;</span><span>Szczegóły zamówienia</span>
                                         </div>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
+                                            <FaWeightHanging size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga netto:<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalNetWeight}</span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
+                                            <FaWeight size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga brutto:<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalGrossWeight}</span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
+                                            <FaGlassWhiskey size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita objętość:<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalVolume}</span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row style={{marginTop: '15px', paddingLeft: '5px'}}>
+                                    <Col>
+                                        <FormControl>
+                                            <InputLabel id="genderLabel">
+                                                <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Forma płatności
+                                            </InputLabel>
+                                                <Select
+                                                    id="selectUserGender"
+                                                    color="primary"
+                                                    value={this.state.selectedPaymentFormId}
+                                                    style={{width: '300px'}}
+                                                    InputLabelProps={{
+                                                        style:{
+                                                            color: 'whitesmoke'
+                                                        },
+                                                    }}
+                                                    onChange={this.handleChange('selectedPaymentFormId')}>
+                                                        {this.state.paymentForms.map((paymentForm) => (
+                                                            <MenuItem key={paymentForm.id} value={paymentForm.id}>{paymentForm.paymentName}</MenuItem>
+                                                        ))}
+                                                </Select>
+                                        </FormControl>
+                                    </Col>
+                                </Row>
+                                <Row style={{marginTop: '15px', paddingLeft: '5px'}}>
+                                    <Col>
+                                        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                            <KeyboardDatePicker
+                                                margin="normal"
+                                                id="user-date-picker-dialog"
+                                                label="Oczekiwana data zamówienia"
+                                                format="MM/dd/yyyy"
+                                                color="primary"
+                                                value={this.state.orderExpectedDate}
+                                                onChange={this.handleExpectedDate.bind(this)}
+                                                style={{width: '400px'}}
+                                                KeyboardButtonProps={{
+                                                    'aria-label': 'change date'
+                                                }}
+                                                style={{color: '#5CDB95'}}
+                                                InputLabelProps={{
+                                                    style:{
+                                                        color: 'whitesmoke'
+                                                    },
+                                                }}
+                                                />
+                                        </MuiPickersUtilsProvider>
                                     </Col>
                                 </Row>
                             </Container>
@@ -472,7 +842,7 @@ class AddOrderPanel extends Component{
                                                 rowsMax={10}
                                                 placeholder='Tutaj wpisz uwagi do zamówienia...'
                                                 color="primary"
-                                                // onChange={this.handleChange('name')}
+                                                onChange={this.handleChange('customerAdditionalInstructions')}
                                                 style={{minWidth: '450px'}}
                                                 InputLabelProps={{
                                                     style:{
@@ -548,7 +918,7 @@ class AddOrderPanel extends Component{
                                                 zipCode: warehouse.zipCode,
                                                 select: <ImCheckboxChecked 
                                                             className='Select-On-Popup' 
-                                                            size='1.5em' 
+                                                            size='1.5em'
                                                             onClick={() => {
                                                                 this.handleSelectedWarehouse(warehouse);
                                                                 close();
@@ -557,6 +927,197 @@ class AddOrderPanel extends Component{
                                             ))
                                 }}
                             />
+                            </Row>
+                        </Container>
+                        )
+                    }
+                </Popup>
+                <Popup 
+                    modal
+                    open={this.state.isAddLoadModalOpen}
+                    onClose={this.handleCloseAddLoadModal}
+                    contentStyle={{
+                        width: '50vw',
+                        height: '68vh',
+                        backgroundColor: '#202125',
+                        borderColor: '#202125',
+                        borderRadius: '15px'}}>
+                    {
+                        close => (
+                            <Container>
+                            <Row style={{textAlign: 'center'}}>
+                                <Col>
+                                    <label className='Orders-Header'>
+                                        Dodawanie towaru
+                                    </label>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '10px', paddingLeft: '10px'}}>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label='Nazwa'
+                                            color="primary"
+                                            onChange={this.handleChange('newLoadName')}
+                                            style={{minWidth: '0px'}}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: '#5c8bdb'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                            </Row>
+
+                            <Row style={{marginTop: '10px', paddingLeft: '10px'}}>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label='Ilość (szt)'
+                                            color="primary"
+                                            onChange={this.handleChange('addLoadAmount')}
+                                            value={this.state.addLoadAmount}
+                                            style={{minWidth: '0px'}}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: '#5c8bdb'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label='Waga poj. sztuki (kg)'
+                                            color="primary"
+                                            value={this.state.addLoadWeight}
+                                            onChange={this.handleChange('addLoadWeight')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: '#5c8bdb'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '10px', paddingLeft: '10px'}}>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label='Rodzaj pakunku'
+                                            color="primary"
+                                            onChange={this.handleChange('newLoadPackageType')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: '#5c8bdb'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label='Waga opakowania'
+                                            color="primary"
+                                            type='number'
+                                            style={{width: '150px'}}
+                                            onChange={this.handleChange('newLoadPackageWeight')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                inputProps: { min: 0, max: 999999 },
+                                                style: {
+                                                    color: '#5c8bdb'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '10px', paddingLeft: '10px'}}>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label='Objętość (LITR)'
+                                            color="primary"
+                                            type='number'
+                                            style={{width: '150px'}}
+                                            onChange={this.handleChange('newLoadVolume')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                inputProps: { min: 0, max: 999999 },
+                                                style: {
+                                                    color: '#5c8bdb'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: '30px'}}>
+                                <Col>
+                                    <label className='Tile-Data-Label'>
+                                        <span style={{color: '#f75353', fontSize: '18px'}}>Waga netto (kg): </span>
+                                        <span style={{fontSize: '18px'}}>{this.state.addLoadAmount * this.state.addLoadWeight}</span>
+                                    </label>
+                                </Col>
+                                <Col>
+                                    <label className='Tile-Data-Label'>
+                                        <span style={{color: '#f75353', fontSize: '18px'}}>Waga brutto (kg): </span>
+                                        <span style={{fontSize: '18px'}}>{this.state.addLoadAmount * this.state.addLoadWeight + parseInt(this.state.newLoadPackageWeight)}</span>
+                                    </label>
+                                </Col>
+                            </Row>
+                            <Row style={{textAlign: 'center', marginTop: '60px'}}>
+                                <Col>
+                                    <Button 
+                                        className="Tile-Button" 
+                                        variant="light"
+                                        style={{width: '110px'}}
+                                        onClick={() => {
+                                            this.handleConfirmAddLoad();
+                                            close();
+                                        }}>
+                                            <MdDone size='1.0em'/><span>&nbsp;</span><span>Zatwierdź</span>
+                                    </Button>
+                                </Col>
                             </Row>
                         </Container>
                         )
@@ -621,25 +1182,25 @@ const warehousesColumns =
         label: 'Magazyn',
         field: 'warehouse',
         sort: 'asc',
-        width: 150,
+        width: 250,
     },
     {
         label: 'Adres',
         field: 'streetAddress',
         sort: 'asc',
-        width: 150
+        width: 250
     },
     {
         label: 'Miasto',
         field: 'city',
         sort: 'asc',
-        width: 150
+        width: 250
     },
     {
         label: 'Kod pocztowy',
         field: 'zipCode',
         sort: 'asc',
-        width: 150
+        width: 200
     },
     {
         label: '',
@@ -647,3 +1208,41 @@ const warehousesColumns =
     }
 ];
 
+const loadsColumns = 
+[
+    {
+        label: 'Nazwa',
+        field: 'name',
+        sort: 'asc',
+        width: 150,
+    },
+    {
+        label: 'Ilość (szt)',
+        field: 'amount',
+        sort: 'asc',
+        width: 50
+    },
+    {
+        label: 'Waga netto (kg)',
+        field: 'netWeight',
+        sort: 'asc',
+        width: 100
+    },
+    {
+        label: 'Waga brutto (kg)',
+        field: 'grossWeight',
+        sort: 'asc',
+        width: 100
+    },
+    {
+        label: 'Obj. (LITR)',
+        field: 'volume',
+        sort: 'asc',
+        width: 100
+    },
+    {
+        label: '',
+        field: 'delete',
+        sort:'asc'
+    }
+];

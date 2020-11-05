@@ -96,20 +96,6 @@ class EditUserPanel extends Component{
     async updateUser(){
         try
         {
-            const datta =
-            {
-                'firstName': this.state.firstName === '' ? null : this.state.firstName,
-                'lastName': this.state.lastName === '' ? null : this.state.lastName,
-                'peselNumber': this.state.peselNumber === '' ? null : this.state.peselNumber,
-                'birthDate': this.state.birthDate === '' ? null : this.state.birthDate,
-                'login': this.state.login,
-                'dateOfEmployment': this.state.dateOfEmployment === '' ? null : this.state.dateOfEmployment,
-                'gender': this.state.gender === '' ? null : this.state.gender,
-                'phoneNumber': this.state.phoneNumber === '' ? null : this.state.phoneNumber,
-                'mail': this.state.mail === '' ? null : this.state.mail,
-                'userRoleId': this.state.userRoleId
-            };
-            console.log(datta)
             const response = await axios.put('https://localhost:44394/users/' + this.state.id,
             {
                 'firstName': this.state.firstName === '' ? null : this.state.firstName,
