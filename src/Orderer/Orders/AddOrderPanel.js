@@ -56,7 +56,8 @@ class AddOrderPanel extends Component{
 
             isModalOpen: false,
             selectedPopup: '',
-            isAddLoadModalOpen: false
+            isAddLoadModalOpen: false,
+            isServerResponseModalOpen: false
         }
     }
 
@@ -171,25 +172,29 @@ class AddOrderPanel extends Component{
                 },
                 
             });
-            alert(response.data.message);
+
+            // Set message for response
+            this.setState({
+                serverResponse: response.data.message
+            })
             await this.addLoads(response.data.orderId)
 
         }
         catch(error){
-            // if(error.response){
-            //     if(error.response.data.message === undefined){
-            //         this.setState({
-            //             serverResponse: "Nie podano danych użytkownika.",
-            //             isServerResponseModalOpen: true
-            //         })
-            //     }
-            //     else{
-            //         this.setState({
-            //             serverResponse: error.response.data.message,
-            //             isServerResponseModalOpen: true
-            //         })
-            //     }
-            // }
+            if(error.response){
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie podano danych zamówienia.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
+            }
             console.log(error);
         }
     }
@@ -231,28 +236,26 @@ class AddOrderPanel extends Component{
                 
             });
 
-            alert(response.data.message);
             
-            // this.setState({
-            //     serverResponse: response.data.message,
-            //     isServerResponseModalOpen: true
-            // })
+            this.setState({
+                isServerResponseModalOpen: true
+            })
         }
         catch(error){
-            // if(error.response){
-            //     if(error.response.data.message === undefined){
-            //         this.setState({
-            //             serverResponse: "Nie podano danych użytkownika.",
-            //             isServerResponseModalOpen: true
-            //         })
-            //     }
-            //     else{
-            //         this.setState({
-            //             serverResponse: error.response.data.message,
-            //             isServerResponseModalOpen: true
-            //         })
-            //     }
-            // }
+            if(error.response){
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie podano danych towarów.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
+            }
             console.log(error);
         }
     }
@@ -389,9 +392,9 @@ class AddOrderPanel extends Component{
                         <Button 
                             className="Orders-Button" 
                             variant="light"
-                            onClick={this.createOrder.bind(this)}
+                            onClick={this.handleOpenModal.bind(this, 'confirm')}
                             style={{width: '110px'}}>
-                                <MdDone size='1.0em'/><span>&nbsp;</span><span>Zatwierdź</span>
+                                <MdDone size='1.0em'/><span>&nbsp;</span><span>Utwórz</span>
                         </Button>
                     </Col>
                 </Row>
@@ -471,6 +474,8 @@ class AddOrderPanel extends Component{
                                                 <span style={{color: '#f75353'}}> <AiFillPhone /><span>&nbsp;&nbsp;</span>Nr. kontaktowy(1):<span>&nbsp;&nbsp;</span></span>{this.state.selectedClient?.contactPhoneNumber1}
                                             </label>
                                         </Col>
+                                    </Row>
+                                    <Row>
                                         <Col>
                                             <label className='Tile-Data-Label'>
                                                 <span style={{color: '#f75353'}}><AiFillPhone /><span>&nbsp;&nbsp;</span>Nr. kontaktowy(2):<span>&nbsp;&nbsp;</span></span>{this.state.selectedClient?.contactPhoneNumber2}
@@ -771,7 +776,7 @@ class AddOrderPanel extends Component{
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row style={{marginTop: '15px', paddingLeft: '5px'}}>
+                                <Row style={{marginTop: '25px', paddingLeft: '5px'}}>
                                     <Col>
                                         <FormControl>
                                             <InputLabel id="genderLabel">
@@ -795,18 +800,18 @@ class AddOrderPanel extends Component{
                                         </FormControl>
                                     </Col>
                                 </Row>
-                                <Row style={{marginTop: '15px', paddingLeft: '5px'}}>
+                                <Row style={{paddingLeft: '5px'}}>
                                     <Col>
                                         <MuiPickersUtilsProvider utils={DateFnsUtils}>
                                             <KeyboardDatePicker
                                                 margin="normal"
                                                 id="user-date-picker-dialog"
-                                                label="Oczekiwana data zamówienia"
+                                                label="Oczekiwana data"
                                                 format="MM/dd/yyyy"
                                                 color="primary"
                                                 value={this.state.orderExpectedDate}
                                                 onChange={this.handleExpectedDate.bind(this)}
-                                                style={{width: '400px'}}
+                                                style={{width: '450px'}}
                                                 KeyboardButtonProps={{
                                                     'aria-label': 'change date'
                                                 }}
@@ -864,7 +869,7 @@ class AddOrderPanel extends Component{
 
                 <Popup 
                     modal
-                    open={this.state.isModalOpen}
+                    open={this.state.isModalOpen && this.state.selectedPopup !== 'confirm'}
                     onClose={this.handleCloseModal}
                     contentStyle={{
                         width: '60vw',
@@ -1120,6 +1125,93 @@ class AddOrderPanel extends Component{
                                 </Col>
                             </Row>
                         </Container>
+                        )
+                    }
+                </Popup>
+
+                <Popup 
+                    modal
+                    open={this.state.isModalOpen && this.state.selectedPopup === 'confirm'}
+                    onClose={this.handleCloseModal}
+                    contentStyle={{
+                        width: '30vw',
+                        height: '25vh',
+                        backgroundColor: '#202125',
+                        borderColor: '#202125',
+                        borderRadius: '15px',
+                    }}>
+                    {
+                        close => (
+                            <Container>
+                                <Row style={{textAlign: 'center'}}>
+                                    <Col>
+                                        <label className='Edit-User-Modal-Header'>Czy napewno chcesz utworzyć zamówienie?</label>
+                                    </Col>
+                                </Row>
+                                <Row style={{textAlign: 'center', marginTop: '30px'}}>
+                                    <Col>
+                                        <Button 
+                                            className="Confirm-Edit-User-Button" 
+                                            variant="light"
+                                            onClick={() => {
+                                                close();
+                                            }}>
+                                            Nie
+                                        </Button>
+                                    </Col>
+                                    <Col>
+                                        <Button 
+                                            className="Confirm-Edit-User-Button" 
+                                            variant="light"
+                                            onClick={() => {
+                                                this.createOrder();
+                                                close();
+                                            }}>
+                                            Tak
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        )
+                    }
+                </Popup>
+
+                <Popup 
+                    modal
+                    open={this.state.isServerResponseModalOpen}
+                    onClose={this.handleCloseModal}
+                    contentStyle={{
+                        width: '30vw',
+                        height: '25vh',
+                        backgroundColor: '#202125',
+                        borderColor: '#202125',
+                        borderRadius: '15px',
+                    }}>
+                    {
+                        close => (
+                            <Container>
+                                <Row style={{textAlign: 'center'}}>
+                                    <Col>
+                                        <label className='Edit-User-Modal-Header'>{this.state.serverResponse}</label>
+                                    </Col>
+                                </Row>
+                                <Row style={{textAlign: 'center', marginTop: '30px'}}>
+                                    <Col>
+                                        <NavLink className='Add-User-Nav-Link' to={{
+                                            pathname: '/pracownik-zamowien/zamowienia'
+                                        }}>
+                                            <Button 
+                                                className="Orders-Button" 
+                                                variant="light"
+                                                onClick={() => {
+                                                    close();
+                                                }}>
+                                                Ok
+                                            </Button>
+                                        </NavLink>
+                                    </Col>
+                                </Row>
+                            </Container>
                         )
                     }
                 </Popup>

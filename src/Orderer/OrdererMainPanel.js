@@ -25,6 +25,8 @@ function AdminMainPanel() {
                     <Col xs='10' style={{marginLeft: '250px'}}>
                         <Switch>
                             <Route path='/pracownik-zamowien/zamowienia' exact component={OrdersRoutes}></Route>
+                            <Route path='/pracownik-zamowien/zamowienia/dodaj' component={OrdersRoutes}></Route>
+                            <Route path='/pracownik-zamowien/zamowienia/:id' component={OrdersRoutes}></Route>
                             <Route path='/pracownik-zamowien/zlecenia-spedycji' component={LoadingPage}></Route>
                             <Route path='/pracownik-zamowien/spedytorzy' component={ForwardersPanel}></Route>
                             <Route path='/pracownik-zamowien/kontrahenci' component={CustomerRoutes}></Route>

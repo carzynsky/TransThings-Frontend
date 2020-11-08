@@ -4,11 +4,12 @@ import { NavLink } from 'react-router-dom';
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { MdAdd, MdEdit, MdShowChart } from 'react-icons/md';
 import { FiChevronDown } from 'react-icons/fi';
-import { FaRegFilePdf } from 'react-icons/fa';
+import { FaRegFilePdf, FaHandsHelping  } from 'react-icons/fa';
 import { RiDeleteBin6Line } from 'react-icons/ri';
+import { BiTask } from 'react-icons/bi';
 import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
-import { Select, FormControl, MenuItem, InputLabel } from '@material-ui/core';
+import { Select, FormControl, MenuItem, InputLabel, Tooltip } from '@material-ui/core';
 import axios from 'axios';
 import './OrdersDashboard.css';
 
@@ -211,20 +212,44 @@ class OrdersDashboard extends Component{
                                                             </div>
                                                             <Container>
                                                                 <Row style={{marginTop: '5px'}}>
-                                                                    <Col xs='1'>
-                                                                        <div className='User-Details-Button' >
-                                                                            <MdEdit size='1.1em' className='User-Details-Icon'/>
-                                                                        </div>
+                                                                    <Col xs='2'>
+                                                                        <NavLink className="Add-User-Nav-Link" to={{
+                                                                            pathname: '/pracownik-zamowien/zamowienia/'+ order.id,
+                                                                            }}>
+                                                                            <Tooltip title="Edycja zamówienia" aria-label="add">
+                                                                                <div className='User-Details-Button' >
+                                                                                    <MdEdit size='1.0em' className='User-Details-Icon'/>
+                                                                                </div>
+                                                                            </Tooltip>
+                                                                        </NavLink>
                                                                     </Col>
-                                                                    <Col xs='1'>
-                                                                        <div className='User-Details-Button'>
-                                                                            <FaRegFilePdf className='User-Details-Icon'/>
-                                                                        </div>
+                                                                    <Col xs='2'>
+                                                                        <Tooltip title="Generowanie faktury" aria-label="add">
+                                                                            <div className='User-Details-Button'>
+                                                                                <FaRegFilePdf size='1.0em' className='User-Details-Icon'/>
+                                                                            </div>
+                                                                        </Tooltip>
+                                                                    </Col>
+                                                                    <Col xs='2'>
+                                                                        <Tooltip title="Zlecenie spedycji" aria-label="add">
+                                                                            <div className='User-Details-Button'>
+                                                                                <BiTask size='1.0em' className='User-Details-Icon'/>
+                                                                            </div>
+                                                                        </Tooltip>
+                                                                    </Col>
+                                                                    <Col xs='2'>
+                                                                        <Tooltip title="Konsultacje spedycji" aria-label="add">
+                                                                            <div className='User-Details-Button'>
+                                                                                <FaHandsHelping size='1.0em' className='User-Details-Icon'/>
+                                                                            </div>
+                                                                        </Tooltip>
                                                                     </Col>
                                                                     <Col>
-                                                                        <div className='User-Details-Button'>
-                                                                            <RiDeleteBin6Line size='1.1em' className='User-Details-Icon'/>
-                                                                        </div>
+                                                                        <Tooltip title="Usunięcie zamówienia" aria-label="add">
+                                                                            <div className='User-Details-Button'>
+                                                                                <RiDeleteBin6Line size='1.0em' className='User-Details-Icon'/>
+                                                                            </div>
+                                                                        </Tooltip>
                                                                     </Col>
                                                                 </Row>
                                                             </Container>
