@@ -30,12 +30,14 @@ export const Routes = () => {
             <Route path='/admin/profil' component={getSessionCookie().role === admin ? AdminMainPanel : NotFound }></Route>
             
             <Route path='/pracownik-zamowien/zamowienia' component={getSessionCookie().role === orderer ? OrdererMainPanel : NotFound }></Route>
+            <Route path='/pracownik-zamowien/zlecenia-spedycji' component={getSessionCookie().role === orderer ? OrdererMainPanel : NotFound }></Route>
             <Route path='/pracownik-zamowien/spedytorzy' component={getSessionCookie().role === orderer ? OrdererMainPanel : NotFound }></Route>
             <Route path='/pracownik-zamowien/magazyny' component={getSessionCookie().role === orderer ? OrdererMainPanel : NotFound }></Route>
             <Route path='/pracownik-zamowien/kontrahenci' component={getSessionCookie().role === orderer ? OrdererMainPanel : NotFound }></Route>
             <Route path='/pracownik-zamowien/profil' component={getSessionCookie().role === orderer ? OrdererMainPanel : NotFound }></Route>
 
             <Route path='/spedytor/zlecenia' component={getSessionCookie().role === forwarder ? ForwarderMainPanel : NotFound }></Route>
+            <Route path='/spedytor/konsultacje-spedycji' component={getSessionCookie().role === forwarder ? ForwarderMainPanel : NotFound }></Route>
             <Route path='/spedytor/profil' component={getSessionCookie().role === forwarder ? ForwarderMainPanel : NotFound }></Route>
             <Route component={NotFound}/>
           </Switch>

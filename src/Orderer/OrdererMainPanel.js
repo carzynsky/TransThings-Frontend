@@ -12,6 +12,7 @@ import ForwardersPanel from './Forwarders/ForwardersPanel';
 import OrdersDashboard from './Orders/OrdersDashboard';
 import AddOrderPanel from './Orders/AddOrderPanel';
 import OrdersRoutes from './Orders/OrdersRoutes';
+import ForwardingOrdersDashboard from './ForwardingOrders/ForwardingOrdersDashboards';
 
 
 function AdminMainPanel() {
@@ -27,7 +28,7 @@ function AdminMainPanel() {
                             <Route path='/pracownik-zamowien/zamowienia' exact component={OrdersRoutes}></Route>
                             <Route path='/pracownik-zamowien/zamowienia/dodaj' component={OrdersRoutes}></Route>
                             <Route path='/pracownik-zamowien/zamowienia/:id' component={OrdersRoutes}></Route>
-                            <Route path='/pracownik-zamowien/zlecenia-spedycji' component={LoadingPage}></Route>
+                            <Route path='/pracownik-zamowien/zlecenia-spedycji' component={ForwardingOrdersDashboard}></Route>
                             <Route path='/pracownik-zamowien/spedytorzy' component={ForwardersPanel}></Route>
                             <Route path='/pracownik-zamowien/kontrahenci' component={CustomerRoutes}></Route>
                             <Route path='/pracownik-zamowien/magazyny' component={WarehousesRoutes}></Route>

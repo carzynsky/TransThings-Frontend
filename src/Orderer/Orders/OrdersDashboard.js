@@ -190,7 +190,7 @@ class OrdersDashboard extends Component{
                                                         label: 'Status',
                                                         field: 'orderStatus',
                                                         sort: 'asc'
-                                                    },
+                                                    }
                                                 ],
                                                 rows: this.state.orders.map((order) => (
                                                     {
@@ -205,8 +205,9 @@ class OrdersDashboard extends Component{
                                                                 className='Order-Status-Block'
                                                                 style={{
                                                                     backgroundColor: order.orderStatus?.statusName === 'Utworzone' ? ' #fff134' 
-                                                                    : '#34ff4c',
+                                                                    : order.orderStatus?.statusName === 'Anulowane' ? '#f75353' : '#34ff4c',
                                                                     boxShadow: order.orderStatus?.statusName === 'Utworzone' ? '2px 2px 13px -4px #fff134'
+                                                                    : order.orderStatus?.statusName === 'Anulowane' ? '2px 2px 13px -4px #f75353'
                                                                     : '2px 2px 13px -4px #34ff4c'}}>
                                                                 {order.orderStatus?.statusName}
                                                             </div>
@@ -230,20 +231,15 @@ class OrdersDashboard extends Component{
                                                                             </div>
                                                                         </Tooltip>
                                                                     </Col>
-                                                                    <Col xs='2'>
-                                                                        <Tooltip title="Zlecenie spedycji" aria-label="add">
-                                                                            <div className='User-Details-Button'>
-                                                                                <BiTask size='1.0em' className='User-Details-Icon'/>
-                                                                            </div>
-                                                                        </Tooltip>
-                                                                    </Col>
-                                                                    <Col xs='2'>
-                                                                        <Tooltip title="Konsultacje spedycji" aria-label="add">
-                                                                            <div className='User-Details-Button'>
-                                                                                <FaHandsHelping size='1.0em' className='User-Details-Icon'/>
-                                                                            </div>
-                                                                        </Tooltip>
-                                                                    </Col>
+                                                                    {order.orderStatus?.statusName === 'Zaakceptowane' && 
+                                                                        <Col xs='2'>
+                                                                            <Tooltip title="Utwórz zlecenie spedycji" aria-label="add">
+                                                                                <div className='User-Details-Button'>
+                                                                                    <BiTask size='1.0em' className='User-Details-Icon'/>
+                                                                                </div>
+                                                                            </Tooltip>
+                                                                        </Col>
+                                                                    }
                                                                     <Col>
                                                                         <Tooltip title="Usunięcie zamówienia" aria-label="add">
                                                                             <div className='User-Details-Button'>

@@ -1,0 +1,18 @@
+.Small-Button{
+    font-family: 'Overpass', sans-serif;
+    width: 70px;
+    height: 30px;
+    font-size: 12px;
+    background-color: #50ee9c;
+    box-shadow: 2px 2px 15px -4px #50ee9c;
+    border: solid 3px #50ee9c;
+    color: #202125;
+    border-radius: 5px;
+}
+
+.Small-Tile{
+    background-color: #202125;
+    height: 16vh;
+    width: 16vw;
+    border-radius: 15px;
+}

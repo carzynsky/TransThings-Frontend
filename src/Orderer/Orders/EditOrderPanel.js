@@ -7,8 +7,9 @@ import { HiOutlineOfficeBuilding } from 'react-icons/hi';
 import { ImCheckboxChecked, ImOffice } from 'react-icons/im';
 import { BiPackage, BiMessageAdd } from 'react-icons/bi';
 import { CgDetailsMore } from 'react-icons/cg';
-import { RiDeleteBin6Line } from 'react-icons/ri';
+import { RiDeleteBin6Line, RiTruckLine, RiPriceTag3Line } from 'react-icons/ri';
 import { AiFillPhone } from 'react-icons/ai';
+import { GiPathDistance } from 'react-icons/gi';
 import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
 import { TextField, FormControl, InputLabel, Select, MenuItem, Checkbox } from '@material-ui/core';
@@ -22,7 +23,6 @@ import './EditOrderPanel.css';
 class EditOrderPanel extends Component{
     constructor(props){
         super(props);
-
         this.state = {
             token: getSessionCookie(),
             selectedClient: '',
@@ -54,12 +54,19 @@ class EditOrderPanel extends Component{
             destinationCity: '',
             destinationCountry: '',
             customerAdditionalInstructions: null,
+            transportDistance: null,
 
             paymentForms: [],
             selectedPaymentFormId: '',
 
             orderStatuses: [],
             selectedOrderStatusId: '',
+
+            forwarders: [],
+            selectedConsultant: null,
+
+            vehicleTypes: [],
+            selectedVehicleTypeId: null,
 
             isModalOpen: false,
             selectedPopup: '',
@@ -86,6 +93,7 @@ class EditOrderPanel extends Component{
                 order: data,
                 selectedClient: data.client,
                 selectedWarehouse: data.warehouse,
+                selectedConsultant: data.consultant,
                 totalNetWeight: data.totalNetWeight,
                 totalGrossWeight: data.totalGrossWeight,
                 totalVolume: data.totalVolume,
@@ -96,6 +104,8 @@ class EditOrderPanel extends Component{
                 orderExpectedDate: data.orderExpectedDate,
                 selectedPaymentFormId: data.paymentFormId,
                 selectedOrderStatusId: data.orderStatusId,
+                selectedVehicleTypeId: data.vehicleTypeId,
+                transportDistance: data.transportDistance,
                 isClientVerified: data.isClientVerified,
                 isAvailableAtWarehouse: data.isAvailableAtWarehouse
             })
@@ -119,11 +129,6 @@ class EditOrderPanel extends Component{
 
             const data = await response.data;
 
-            if(data.length === 0){
-                this.setState({
-                    warehouses: []
-                })
-            }
             this.setState({
                 warehouses: data
             })
@@ -150,11 +155,65 @@ class EditOrderPanel extends Component{
                 this.setState({
                     paymentForms: []
                 })
+                return
             }
             this.setState({
-                paymentForms: data,
-                selectedPaymentFormId: data[0].id
+                paymentForms: data
             })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    // GET call to API to get vehicle types
+    async getVehicleTypes(){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/vehicle-types', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            });
+
+            const data = await response.data;
+            if(data.length === 0){
+                this.setState({
+                    vehicleTypes: []
+                })
+                return
+            }
+
+            this.setState({
+                vehicleTypes: data
+            })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    // GET call to API to get forwarders
+    async getForwarders(){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/users/role/2', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            })
+
+            const data = await response.data
+            if(data.length === 0){
+                this.setState({ forwarders: [] })
+                return
+            }
+
+            this.setState({ forwarders: data })
         }
         catch(error){
             console.log(error);
@@ -218,11 +277,11 @@ class EditOrderPanel extends Component{
         }
     }
 
-    // POST call to API to add update order
+    // PUT call to API to add update order
     async updateOrder(){
         try
         {
-            const response = await axios.put('https://localhost:44394/orders',
+            const response = await axios.put('https://localhost:44394/orders/' + this.state.order?.id,
             {
                 'orderExpectedDate': this.state.orderExpectedDate,
                 'totalNetWeight': this.state.totalNetWeight,
@@ -237,9 +296,11 @@ class EditOrderPanel extends Component{
                 'paymentFormId': this.state.selectedPaymentFormId,
                 'warehouseId': this.state.selectedWarehouse?.id,
                 'customerAdditionalInstructions': this.state.customerAdditionalInstructions,
+                'transportDistance': this.state.transportDistance,
                 'isClientVerified': this.state.isClientVerified,
                 'isAvailableAtWarehouse': this.state.isAvailableAtWarehouse,
-                'orderStatusId': this.state.selectedOrderStatusId
+                'orderStatusId': this.state.selectedOrderStatusId,
+                'consultantId': this.state.selectedConsultant?.id
             },
             {
                 headers: {
@@ -248,7 +309,7 @@ class EditOrderPanel extends Component{
                     'Authorization': 'Bearer ' + this.state.token.token
                 },
                 
-            });
+            })
 
             // Set message for response
             this.setState({
@@ -276,13 +337,28 @@ class EditOrderPanel extends Component{
         }
     }
 
-    // POST call to API to add or update loads
+    // PUT call to API to add or update loads
     async addOrUpdateLoads(){
         try
         {
             var newLoads = [];
             this.state.loads.map(x => {
+                if(x.orderId === 0){
+                    newLoads.push({
+                        'name': x.name,
+                        'weight': parseFloat(x.grossWeight),
+                        'amount': parseInt(x.amount),
+                        'netWeight': parseFloat(x.netWeight),
+                        'packageType': x.packageType,
+                        'grossWeight': parseFloat(x.grossWeight),
+                        'volume': parseFloat(x.volume),
+                        'orderId': this.state.order?.id
+                    })
+                    return
+                }
+
                 newLoads.push({
+                    'id': x.id,
                     'name': x.name,
                     'weight': parseFloat(x.grossWeight),
                     'amount': parseInt(x.amount),
@@ -299,7 +375,7 @@ class EditOrderPanel extends Component{
                 'loads': newLoads
             }
 
-            const response = await axios.post('https://localhost:44394/loads',
+            const response = await axios.put('https://localhost:44394/loads/' + this.state.order?.id,
             {
                 'loads': newLoads
             },
@@ -310,9 +386,8 @@ class EditOrderPanel extends Component{
                     'Authorization': 'Bearer ' + this.state.token.token
                 },
                 
-            });
+            })
 
-            
             this.setState({
                 isServerResponseModalOpen: true
             })
@@ -332,7 +407,7 @@ class EditOrderPanel extends Component{
                     })
                 }
             }
-            console.log(error);
+            console.log(error)
         }
     }
 
@@ -341,7 +416,7 @@ class EditOrderPanel extends Component{
             this.setState({
                 [name]: event.target.checked
             })
-            return;
+            return
         }
 
         this.setState({
@@ -350,51 +425,31 @@ class EditOrderPanel extends Component{
     }
 
     // handle open popup
-    handleOpenModal = (data) => {
-        this.setState({
-            selectedPopup: data,
-            isModalOpen: true
-        })
-    }
+    handleOpenModal = (data) => this.setState({ selectedPopup: data, isModalOpen: true })
 
     // handle close popup
-    handleCloseModal = () => {
-        this.setState({
-            isModalOpen: false
-        })
-    }
+    handleCloseModal = () => this.setState({ isModalOpen: false})
 
     // handle selected client
-    handleSelectedClient = (client) => {
-        this.setState({
-            selectedClient: client
-        })
-    }
+    handleSelectedClient = (client) => this.setState({ selectedClient: client })
 
-    // handle selected client
-    handleSelectedWarehouse = (warehouse) => {
-        this.setState({
-            selectedWarehouse: warehouse
-        })
-    }
+    // handle selected warehouse
+    handleSelectedWarehouse = (warehouse) => this.setState({ selectedWarehouse: warehouse })
 
-    handleOpenAddLoadModal = () => {
-        this.setState({
-            isAddLoadModalOpen: true
-        })
-    }
+    // handle selected consultant
+    handleSelectedConsultant = (consultant) => this.setState({ selectedConsultant: consultant })
 
-    handleCloseAddLoadModal = () => {
-        this.setState({
-            isAddLoadModalOpen: false
-        })
-    }
+    // handle open modal for new load
+    handleOpenAddLoadModal = () => this.setState({ isAddLoadModalOpen: true })
+
+    // handle close model for new load
+    handleCloseAddLoadModal = () => this.setState({ isAddLoadModalOpen: false })
 
     // handle add created load to table
     handleConfirmAddLoad = () => {
-        var _loads = this.state.loads;
-        var len = _loads.length;
-        var newId = len === 0 ? 1 : _loads[len-1].id+1;
+        var _loads = this.state.loads
+        var len = _loads.length
+        var newId = len === 0 ? 1 : _loads[len-1].id+1
         _loads.push({
             'id': newId,
             'name': this.state.newLoadName,
@@ -403,8 +458,9 @@ class EditOrderPanel extends Component{
             'grossWeight': this.state.addLoadAmount * this.state.addLoadWeight + parseInt(this.state.newLoadPackageWeight),
             'volume': this.state.newLoadVolume,
             'packageType': this.state.newLoadPackageType,
-            'orderId': this.state.order?.id
-        });
+            'orderId': 0
+        })
+
         this.setState({
             loads: _loads,
             addLoadAmount: 1,
@@ -418,6 +474,7 @@ class EditOrderPanel extends Component{
         })
     }
 
+    // handle remove created loads from table
     handleDeleteSelectedLoad = (load) => {
         var filteredLoads = this.state.loads.filter( x => x.id !== load.id);
 
@@ -439,16 +496,15 @@ class EditOrderPanel extends Component{
         })
     }
 
-    handleExpectedDate = (date) => {
-        this.setState({
-            orderExpectedDate: date
-        })
-    }
+    // handle expected realization date of order
+    handleExpectedDate = (date) => this.setState({ orderExpectedDate: date })
 
     async componentDidMount(){
         await this.getWarehouses();
         await this.getPaymentForms();
+        await this.getVehicleTypes();
         await this.getOrderStatuses();
+        await this.getForwarders();
         await this.getOrderById(this.props.match.params.id);
         await this.getLoads();
     };
@@ -463,7 +519,8 @@ class EditOrderPanel extends Component{
 
                     <Col xs='1' style={{minWidth: '120px', marginTop: '10px'}}>
                         <NavLink className='Add-User-Nav-Link' to={{
-                            pathname: '/pracownik-zamowien/zamowienia'
+                            pathname: this.state.token.role === 'orderer' ? '/pracownik-zamowien/zamowienia' 
+                            : '/spedytor/konsultacje-spedycji'
                         }}>
                             <Button 
                                 className="Orders-Button" 
@@ -497,7 +554,7 @@ class EditOrderPanel extends Component{
                                 InputLabelProps={{
                                     style:{
                                         color: 'whitesmoke'
-                                    },
+                                    }
                                 }}
                                 onChange={this.handleChange('selectedOrderStatusId')}>
                                 {this.state.orderStatuses.map((orderStatus) => (
@@ -505,6 +562,91 @@ class EditOrderPanel extends Component{
                                 ))}
                             </Select>
                         </FormControl>
+                    </Col>
+                    <Col xs='3'>
+                        <div className='Small-Tile'>
+                            <Container>
+                                <Row>
+                                    <Col>
+                                        <div className='Orders-Stats-Header' style={{fontSize: '14px'}}>
+                                            Konsultant spedycji
+                                        </div>
+                                    </Col>
+                                    {this.state.selectedConsultant !== null &&
+                                    <Col>
+                                            <Button 
+                                                className="Small-Button"
+                                                variant="light"
+                                                style={{marginTop: 15}}
+                                                onClick={this.handleOpenModal.bind(this, 'addConsultant')}>Zmień
+                                            </Button>
+                                    </Col>
+
+                                    }
+
+                                </Row>
+                                <Row style={{textAlign: 'center', marginTop: 5}}>
+                                    <Col>
+                                        {this.state.selectedConsultant !== null &&
+                                            <div className='Tile-Data-Label' style={{fontSize: 20}}>{this.state.selectedConsultant?.firstName} {this.state.selectedConsultant?.lastName}</div>
+                                        }
+                                        {this.state.selectedConsultant === null &&
+                                            <Button 
+                                                className="Small-Button"
+                                                variant="light"
+                                                style={{marginTop: 10}}
+                                                onClick={this.handleOpenModal.bind(this, 'addConsultant')}>Dodaj
+                                            </Button>
+                                        }
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </div>
+                    </Col>
+                    <Col xs='3'>
+                        <div className='Small-Tile'>
+                            <Container>
+                                <Row>
+                                    <Col>
+                                        <div className='Orders-Stats-Header' style={{fontSize: '14px'}}>
+                                            Zlecenie spedycji
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row style={{textAlign: 'center', marginTop: 10}}>
+                                    <Col>
+                                        {this.state.order?.forwardingOrderId !== null &&
+                                            <div className='Tile-Data-Label'>{this.state.order?.forwardingOrder?.forwardingOrderNumber}</div>
+                                        }
+                                        {this.state.order?.forwardingOrderId === null && this.state.selectedOrderStatusId === 2 && 
+                                            // <div className='Tile-Data-Label'>Nie utworzono</div>
+                                            <Container>
+                                                <Row>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Small-Button"
+                                                            variant="light"
+                                                            style={{ width: 90 }}
+                                                            onClick={this.handleOpenModal.bind(this, 'addConsultant')}>Przypisz
+                                                        </Button>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Small-Button"
+                                                            variant="light"
+                                                            style={{ marginTop: 8, width: 90 }}
+                                                            onClick={this.handleOpenModal.bind(this, 'addConsultant')}>Utwórz
+                                                        </Button>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        }
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </div>
                     </Col>
                 </Row>
                 <Row style={{marginTop: '25px'}}>
@@ -1014,7 +1156,150 @@ class EditOrderPanel extends Component{
                     <Col>
                     </Col>
                 </Row>
-
+                {this.state.token.role === 'Forwarder' &&
+                    <Row style={{ marginTop: 25, paddingBottom: 15 }}>
+                        <Col>
+                            <div className='Order-Client-Tile'>
+                                <Container>
+                                    <Row>
+                                        <Col>
+                                            <div className='Tile-Header' style={{color: '#f75353'}}>
+                                                <BiMessageAdd size='1.5em'/><span>&nbsp;&nbsp;</span><span>Szczegóły trasy</span>
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                    <Row style={{ marginTop: 10 }}>
+                                        <Col>
+                                            <Container>
+                                                <Row>
+                                                    <Col>
+                                                        <label className='Tile-Data-Label' style={{fontSize: '26px', color: '#f75353'}}>Transport z:</label>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col>
+                                                        <label className='Tile-Data-Label' style={{fontSize: '18px'}}>{this.state.selectedWarehouse?.name}</label>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col>
+                                                        <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
+                                                            {this.state.selectedWarehouse?.streetAddress}<span>&nbsp;&nbsp;</span>{this.state.selectedWarehouse?.zipCode}<span>&nbsp;&nbsp;</span>{this.state.selectedWarehouse?.city}
+                                                        </div>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        </Col>
+                                        <Col>
+                                            <Container>
+                                                <Row>
+                                                    <Col>
+                                                        <label className='Tile-Data-Label' style={{fontSize: '26px', color: '#f75353'}}>Transport do:</label>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col>
+                                                        <label className='Tile-Data-Label' style={{fontSize: '18px' }}>{this.state.order?.client?.clientFirstName} {this.state.order?.client?.clientLastName}</label>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <Col>
+                                                        <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
+                                                            {this.state.destinationStreetAddress}<span>&nbsp;&nbsp;</span>{this.state.destinationZipCode}<span>&nbsp;&nbsp;</span>{this.state.destinationCity}
+                                                        </div>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        </Col>
+                                    </Row>
+                                    <Row style={{ marginTop: 15, paddingLeft: 15 }}>
+                                        <Col>
+                                            <label className='Tile-Data-Label' style={{fontSize: '26px', color: '#f75353'}}>Optymalna trasa</label>
+                                        </Col>
+                                    </Row>
+                                    <Row style={{ paddingLeft: 15 }}>
+                                        <Col>
+                                            <FormControl  noValidate autoComplete="off">
+                                                <TextField 
+                                                    id="optimalRouteDistance" 
+                                                    label={
+                                                        <div>
+                                                            <GiPathDistance /><span>&nbsp;&nbsp;</span><span>Dystans (km)</span>
+                                                        </div>
+                                                    }
+                                                    color="primary"
+                                                    onChange={this.handleChange('transportDistance')}
+                                                    value={this.state.transportDistance}
+                                                    style={{minWidth: '350px'}}
+                                                    type='number'
+                                                    InputLabelProps={{
+                                                        style:{
+                                                            color: 'whitesmoke'
+                                                        },
+                                                    }}
+                                                    InputProps={{
+                                                        style: {
+                                                            color: '#5c8bdb'
+                                                        },
+                                                    }} />
+                                            </FormControl>
+                                        </Col>
+                                        <Col>
+                                            <FormControl  noValidate autoComplete="off">
+                                                <TextField 
+                                                    id="optimalRouteDistance" 
+                                                    label={
+                                                        <div>
+                                                            <RiPriceTag3Line /><span>&nbsp;&nbsp;</span><span>Stawka (zł)</span>
+                                                        </div>
+                                                    }
+                                                    color="primary"
+                                                    // onChange={this.handleChange('transportDistance')}
+                                                    // value={this.state.transportDistance}
+                                                    type='number'
+                                                    style={{minWidth: '350px'}}
+                                                    InputLabelProps={{
+                                                        style:{
+                                                            color: 'whitesmoke'
+                                                        },
+                                                    }}
+                                                    InputProps={{
+                                                        style: {
+                                                            color: '#5c8bdb'
+                                                        },
+                                                    }} />
+                                            </FormControl>
+                                        </Col>
+                                    </Row>
+                                    <Row style={{ paddingLeft: 15, marginTop: 10 }}>
+                                        <Col>
+                                            <FormControl>
+                                                <InputLabel id="genderLabel">
+                                                    <RiTruckLine size='1.3em'/><span>&nbsp;&nbsp;</span>Rodzaj pojazdu
+                                                </InputLabel>
+                                                    <Select
+                                                        id="selectUserGender"
+                                                        color="primary"
+                                                        value={this.state.selectedVehicleTypeId}
+                                                        style={{width: '300px'}}
+                                                        InputLabelProps={{
+                                                            style:{
+                                                                color: 'whitesmoke'
+                                                            },
+                                                        }}
+                                                        onChange={this.handleChange('selectedVehicleTypeId')}>
+                                                            {this.state.vehicleTypes.map((vehicleType) => (
+                                                                <MenuItem key={vehicleType.id} value={vehicleType.id}>{vehicleType.typeName}</MenuItem>
+                                                            ))}
+                                                    </Select>
+                                            </FormControl>
+                                        </Col>
+                                    </Row>
+                                </Container>
+                            </div>
+                        </Col>
+                    </Row>
+                }
                 <Popup 
                     modal
                     open={this.state.isModalOpen && this.state.selectedPopup !== 'confirm'}
@@ -1031,7 +1316,7 @@ class EditOrderPanel extends Component{
                             <Row style={{textAlign: 'center'}}>
                                 <Col>
                                     <label className='Orders-Header'>
-                                        {this.state.selectedPopup === 'clients' ? 'Wybierz klienta' : 'Wybierz magazyn'}
+                                        {this.state.selectedPopup === 'addConsultant' ? 'Wybierz konsultanta spedycji' : 'Wybierz magazyn'}
                                     </label>
                                 </Col>
                             </Row>
@@ -1043,8 +1328,25 @@ class EditOrderPanel extends Component{
                                 scrollY
                                 small
                                 data={{
-                                    columns: warehousesColumns,
-                                    rows:
+                                    columns: this.state.selectedPopup === 'addConsultant' ? forwardersColumns : warehousesColumns,
+                                    rows: this.state.selectedPopup === 'addConsultant' ? 
+
+                                        this.state.forwarders.map((forwarder) => (
+                                            {
+                                                firstName: forwarder.firstName,
+                                                lastName: forwarder.lastName,
+                                                login: forwarder.login,
+                                                mail: forwarder.mail,
+                                                select: <ImCheckboxChecked 
+                                                            className='Select-On-Popup' 
+                                                            size='1.5em'
+                                                            onClick={() => {
+                                                                this.handleSelectedConsultant(forwarder)
+                                                                close()
+                                                            }}/>
+                                                }
+                                            ))
+                                        :
                                         this.state.warehouses.map((warehouse) => (
                                             {
                                                 warehouse: warehouse.name,
@@ -1275,7 +1577,7 @@ class EditOrderPanel extends Component{
                             <Container>
                                 <Row style={{textAlign: 'center'}}>
                                     <Col>
-                                        <label className='Edit-User-Modal-Header'>Czy napewno chcesz utworzyć zamówienie?</label>
+                                        <label className='Edit-User-Modal-Header'>Czy napewno chcesz zaktualizować zamówienie?</label>
                                     </Col>
                                 </Row>
                                 <Row style={{textAlign: 'center', marginTop: '30px'}}>
@@ -1294,8 +1596,8 @@ class EditOrderPanel extends Component{
                                             className="Confirm-Edit-User-Button" 
                                             variant="light"
                                             onClick={() => {
-                                                this.createOrder();
-                                                close();
+                                                this.updateOrder()
+                                                close()
                                             }}>
                                             Tak
                                         </Button>
@@ -1421,3 +1723,37 @@ const loadsColumns =
         sort:'asc'
     }
 ];
+
+const forwardersColumns = 
+[
+    {
+        label: 'Imię',
+        field: 'firstName',
+        sort: 'asc',
+        width: 250,
+    },
+    {
+        label: 'Nazwisko',
+        field: 'lastName',
+        sort: 'asc',
+        width: 250
+    },
+    {
+        label: 'Login',
+        field: 'login',
+        sort: 'asc',
+        width: 250
+    },
+    {
+        label: 'Adres email',
+        field: 'mail',
+        sort: 'asc',
+        width: 250
+    },
+    {
+        label: '',
+        field: 'select',
+        sort: 'asc',
+        width: 250
+    }
+]

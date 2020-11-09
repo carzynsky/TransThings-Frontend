@@ -260,52 +260,24 @@ class AddOrderPanel extends Component{
         }
     }
 
-    handleChange = (name) => (event) => {
-        this.setState({
-            [name]: event.target.value
-        })
-    }
+    // handle change of state by passed name
+    handleChange = (name) => (event) => this.setState({ [name]: event.target.value })
 
     // handle open popup
-    handleOpenModal = (data) => {
-        this.setState({
-            selectedPopup: data,
-            isModalOpen: true
-        })
-    }
+    handleOpenModal = (data) => this.setState({ selectedPopup: data, isModalOpen: true })
 
     // handle close popup
-    handleCloseModal = () => {
-        this.setState({
-            isModalOpen: false
-        })
-    }
+    handleCloseModal = () => this.setState({ isModalOpen: false })
 
     // handle selected client
-    handleSelectedClient = (client) => {
-        this.setState({
-            selectedClient: client
-        })
-    }
+    handleSelectedClient = (client) => this.setState({ selectedClient: client })
 
     // handle selected client
-    handleSelectedWarehouse = (warehouse) => {
-        this.setState({
-            selectedWarehouse: warehouse
-        })
-    }
+    handleSelectedWarehouse = (warehouse) => this.setState({ selectedWarehouse: warehouse })
 
-    handleOpenAddLoadModal = () => {
-        this.setState({
-            isAddLoadModalOpen: true
-        })
-    }
+    handleOpenAddLoadModal = () => this.setState({ isAddLoadModalOpen: true })
 
-    handleCloseAddLoadModal = () => {
-        this.setState({
-            isAddLoadModalOpen: false
-        })
-    }
+    handleCloseAddLoadModal = () => this.setState({ isAddLoadModalOpen: false })
 
     // handle add created load to table
     handleConfirmAddLoad = () => {
@@ -356,11 +328,7 @@ class AddOrderPanel extends Component{
         })
     }
 
-    handleExpectedDate = (date) => {
-        this.setState({
-            orderExpectedDate: date
-        })
-    }
+    handleExpectedDate = (date) => this.setState({ orderExpectedDate: date })
 
     async componentDidMount(){
         await this.getClients();
@@ -1216,8 +1184,6 @@ class AddOrderPanel extends Component{
                     }
                 </Popup>
             </Container>
-
-            
         );
     }
 }
