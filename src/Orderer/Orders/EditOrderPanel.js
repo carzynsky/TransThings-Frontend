@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
 import { MdDone, MdAdd, MdLocationOn, MdLocationCity, MdLocalPostOffice, MdVerifiedUser, MdEventAvailable } from 'react-icons/md';
-import { FaUserTie, FaWarehouse, FaFlagUsa, FaAddressCard, FaWeightHanging, FaWeight, FaGlassWhiskey, FaRegMoneyBillAlt } from 'react-icons/fa';
+import { FaUserTie, FaCloudscale, FaWarehouse, FaFlagUsa, FaAddressCard, FaWeightHanging, FaWeight, FaGlassWhiskey, FaRegMoneyBillAlt } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
 import { HiOutlineOfficeBuilding } from 'react-icons/hi';
 import { ImCheckboxChecked, ImOffice } from 'react-icons/im';
-import { BiPackage, BiMessageAdd } from 'react-icons/bi';
-import { CgDetailsMore } from 'react-icons/cg';
-import { RiDeleteBin6Line, RiTruckLine, RiPriceTag3Line } from 'react-icons/ri';
+import { BiPackage, BiMessageAdd, BiTask } from 'react-icons/bi';
+import { CgDetailsMore, CgFileDocument } from 'react-icons/cg';
+import { RiDeleteBin6Line, RiTruckLine } from 'react-icons/ri';
 import { AiFillPhone } from 'react-icons/ai';
 import { GiPathDistance } from 'react-icons/gi';
 import { MDBDataTable } from 'mdbreact';
@@ -28,6 +28,9 @@ class EditOrderPanel extends Component{
             selectedClient: '',
             isClientVerified: false,
             isAvailableAtWarehouse: false,
+            netPrice: false,
+            grossPrice: false,
+            rate: null,
 
             order: '',
 
@@ -54,7 +57,7 @@ class EditOrderPanel extends Component{
             destinationCity: '',
             destinationCountry: '',
             customerAdditionalInstructions: null,
-            transportDistance: null,
+            transportDistance: '',
 
             paymentForms: [],
             selectedPaymentFormId: '',
@@ -66,12 +69,18 @@ class EditOrderPanel extends Component{
             selectedConsultant: null,
 
             vehicleTypes: [],
-            selectedVehicleTypeId: null,
+            selectedVehicleTypeId: '',
+
+            selectConsultantAsForwarder: false,
+            additionalInformation: null,
+            forwardingOrderId: null,
 
             isModalOpen: false,
             selectedPopup: '',
             isAddLoadModalOpen: false,
-            isServerResponseModalOpen: false
+            isCreateForwardingOrderModalOpen: false,
+            isServerResponseModalOpen: false,
+            isOk: false
         }
     }
 
@@ -87,8 +96,8 @@ class EditOrderPanel extends Component{
                 }
             });
 
-            const data = await response.data;
-            console.log(data)
+            const data = await response.data
+
             this.setState({
                 order: data,
                 selectedClient: data.client,
@@ -98,6 +107,7 @@ class EditOrderPanel extends Component{
                 totalGrossWeight: data.totalGrossWeight,
                 totalVolume: data.totalVolume,
                 destinationStreetAddress: data.destinationStreetAddress,
+                customerAdditionalInstructions: data.customerAdditionalInstructions,
                 destinationZipCode: data.destinationZipCode,
                 destinationCountry: data.destinationCountry,
                 destinationCity: data.destinationCity,
@@ -105,9 +115,12 @@ class EditOrderPanel extends Component{
                 selectedPaymentFormId: data.paymentFormId,
                 selectedOrderStatusId: data.orderStatusId,
                 selectedVehicleTypeId: data.vehicleTypeId,
+                forwardingOrderId: data.forwardingOrderId,
+                netPrice: data.netPrice?.toFixed(2),
+                grossPrice: data.grossPrice?.toFixed(2),
                 transportDistance: data.transportDistance,
                 isClientVerified: data.isClientVerified,
-                isAvailableAtWarehouse: data.isAvailableAtWarehouse
+                isAvailableAtWarehouse: data.isAvailableAtWarehouse,
             })
         }
         catch(error){
@@ -260,8 +273,8 @@ class EditOrderPanel extends Component{
                 }
             });
 
-            const data = await response.data;
-            console.log(data)
+            const data = await response.data
+
             if(data.length === 0){
                 this.setState({
                     orderStatuses: []
@@ -296,11 +309,15 @@ class EditOrderPanel extends Component{
                 'paymentFormId': this.state.selectedPaymentFormId,
                 'warehouseId': this.state.selectedWarehouse?.id,
                 'customerAdditionalInstructions': this.state.customerAdditionalInstructions,
-                'transportDistance': this.state.transportDistance,
+                'transportDistance': this.state.transportDistance === '' ? null : parseFloat(this.state.transportDistance),
+                'netPrice': this.state.token.role === 'Orderer' ? parseFloat(this.state.netPrice) : parseFloat((this.state.totalGrossWeight * this.state.transportDistance * this.state.rate).toFixed(2)),
+                'grossPrice': this.state.token.role === 'Orderer' ? parseFloat(this.state.grossPrice) : parseFloat((this.state.totalGrossWeight * this.state.transportDistance * this.state.rate * 1.23).toFixed(2)),
                 'isClientVerified': this.state.isClientVerified,
                 'isAvailableAtWarehouse': this.state.isAvailableAtWarehouse,
                 'orderStatusId': this.state.selectedOrderStatusId,
-                'consultantId': this.state.selectedConsultant?.id
+                'consultantId': this.state.selectedConsultant?.id,
+                'forwardingOrderId': this.state.forwardingOrderId,
+                'vehicleTypeId': this.state.selectedVehicleTypeId === '' ? null : this.state.selectedVehicleTypeId
             },
             {
                 headers: {
@@ -311,12 +328,12 @@ class EditOrderPanel extends Component{
                 
             })
 
-            // Set message for response
-            this.setState({
-                serverResponse: response.data.message
-            })
-            await this.addOrUpdateLoads()
+            //Set message for response
+            if(!this.state.isCreateForwardingOrderModalOpen){
+                this.setState({ serverResponse: response.data.message })
+            }
 
+            await this.addOrUpdateLoads()
         }
         catch(error){
             if(error.response){
@@ -370,11 +387,6 @@ class EditOrderPanel extends Component{
                 })
             })
 
-            const data = 
-            {
-                'loads': newLoads
-            }
-
             const response = await axios.put('https://localhost:44394/loads/' + this.state.order?.id,
             {
                 'loads': newLoads
@@ -389,7 +401,8 @@ class EditOrderPanel extends Component{
             })
 
             this.setState({
-                isServerResponseModalOpen: true
+                isServerResponseModalOpen: true,
+                isOk: true
             })
         }
         catch(error){
@@ -411,8 +424,52 @@ class EditOrderPanel extends Component{
         }
     }
 
+    // POST call to API to create forwarding order
+    async createForwardingOrder(){
+        try{
+            const response = await axios.post('https://localhost:44394/forwarding-orders',
+            {
+                'additionalDescription': this.state.additionalInformation,
+                'forwarderId': this.state.selectConsultantAsForwarder ? this.state.order?.consultantId : null,
+            },
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
+                
+            })
+
+            this.setState({
+                serverResponse: response.data.message,
+                forwardingOrderId: response.data.forwardingOrderId
+            })
+
+            await this.updateOrder()
+        }
+        catch(error){
+            if(error.response){
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponse: "Nie podano danych zlecenia spedycji.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponse: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
+            }
+            console.log(error)
+        }
+    }
+
+    // handle change generic
     handleChange = (name) => (event) => {
-        if(name === 'isClientVerified' || name === 'isAvailableAtWarehouse'){
+        if(name === 'isClientVerified' || name === 'isAvailableAtWarehouse' || name === 'selectConsultantAsForwarder'){
             this.setState({
                 [name]: event.target.checked
             })
@@ -444,6 +501,12 @@ class EditOrderPanel extends Component{
 
     // handle close model for new load
     handleCloseAddLoadModal = () => this.setState({ isAddLoadModalOpen: false })
+
+    // handle open create forwarding order modal
+    handleOpenCreateForwardingOrderModal = () => this.setState({ isCreateForwardingOrderModalOpen: true })
+
+    // handle close create forwarding order modal
+    handleCloseCreateForwardingOrderModal = () => this.setState({ isCreateForwardingOrderModalOpen: false })
 
     // handle add created load to table
     handleConfirmAddLoad = () => {
@@ -519,7 +582,7 @@ class EditOrderPanel extends Component{
 
                     <Col xs='1' style={{minWidth: '120px', marginTop: '10px'}}>
                         <NavLink className='Add-User-Nav-Link' to={{
-                            pathname: this.state.token.role === 'orderer' ? '/pracownik-zamowien/zamowienia' 
+                            pathname: this.state.token.role === 'Orderer' ? '/pracownik-zamowien/zamowienia' 
                             : '/spedytor/konsultacje-spedycji'
                         }}>
                             <Button 
@@ -540,8 +603,23 @@ class EditOrderPanel extends Component{
                         </Button>
                     </Col>
                 </Row>
-                <Row style={{marginTop: 10}}>
+                <Row>
                     <Col>
+                        <div className='Orders-Header' style={{color: '#f75353', fontSize: 24}}>
+                            <CgFileDocument /><span>&nbsp;&nbsp;</span><span>{this.state.order?.orderNumber}</span>
+                        </div>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <div className='Orders-Header' style={{color: '#f75353', fontSize: 24}}>
+                            <BiTask /><span>&nbsp;&nbsp;</span><span>{this.state.order?.forwardingOrder === null ? 'brak' : this.state.order?.forwardingOrder?.forwardingOrderNumber}</span>
+                        </div>
+                    </Col>
+                </Row>
+                
+                <Row style={{ marginTop: 25 }}>
+                    <Col style={{ paddingTop: 25 }}>
                         <FormControl>
                             <InputLabel id="genderLabel">
                                 Status
@@ -569,6 +647,26 @@ class EditOrderPanel extends Component{
                                 <Row>
                                     <Col>
                                         <div className='Orders-Stats-Header' style={{fontSize: '14px'}}>
+                                            Przyjmujący zamówienie
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row style={{ textAlign: 'center', marginTop: 10 }}>
+                                    <Col>
+                                        <div className='Tile-Data-Label' style={{ fontSize: 20}}>
+                                            {this.state.order?.orderer?.firstName}<span>&nbsp;</span>{this.state.order?.orderer?.lastName} 
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </div>
+                    </Col>
+                    <Col xs='3'>
+                        <div className='Small-Tile'>
+                            <Container>
+                                <Row>
+                                    <Col>
+                                        <div className='Orders-Stats-Header' style={{fontSize: '14px'}}>
                                             Konsultant spedycji
                                         </div>
                                     </Col>
@@ -581,7 +679,6 @@ class EditOrderPanel extends Component{
                                                 onClick={this.handleOpenModal.bind(this, 'addConsultant')}>Zmień
                                             </Button>
                                     </Col>
-
                                     }
 
                                 </Row>
@@ -608,47 +705,59 @@ class EditOrderPanel extends Component{
                             <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Orders-Stats-Header' style={{fontSize: '14px'}}>
-                                            Zlecenie spedycji
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 14 }}>
+                                            Spedytor
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row style={{textAlign: 'center', marginTop: 10}}>
                                     <Col>
-                                        {this.state.order?.forwardingOrderId !== null &&
-                                            <div className='Tile-Data-Label'>{this.state.order?.forwardingOrder?.forwardingOrderNumber}</div>
-                                        }
-                                        {this.state.order?.forwardingOrderId === null && this.state.selectedOrderStatusId === 2 && 
-                                            // <div className='Tile-Data-Label'>Nie utworzono</div>
-                                            <Container>
-                                                <Row>
-                                                    <Col>
-                                                        <Button 
-                                                            className="Small-Button"
-                                                            variant="light"
-                                                            style={{ width: 90 }}
-                                                            onClick={this.handleOpenModal.bind(this, 'addConsultant')}>Przypisz
-                                                        </Button>
-                                                    </Col>
-                                                </Row>
-                                                <Row>
-                                                    <Col>
-                                                        <Button 
-                                                            className="Small-Button"
-                                                            variant="light"
-                                                            style={{ marginTop: 8, width: 90 }}
-                                                            onClick={this.handleOpenModal.bind(this, 'addConsultant')}>Utwórz
-                                                        </Button>
-                                                    </Col>
-                                                </Row>
-                                            </Container>
-                                        }
+                                        <div className='Tile-Data-Label' style={{ fontSize: 20 }}>{this.state.order?.forwardingOrderId === null ? 'brak' 
+                                        : <span><span>{this.state.order?.forwardingOrder?.forwarder?.firstName}</span><span>&nbsp;</span><span>{this.state.order?.forwardingOrder?.forwarder?.lastName}</span></span>}</div>
                                     </Col>
                                 </Row>
                             </Container>
                         </div>
                     </Col>
                 </Row>
+
+                {this.state.token.role === 'Orderer' && this.state.forwardingOrderId === null && this.state.selectedOrderStatusId === 2 && 
+                <Row style={{ marginTop: 25 }}>
+                    <Col>
+                        <div className='Order-Client-Tile'>
+                            <Container>
+                                <Row style={{ marginTop: 10 }}>
+                                    <Col xs='6'>
+                                        <div className='Tile-Header' style={{ color: '#50ee9c' }}>
+                                            Tworzenie zlecenia spedycji
+                                        </div>
+                                    </Col>
+                                    <Col>
+                                        <Button 
+                                            className="Orders-Button" 
+                                            variant="light"
+                                            style={{ width: 100, marginTop: 15 }}
+                                            onClick={this.handleOpenCreateForwardingOrderModal}>
+                                            Utwórz
+                                        </Button>
+                                    </Col>
+                                    <Col>
+                                        <Button 
+                                            className="Orders-Button" 
+                                            variant="light"
+                                            style={{ width: 100, marginTop: 15 }}>
+                                            Przypisz
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </div>
+                    </Col>
+                    <Col>
+                    </Col>
+                </Row>
+                }
+
                 <Row style={{marginTop: '25px'}}>
                     <Col>
                         <div className='Order-Client-Tile'>
@@ -1005,21 +1114,36 @@ class EditOrderPanel extends Component{
                                 <Row>
                                     <Col>
                                         <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
-                                            <FaWeightHanging size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga netto:<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalNetWeight}</span>
+                                            <FaWeightHanging size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga netto (kg):<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalNetWeight}</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
                                         <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
-                                            <FaWeight size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga brutto:<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalGrossWeight}</span>
+                                            <FaWeight size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga brutto (kg):<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalGrossWeight}</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
                                         <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
-                                            <FaGlassWhiskey size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita objętość:<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalVolume}</span>
+                                            <FaGlassWhiskey size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita objętość (LITR):<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalVolume}</span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
+                                            <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita kwota netto (zł)<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.netPrice}</span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
+                                            <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita kwota brutto (zł)<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>
+                                            {this.state.grossPrice} </span>
                                         </div>
                                     </Col>
                                 </Row>
@@ -1058,11 +1182,10 @@ class EditOrderPanel extends Component{
                                                 color="primary"
                                                 value={this.state.orderExpectedDate}
                                                 onChange={this.handleExpectedDate.bind(this)}
-                                                style={{width: '450px'}}
+                                                style={ {width: '450px', color: '#5CDB95'}}
                                                 KeyboardButtonProps={{
                                                     'aria-label': 'change date'
                                                 }}
-                                                style={{color: '#5CDB95'}}
                                                 InputLabelProps={{
                                                     style:{
                                                         color: 'whitesmoke'
@@ -1094,6 +1217,7 @@ class EditOrderPanel extends Component{
                                                 rowsMax={10}
                                                 placeholder='Tutaj wpisz uwagi do zamówienia...'
                                                 color="primary"
+                                                value={this.state.customerAdditionalInstructions}
                                                 onChange={this.handleChange('customerAdditionalInstructions')}
                                                 style={{minWidth: '450px'}}
                                                 InputLabelProps={{
@@ -1132,9 +1256,9 @@ class EditOrderPanel extends Component{
                                     </Col>
                                     <Col>
                                         <Checkbox 
-                                        inputProps={{ 'aria-label': 'uncontrolled-checkbox' }} 
-                                        checked={this.state.isClientVerified}
-                                        onChange={this.handleChange('isClientVerified')}/>
+                                            inputProps={{ 'aria-label': 'uncontrolled-checkbox' }} 
+                                            checked={this.state.isClientVerified}
+                                            onChange={this.handleChange('isClientVerified')}/>
                                     </Col>
                                 </Row>
                                 <Row>
@@ -1145,9 +1269,9 @@ class EditOrderPanel extends Component{
                                     </Col>
                                     <Col>
                                         <Checkbox 
-                                        inputProps={{ 'aria-label': 'uncontrolled-checkbox' }} 
-                                        checked={this.state.isAvailableAtWarehouse}
-                                        onChange={this.handleChange('isAvailableAtWarehouse')}/>
+                                            inputProps={{ 'aria-label': 'uncontrolled-checkbox' }} 
+                                            checked={this.state.isAvailableAtWarehouse}
+                                            onChange={this.handleChange('isAvailableAtWarehouse')}/>
                                     </Col>
                                 </Row>
                             </Container>
@@ -1156,7 +1280,6 @@ class EditOrderPanel extends Component{
                     <Col>
                     </Col>
                 </Row>
-                {this.state.token.role === 'Forwarder' &&
                     <Row style={{ marginTop: 25, paddingBottom: 15 }}>
                         <Col>
                             <div className='Order-Client-Tile'>
@@ -1238,24 +1361,26 @@ class EditOrderPanel extends Component{
                                                         },
                                                     }}
                                                     InputProps={{
+                                                        inputProps: { min: 0, max: 999999999 },
                                                         style: {
                                                             color: '#5c8bdb'
                                                         },
                                                     }} />
                                             </FormControl>
                                         </Col>
+                                        {this.state.token.role === 'Forwarder' &&
                                         <Col>
                                             <FormControl  noValidate autoComplete="off">
                                                 <TextField 
                                                     id="optimalRouteDistance" 
                                                     label={
                                                         <div>
-                                                            <RiPriceTag3Line /><span>&nbsp;&nbsp;</span><span>Stawka (zł)</span>
+                                                            <FaCloudscale /><span>&nbsp;&nbsp;</span><span>Stawka</span>
                                                         </div>
                                                     }
                                                     color="primary"
-                                                    // onChange={this.handleChange('transportDistance')}
-                                                    // value={this.state.transportDistance}
+                                                    onChange={this.handleChange('rate')}
+                                                    value={this.state.rate}
                                                     type='number'
                                                     style={{minWidth: '350px'}}
                                                     InputLabelProps={{
@@ -1264,14 +1389,35 @@ class EditOrderPanel extends Component{
                                                         },
                                                     }}
                                                     InputProps={{
+                                                        inputProps: { min: 0, max: 999999999 },
                                                         style: {
                                                             color: '#5c8bdb'
                                                         },
                                                     }} />
                                             </FormControl>
                                         </Col>
+                                        }
+                                        
                                     </Row>
-                                    <Row style={{ paddingLeft: 15, marginTop: 10 }}>
+                                    {this.state.token.role === 'Forwarder' &&
+                                     <Row style={{ paddingLeft: 10, marginTop: 10 }}>
+                                        <Col>
+                                            <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
+                                                <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Nowa kwota netto (zł)<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>
+                                                    {(this.state.totalGrossWeight * this.state.transportDistance * this.state.rate).toFixed(2)}
+                                                </span>
+                                            </div>
+                                        </Col>
+                                        <Col>
+                                            <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
+                                                <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Nowa kwota brutto (zł)<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>
+                                                    {(this.state.totalGrossWeight * this.state.transportDistance * this.state.rate * 1.23).toFixed(2)}
+                                                </span>
+                                            </div>
+                                        </Col>
+                                    </Row> 
+                                    }
+                                    <Row style={{ paddingLeft: 15, marginTop: 15 }}>
                                         <Col>
                                             <FormControl>
                                                 <InputLabel id="genderLabel">
@@ -1299,7 +1445,6 @@ class EditOrderPanel extends Component{
                             </div>
                         </Col>
                     </Row>
-                }
                 <Popup 
                     modal
                     open={this.state.isModalOpen && this.state.selectedPopup !== 'confirm'}
@@ -1629,8 +1774,11 @@ class EditOrderPanel extends Component{
                                 </Row>
                                 <Row style={{textAlign: 'center', marginTop: '30px'}}>
                                     <Col>
+                                        {this.state.isOk &&
+                                        
                                         <NavLink className='Add-User-Nav-Link' to={{
-                                            pathname: '/pracownik-zamowien/zamowienia'
+                                            pathname: this.state.token.role === 'Orderer' ? '/pracownik-zamowien/zamowienia'
+                                            : '/spedytor/konsultacje-spedycji'
                                         }}>
                                             <Button 
                                                 className="Orders-Button" 
@@ -1641,6 +1789,91 @@ class EditOrderPanel extends Component{
                                                 Ok
                                             </Button>
                                         </NavLink>
+                                        }
+                                        {!this.state.isOk &&
+                                            <Button 
+                                                className="Orders-Button" 
+                                                variant="light"
+                                                onClick={() => {
+                                                    close();
+                                                }}>
+                                                Ok
+                                            </Button>
+                                        }
+                                    </Col>
+                                </Row>
+                            </Container>
+                        )
+                    }
+                </Popup>
+
+                <Popup 
+                    modal
+                    open={this.state.isCreateForwardingOrderModalOpen}
+                    onClose={this.handleCloseCreateForwardingOrderModal}
+                    contentStyle={{
+                        width: '50vw',
+                        height: '55vh',
+                        backgroundColor: '#202125',
+                        borderColor: '#202125',
+                        borderRadius: '15px',
+                    }}>
+                    {
+                        close => (
+                            <Container>
+                                <Row style={{textAlign: 'center'}}>
+                                    <Col>
+                                        <label className='Edit-User-Modal-Header'>Tworzenie zlecenia spedycji</label>
+                                    </Col>
+                                </Row>
+                                <Row style={{ marginTop: 25, textAlign: 'center' }}>
+                                    <Col xs>
+                                        <label className='Tile-Data-Label' style={{ fontSize: 14 }}>Przypisz konsultanta jako spedytora</label>
+                                    </Col>
+                                    <Col>
+                                        <Checkbox 
+                                            inputProps={{ 'aria-label': 'uncontrolled-checkbox' }} 
+                                            checked={this.state.selectConsultantAsForwarder}
+                                            onChange={this.handleChange('selectConsultantAsForwarder')}
+                                            />
+                                    </Col>
+                                </Row>
+                                <Row style={{ marginTop: 25, textAlign: 'center', paddingLeft: 60 }}>
+                                    <Col>
+                                        <FormControl  noValidate autoComplete="off">
+                                            <TextField
+                                                id="additionalInformation" 
+                                                multiline
+                                                rowsMax={6}
+                                                placeholder='Dodatkowe informacje...'
+                                                color="primary"
+                                                onChange={this.handleChange('additionalInformation')}
+                                                style={{minWidth: '450px'}}
+                                                InputLabelProps={{
+                                                    style:{
+                                                        color: 'whitesmoke'
+                                                    },
+                                                }}
+                                                InputProps={{
+                                                    style: {
+                                                        color: '#5c8bdb'
+                                                    },
+                                                }} />
+                                        </FormControl>
+                                    </Col>
+                                    <Col>
+                                    </Col>
+                                </Row>
+                                <Row style={{ marginTop: 50, textAlign: 'center' }}>
+                                    <Col>
+                                        <Button 
+                                            className="Orders-Button" 
+                                            variant="light"
+                                            onClick={() => {
+                                                this.createForwardingOrder()
+                                                close()
+                                            }}>Utwórz
+                                        </Button>
                                     </Col>
                                 </Row>
                             </Container>

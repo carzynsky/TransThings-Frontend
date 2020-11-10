@@ -106,10 +106,10 @@ class AddOrderPanel extends Component{
                 this.setState({
                     warehouses: []
                 })
+                return
             }
-            this.setState({
-                warehouses: data
-            })
+
+            this.setState({ warehouses: data })
         }
         catch(error){
             console.log(error);

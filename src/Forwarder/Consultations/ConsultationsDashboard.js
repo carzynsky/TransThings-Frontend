@@ -5,7 +5,6 @@ import { HiOutlineRefresh } from 'react-icons/hi';
 import { CgMoreO } from 'react-icons/cg';
 import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
-import { Select, FormControl, MenuItem, InputLabel, Tooltip } from '@material-ui/core';
 import axios from 'axios';
 import './ConsultationsDashboard.css';
 

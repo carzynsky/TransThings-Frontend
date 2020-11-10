@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
-import { NavLink } from 'react-router-dom';
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
-import { Select, FormControl, MenuItem, InputLabel, Tooltip } from '@material-ui/core';
 import axios from 'axios';
 import './ForwardingOrdersDashboard.css';
 
@@ -50,7 +48,7 @@ class ForwardingOrdersDashboard extends Component{
     }
 
     async componentDidMount(){
-        //await this.getForwardingOrders();
+        await this.getForwardingOrders();
     };
 
     render(){

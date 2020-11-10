@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { HiOutlineRefresh } from 'react-icons/hi';
 import { MdAdd, MdEdit, MdShowChart } from 'react-icons/md';
 import { FiChevronDown } from 'react-icons/fi';
-import { FaRegFilePdf, FaHandsHelping  } from 'react-icons/fa';
+import { FaRegFilePdf } from 'react-icons/fa';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { BiTask } from 'react-icons/bi';
 import { MDBDataTable } from 'mdbreact';
@@ -195,7 +195,7 @@ class OrdersDashboard extends Component{
                                                 rows: this.state.orders.map((order) => (
                                                     {
                                                         orderNumber: order.orderNumber,
-                                                        forwardingOrderNumber: order.forwardingOrderNumber?.forwardingOrderNumber,
+                                                        forwardingOrderNumber: order.forwardingOrder?.forwardingOrderNumber,
                                                         client: order.client.clientFirstName + ' ' + order.client.clientLastName,
                                                         path: order.warehouse.city + '-' + order.destinationCity,
                                                         expectedDate: order.orderExpectedDate.split('T')[0],

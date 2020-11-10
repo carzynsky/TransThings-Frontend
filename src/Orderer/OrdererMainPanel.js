@@ -9,8 +9,6 @@ import EditUserPanel from '../Admin/Users/EditUserPanel';
 import CustomerRoutes from '../Admin/Customers/CustomersRoutes';
 import './OrdererMainPanel.css';
 import ForwardersPanel from './Forwarders/ForwardersPanel';
-import OrdersDashboard from './Orders/OrdersDashboard';
-import AddOrderPanel from './Orders/AddOrderPanel';
 import OrdersRoutes from './Orders/OrdersRoutes';
 import ForwardingOrdersDashboard from './ForwardingOrders/ForwardingOrdersDashboards';
 
