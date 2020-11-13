@@ -1,13 +1,14 @@
 import React from 'react';
 import { Nav, Container, Row, Col } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
-import history from '../history.js';
-import * as Cookies from 'js-cookie';
 import { getSessionCookie } from '../sessions';
 import { AiOutlinePoweroff } from 'react-icons/ai';
-import { FaHandsHelping } from 'react-icons/fa';
+import { FaHandsHelping, FaWarehouse } from 'react-icons/fa';
+import { RiTruckFill } from 'react-icons/ri';
 import { BiTask, BiHomeSmile } from 'react-icons/bi';
 import { CgProfile } from 'react-icons/cg';
+import history from '../history.js';
+import * as Cookies from 'js-cookie';
 import './ForwarderNavigationSidebar.css';
 
 const ForwarderNavigationSidebar = () => {
@@ -24,7 +25,7 @@ const ForwarderNavigationSidebar = () => {
     }
 
     return (
-        <Container className="Navigation-Container">
+        <Container className="Navigation-Container" style={{ height: 762 }}>
             <Nav className="flex-column">
                 <div style={{textAlign: 'center', paddingTop: '50px'}}>
                     <Row>
@@ -49,6 +50,12 @@ const ForwarderNavigationSidebar = () => {
                 </NavLink>
                 <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/spedytor/konsultacje-spedycji'>
                     <FaHandsHelping color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Konsultacje spedycji</span>
+                </NavLink>
+                <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/spedytor/konsultacje-spedycji'>
+                    <RiTruckFill color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Przewoźnicy</span>
+                </NavLink>
+                <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/spedytor/konsultacje-spedycji'>
+                    <FaWarehouse color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Magazyny</span>
                 </NavLink>
                 {/* <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/pracownik-zamowien/magazyny'>
                     <FaWarehouse color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Magazyny</span>

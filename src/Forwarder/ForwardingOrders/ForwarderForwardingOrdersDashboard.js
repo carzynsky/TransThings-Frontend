@@ -1,31 +1,31 @@
 import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
-import { NavLink } from 'react-router-dom';
 import { HiOutlineRefresh } from 'react-icons/hi';
-import { MdShowChart } from 'react-icons/md';
-import { WiTime5 } from 'react-icons/wi';
+import { MdShowChart, MdEdit } from 'react-icons/md';
 import { BiShowAlt } from 'react-icons/bi';
 import { Tooltip } from '@material-ui/core';
 import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
+import { NavLink } from 'react-router-dom';
 import axios from 'axios';
-import './ConsultationsDashboard.css';
+import './ForwarderForwardingOrdersDashboard.css';
 
-class ConsultationsDashboard extends Component{
+class ForwarderForwardingOrdersDashboard extends Component{
     constructor(props){
         super(props);
         this.state = {
             token: getSessionCookie(),
-            consultationOrders: [],
-            consultationOrdersQuantity: ''
+            forwardingOrders: [],
+            forwardingOrdersQuantity: '',
+            userForwardingOrdersQuantity: ''
         }
     }
 
-    // GET call to API to get orders ready for consultation by logged user
-    async getOrdersReadyForConsultations(){
+    // GET call to API to get forwardingOrders
+    async getForwardingOrders(){
         try
         {
-            const response = await axios.get('https://localhost:44394/orders/consultants/' + this.state.token.userId, {
+            const response = await axios.get('https://localhost:44394/forwarding-orders', {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json;charset=UTF-8',
@@ -36,15 +36,19 @@ class ConsultationsDashboard extends Component{
             const data = await response.data;
             if(data.length === 0){
                 this.setState({
-                    consultationOrders: [],
-                    consultationOrdersQuantity: 0
+                    forwardingOrders: [],
+                    forwardingOrdersQuantity: 0,
+                    userForwardingOrdersQuantity: 0
                 })
                 return
             }
 
+            let filtered =  data.filter(x => x.forwarderId === this.state.token.userId)
+
             this.setState({
-                consultationOrders: data,
-                consultationOrdersQuantity: data.length
+                forwardingOrders: data,
+                forwardingOrdersQuantity: data.length,
+                userForwardingOrdersQuantity: filtered.length
             })
         }
         catch(error){
@@ -53,7 +57,7 @@ class ConsultationsDashboard extends Component{
     }
 
     async componentDidMount(){
-        await this.getOrdersReadyForConsultations()
+        await this.getForwardingOrders();
     };
 
     render(){
@@ -61,14 +65,14 @@ class ConsultationsDashboard extends Component{
             <Container>
                 <Row style={{ marginTop: 50 }}>
                     <Col xs='9' style={{ minWidth: 450 }}>
-                        <div className='Orders-Header'>Konsultacje zamówień transportu</div>
+                        <div className='Orders-Header'>Zlecenia spedycji</div>
                     </Col>
 
-                    <Col style={{minWidth: '120px', marginTop: '10px', textAlign: 'right' }}>
+                    <Col style={{ minWidth: 120, marginTop: 10, textAlign: 'right' }}>
                         <Button 
                             className="Orders-Button" 
                             variant="light"
-                            onClick={this.getOrdersReadyForConsultations}>
+                            >
                                 <HiOutlineRefresh size='1.0em'/><span>&nbsp;</span><span>Odśwież</span>
                         </Button>
                     </Col>
@@ -80,13 +84,13 @@ class ConsultationsDashboard extends Component{
                                 <Row>
                                     <Col>
                                         <div className='Orders-Stats-Header' style={{ fontSize: 14 }}>
-                                            <WiTime5 size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Oczekujące konsultacje</span>
+                                            <MdShowChart size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Wszystkich zleceń</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row style={{textAlign: 'center'}}>
                                     <Col>
-                                        <div className='Orders-Stats-Number'>{this.state.consultationOrdersQuantity}</div>
+                                        <div className='Orders-Stats-Number'>{this.state.forwardingOrdersQuantity}</div>
                                     </Col>
                                 </Row>
                             </Container>
@@ -98,13 +102,13 @@ class ConsultationsDashboard extends Component{
                                 <Row>
                                     <Col>
                                         <div className='Orders-Stats-Header' style={{ fontSize: 14 }}>
-                                            <MdShowChart size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Moje konsultacje</span>
+                                            <MdShowChart size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Moje aktywne zlecenia</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row style={{textAlign: 'center'}}>
                                     <Col>
-                                        <div className='Orders-Stats-Number'>{this.state.consultationOrdersQuantity}</div>
+                                        <div className='Orders-Stats-Number'>{this.state.userForwardingOrdersQuantity}</div>
                                     </Col>
                                 </Row>
                             </Container>
@@ -128,23 +132,29 @@ class ConsultationsDashboard extends Component{
                                             scrollY
                                             small
                                             data={{
-                                                columns: consultationOrdersColumns,
-                                                rows: this.state.consultationOrders.map((consultationOrder) => (
+                                                columns: forwardingOrdersColumns,
+                                                rows: this.state.forwardingOrders.map((forwardingOrder) => (
                                                     {
-                                                        orderNumber: consultationOrder.orderNumber,
-                                                        client: consultationOrder.client?.clientFirstName + ' ' + consultationOrder.client?.clientLastName,
-                                                        path: consultationOrder.warehouse?.city + '-' + consultationOrder.destinationCity,
-                                                        expectedDate: consultationOrder.orderExpectedDate.split('T')[0],
+                                                        forwardingOrderNumber: forwardingOrder.forwardingOrderNumber,
+                                                        createDate: forwardingOrder.createDate.split('T')[0],
+                                                        forwarder: forwardingOrder.forwarder?.firstName + ' ' + forwardingOrder.forwarder?.lastName,
+                                                        contactPhoneNumber: forwardingOrder.forwarder?.phoneNumber,
                                                         select: 
-                                                                <NavLink className="Add-User-Nav-Link" to={{
-                                                                    pathname: '/spedytor/konsultacje-spedycji/' + consultationOrder.id,
+                                                                <Tooltip title="Pokaż szczegóły zlecenia" aria-label="add">
+                                                                    <div className='User-Details-Button'>
+                                                                        <BiShowAlt className='Warehouse-Details-Icon' size='1.4em'/>
+                                                                    </div>
+                                                                </Tooltip>,
+                                                        edit: this.state.token.userId === forwardingOrder.forwarderId ?
+                                                                <NavLink className='Add-User-Nav-Link' to={{
+                                                                    pathname: '/spedytor/zlecenia/'+ forwardingOrder.id,
                                                                     }}>
-                                                                    <Tooltip title="Pokaż zamówienie" aria-label="add">
+                                                                    <Tooltip title="Edytuj zlecenie" aria-label="add">
                                                                         <div className='User-Details-Button'>
-                                                                            <BiShowAlt className='Warehouse-Details-Icon' size='1.4em'/>
+                                                                            <MdEdit className='Warehouse-Details-Icon' size='1.0em'/>
                                                                         </div>
                                                                     </Tooltip>
-                                                                </NavLink>
+                                                                </NavLink> : ''
                                                     }
                                                 ))
                                             }}
@@ -159,37 +169,43 @@ class ConsultationsDashboard extends Component{
         );
     }
 }
-export default ConsultationsDashboard;
+export default ForwarderForwardingOrdersDashboard;
 
-const consultationOrdersColumns = 
+const forwardingOrdersColumns = 
 [
     {
-        label: 'Nr. zamówienia',
-        field: 'orderNumber',
-        sort: 'asc',
-        width: '200'
-    },
-    {
-        label: 'Klient',
-        field: 'client',
-        sort: 'asc',
-        width: '200'
-    },
-    {
-        label: 'Trasa',
-        field: 'path',
+        label: 'Nr. zlecenia',
+        field: 'forwardingOrderNumber',
         sort: 'asc',
         width: '250'
     },
     {
-        label: 'Data zlecenia',
-        field: 'expectedDate',
+        label: 'Data utworzenia',
+        field: 'createDate',
         sort: 'asc',
-        width: '200'
+        width: '250'
+    },
+    {
+        label: 'Spedytor',
+        field: 'forwarder',
+        sort: 'asc',
+        width: '250'
+    },
+    {
+        label: 'Nr. kontaktowy',
+        field: 'contactPhoneNumber',
+        sort: 'asc',
+        width: '250'
     },
     {
         label: '',
         field: 'select',
+        sort: 'asc',
+        width: '50'
+    },
+    {
+        label: '',
+        field: 'edit',
         sort: 'asc'
     }
 ]

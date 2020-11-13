@@ -1,0 +1,68 @@
+.Forwarding-Order-Show-Nav{
+    padding-left: 5px;
+    padding-top: 15px;
+    font-size: 22px;
+    font-family: 'Overpass', sans-serif;
+    color: #50ee9c;
+}
+
+.Forwarding-Order-Show-Nav:hover{
+    cursor: pointer;
+    color: whitesmoke;
+}
+
+.Forwarding-Order-Show-Nav-Red{
+    padding-left: 5px;
+    padding-top: 15px;
+    font-size: 22px;
+    font-family: 'Overpass', sans-serif;
+    color: #f75353;
+}
+
+.Forwarding-Order-Show-Nav-Red:hover{
+    cursor: pointer;
+    color: whitesmoke;
+}
+
+.Purple-Button{
+    margin-top: 10px;
+    font-family: 'Overpass', sans-serif;
+    width: 80px;
+    font-size: 13px;
+    background-color: #c76eff;
+    border-radius: 5px;
+    box-shadow: 2px 2px 15px -4px #c76eff;
+    border: solid 1px #c76eff;
+    color: #202125;
+    padding-top: 10px;
+}
+
+.Yellow-Button{
+    margin-top: 10px;
+    font-family: 'Overpass', sans-serif;
+    width: 80px;
+    font-size: 13px;
+    background-color: #f2f540;
+    border-radius: 5px;
+    box-shadow: 2px 2px 15px -4px #f2f540;
+    border: solid 1px #f2f540;
+    color: #202125;
+    padding-top: 10px;
+}
+
+.Green-Button{
+    margin-top: 10px;
+    font-family: 'Overpass', sans-serif;
+    width: 90px;
+    font-size: 13px;
+    background-color: #50ee9c;
+    border-radius: 5px;
+    box-shadow: 2px 2px 15px -4px #50ee9c;
+    border: solid 1px #50ee9c;
+    color: #202125;
+    padding-top: 10px;
+}
+
+.MuiInputBase-root{
+    color: whitesmoke !important;
+}

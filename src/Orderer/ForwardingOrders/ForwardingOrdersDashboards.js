@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
 import { HiOutlineRefresh } from 'react-icons/hi';
+import { MdShowChart } from 'react-icons/md';
+import { BiShowAlt } from 'react-icons/bi';
+import { Tooltip } from '@material-ui/core';
 import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
 import axios from 'axios';
@@ -16,7 +19,7 @@ class ForwardingOrdersDashboard extends Component{
         }
     }
 
-    // GET call to API to get forwarders
+    // GET call to API to get forwardingOrders
     async getForwardingOrders(){
         try
         {
@@ -54,12 +57,12 @@ class ForwardingOrdersDashboard extends Component{
     render(){
         return(
             <Container>
-                <Row style={{marginTop: '50px'}}>
-                    <Col xs='9' style={{minWidth: '450px'}}>
+                <Row style={{ marginTop: 50 }}>
+                    <Col xs='9' style={{ minWidth: 450 }}>
                         <div className='Orders-Header'>Zlecenia spedycji</div>
                     </Col>
 
-                    <Col xs='1' style={{minWidth: '120px', marginTop: '10px'}}>
+                    <Col style={{ minWidth: 120, marginTop: 10, textAlign: 'right' }}>
                         <Button 
                             className="Orders-Button" 
                             variant="light"
@@ -67,18 +70,26 @@ class ForwardingOrdersDashboard extends Component{
                                 <HiOutlineRefresh size='1.0em'/><span>&nbsp;</span><span>Odśwież</span>
                         </Button>
                     </Col>
-                    {/* <Col xs='1' style={{minWidth: '120px', marginTop: '10px'}}>
-                        <NavLink className='Orderer-Nav-Link' to={{
-                            pathname: '/pracownik-zamowien/zamowienia/dodaj',
-                            state: { from: this.props.location.pathname }
-                            }}>
-                            <Button 
-                                className="Orders-Button" 
-                                variant="light">
-                                    <MdAdd size='1.0em'/><span>&nbsp;</span><span>Dodaj</span>
-                            </Button>
-                        </NavLink>
-                    </Col> */}
+                </Row>
+                <Row style={{ marginTop: 15 }}>
+                    <Col>
+                        <div className='Orders-Sub-Tile'>
+                            <Container>
+                                <Row>
+                                    <Col>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 14 }}>
+                                            <MdShowChart size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Wszystkich zleceń</span>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <Row style={{textAlign: 'center'}}>
+                                    <Col>
+                                        <div className='Orders-Stats-Number'>{this.state.forwardingOrdersQuantity}</div>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        </div>
+                    </Col>
                 </Row>
                 <Row style={{marginTop: '30px'}}>
                     <Col>
@@ -93,31 +104,20 @@ class ForwardingOrdersDashboard extends Component{
                                             scrollY
                                             small
                                             data={{
-                                                columns: [
-                                                    {
-                                                        label: 'Nr. zlecenia',
-                                                        field: 'forwardingOrderNumber',
-                                                        sort: 'asc',
-                                                        width: '200'
-                                                    },
-                                                    {
-                                                        label: 'Data utworzenia',
-                                                        field: 'createDate',
-                                                        sort: 'asc',
-                                                        width: '150'
-                                                    },
-                                                    {
-                                                        label: 'Spedytor',
-                                                        field: 'forwarder',
-                                                        sort: 'asc',
-                                                        width: '200'
-                                                    }
-                                                ],
+                                                columns: forwardingOrdersColumns,
                                                 rows: this.state.forwardingOrders.map((forwardingOrder) => (
                                                     {
                                                         forwardingOrderNumber: forwardingOrder.forwardingOrderNumber,
                                                         createDate: forwardingOrder.createDate.split('T')[0],
                                                         forwarder: forwardingOrder.forwarder?.firstName + ' ' + forwardingOrder.forwarder?.lastName,
+                                                        contactPhoneNumber: forwardingOrder.forwarder?.phoneNumber,
+                                                        select: 
+                                                                <Tooltip title="Pokaż szczegóły zlecenia" aria-label="add">
+                                                                    <div className='User-Details-Button'>
+                                                                        <BiShowAlt className='Warehouse-Details-Icon' size='1.4em'/>
+                                                                    </div>
+                                                                </Tooltip>,
+                                                        
                                                     }
                                                 ))
                                             }}
@@ -133,3 +133,36 @@ class ForwardingOrdersDashboard extends Component{
     }
 }
 export default ForwardingOrdersDashboard;
+
+const forwardingOrdersColumns = 
+[
+    {
+        label: 'Nr. zlecenia',
+        field: 'forwardingOrderNumber',
+        sort: 'asc',
+        width: '250'
+    },
+    {
+        label: 'Data utworzenia',
+        field: 'createDate',
+        sort: 'asc',
+        width: '250'
+    },
+    {
+        label: 'Spedytor',
+        field: 'forwarder',
+        sort: 'asc',
+        width: '250'
+    },
+    {
+        label: 'Nr. kontaktowy',
+        field: 'contactPhoneNumber',
+        sort: 'asc',
+        width: '250'
+    },
+    {
+        label: '',
+        field: 'select',
+        sort: 'asc'
+    }
+]

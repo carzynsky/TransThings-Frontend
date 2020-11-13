@@ -4,11 +4,12 @@ import {BrowserRouter, Switch, Route} from 'react-router-dom';
 import ForwarderNavigationSidebar from './ForwarderNavigationSidebar';
 import EditUserPanel from '../Admin/Users/EditUserPanel';
 import Profile from '../Profile';
-import LoadingPage from '../LoadingPage';
 import NotFound from '../NotFound';
-import './ForwarderMainPanel.css';
+import ForwarderForwardingOrdersDashboard from './ForwardingOrders/ForwarderForwardingOrdersDashboard';
 import ConsultationsDashboard from './Consultations/ConsultationsDashboard';
 import EditOrderPanel from '../Orderer/Orders/EditOrderPanel';
+import EditForwardingOrderPanel from './ForwardingOrders/EditForwardingOrderPanel';
+import './ForwarderMainPanel.css';
 
 function ForwarderMainPanel() {
     return (
@@ -20,7 +21,8 @@ function ForwarderMainPanel() {
                     </Col>
                     <Col xs='10' style={{ marginLeft: 250 }}>
                         <Switch>
-                            <Route path='/spedytor/zlecenia' exact component={LoadingPage}></Route>
+                            <Route path='/spedytor/zlecenia/:id' component={EditForwardingOrderPanel}></Route>
+                            <Route path='/spedytor/zlecenia' exact component={ForwarderForwardingOrdersDashboard}></Route>
                             <Route path='/spedytor/konsultacje-spedycji/:id' component={EditOrderPanel}></Route>
                             <Route path='/spedytor/konsultacje-spedycji' component={ConsultationsDashboard}></Route>
                             <Route path='/spedytor/profil/edycja/:id' component={EditUserPanel}></Route>

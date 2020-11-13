@@ -5,7 +5,6 @@ import { HiOutlineRefresh } from 'react-icons/hi';
 import { MdAdd, MdEdit, MdShowChart } from 'react-icons/md';
 import { FiChevronDown } from 'react-icons/fi';
 import { FaRegFilePdf } from 'react-icons/fa';
-import { RiDeleteBin6Line } from 'react-icons/ri';
 import { BiTask } from 'react-icons/bi';
 import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
@@ -36,7 +35,6 @@ class OrdersDashboard extends Component{
             });
 
             const data = await response.data;
-            console.log(data)
             if(data.length === 0){
                 this.setState({
                     orders: [],
@@ -240,13 +238,6 @@ class OrdersDashboard extends Component{
                                                                             </Tooltip>
                                                                         </Col>
                                                                     }
-                                                                    <Col>
-                                                                        <Tooltip title="Usunięcie zamówienia" aria-label="add">
-                                                                            <div className='User-Details-Button'>
-                                                                                <RiDeleteBin6Line size='1.0em' className='User-Details-Icon'/>
-                                                                            </div>
-                                                                        </Tooltip>
-                                                                    </Col>
                                                                 </Row>
                                                             </Container>
                                                         </div>
