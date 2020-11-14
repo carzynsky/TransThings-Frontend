@@ -51,10 +51,10 @@ const ForwarderNavigationSidebar = () => {
                 <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/spedytor/konsultacje-spedycji'>
                     <FaHandsHelping color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Konsultacje spedycji</span>
                 </NavLink>
-                <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/spedytor/konsultacje-spedycji'>
+                <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/spedytor/przewoznicy'>
                     <RiTruckFill color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Przewoźnicy</span>
                 </NavLink>
-                <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/spedytor/konsultacje-spedycji'>
+                <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/spedytor/magazyny'>
                     <FaWarehouse color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Magazyny</span>
                 </NavLink>
                 {/* <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/pracownik-zamowien/magazyny'>

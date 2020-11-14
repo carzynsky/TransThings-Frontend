@@ -5,6 +5,8 @@ import ForwarderNavigationSidebar from './ForwarderNavigationSidebar';
 import EditUserPanel from '../Admin/Users/EditUserPanel';
 import Profile from '../Profile';
 import NotFound from '../NotFound';
+import WarehousesRoutes from '../Admin/Warehouses/WarehousesRoutes';
+import TransportersRoutes from '../Admin/Transporters/TransportersRoutes';
 import ForwarderForwardingOrdersDashboard from './ForwardingOrders/ForwarderForwardingOrdersDashboard';
 import ConsultationsDashboard from './Consultations/ConsultationsDashboard';
 import EditOrderPanel from '../Orderer/Orders/EditOrderPanel';
@@ -25,10 +27,11 @@ function ForwarderMainPanel() {
                             <Route path='/spedytor/zlecenia' exact component={ForwarderForwardingOrdersDashboard}></Route>
                             <Route path='/spedytor/konsultacje-spedycji/:id' component={EditOrderPanel}></Route>
                             <Route path='/spedytor/konsultacje-spedycji' component={ConsultationsDashboard}></Route>
+                            <Route path='/spedytor/magazyny' component={WarehousesRoutes}></Route>
+                            <Route path='/spedytor/przewoznicy' component={TransportersRoutes}></Route>
                             <Route path='/spedytor/profil/edycja/:id' component={EditUserPanel}></Route>
                             <Route path='/spedytor/profil' component={Profile}></Route>
                             <Route component={NotFound}/>
-                            {/* <Route path='/admin/przewoznicy' component={TransportersRoutes}></Route> */}
                         </Switch>
                     </Col>
                 </Row>

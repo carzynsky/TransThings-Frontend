@@ -17,6 +17,7 @@ class TransportersRoutes extends Component {
             <BrowserRouter>
                 <Switch>
                     <Route path='/admin/przewoznicy' exact component={TransportersDashboard}></Route>
+                    <Route path='/spedytor/przewoznicy' exact component={TransportersDashboard}></Route>
                     <Route path='/admin/przewoznicy/:name/edytuj' component={EditTransporterPanel}></Route>
                     <Route path='/admin/przewoznicy/dodaj' component={AddTransporterPanel}></Route>
                     <Route path='/admin/przewoznicy/:name/kierowcy/edytuj/:id' component={EditDriverPanel}></Route>

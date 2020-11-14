@@ -2,11 +2,14 @@ import React, { Component } from 'react';
 import { Row, Col, Container, Button } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { CgNotes, CgFileDocument, CgGym } from 'react-icons/cg';
-import { RiUserVoiceFill } from 'react-icons/ri';
+import { RiUserVoiceFill, RiDeleteBin6Line, RiTruckFill } from 'react-icons/ri';
 import { BiTask, BiCalendar, BiShowAlt, BiPackage } from 'react-icons/bi';
-import { FaWeightHanging, FaWeight, FaGlassWhiskey, FaWarehouse } from 'react-icons/fa';
-import { MdShowChart, MdAdd, MdEdit, MdDone, MdLocationCity } from 'react-icons/md';
+import { FaWeightHanging, FaWeight, FaGlassWhiskey, FaWarehouse, FaMapMarkerAlt, FaMapMarker, FaFlagUsa, FaRegMoneyBillAlt, FaTruckMoving } from 'react-icons/fa';
+import { MdShowChart, MdAdd, MdEdit, MdDone, MdLocationCity, MdLocalPostOffice } from 'react-icons/md';
+import { ImCheckboxChecked } from 'react-icons/im';
+import { HiOutlineOfficeBuilding } from 'react-icons/hi';
 import { AiOutlineCar, AiOutlineUser } from 'react-icons/ai';
+import { GiPathDistance, GiFullMotorcycleHelmet } from 'react-icons/gi';
 import { Tooltip, FormControl, TextField } from '@material-ui/core';
 import { FiChevronDown, FiChevronUp, FiMap } from 'react-icons/fi';
 import { getSessionCookie } from '../../sessions';
@@ -15,8 +18,6 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import axios from 'axios';
 import './EditForwardingOrderPanel.css';
-
-
 
 class EditForwardingOrderPanel extends Component{
     constructor(props){
@@ -29,10 +30,22 @@ class EditForwardingOrderPanel extends Component{
             ordersByForwardingOrderQuantity: '',
             allLoads: [],
             allLoadsQuantity: '',
+
             events: [],
             eventsQuantity: 0,
+
             transits: [],
             transitsQuantity: 0,
+
+            transporters: [],
+            newTransitSelectedTransporter: '',
+
+            drivers: [],
+            newTransitSelectedDriver: '',
+
+            vehicles: [],
+            newTransitSelectedVehicle: '',
+
             selectedOrder: '',
             formatDate: '',
 
@@ -51,6 +64,10 @@ class EditForwardingOrderPanel extends Component{
             isAllLoadsVisible: false,
             isAddEventModalOpen: false,
             isEditAdditionalDescriptionModalOpen: false,
+            isAddTransitModalOpen: false,
+            isAddTransitModalTransportersTableVisible: false,
+            isAddTransitModalDriversTableVisible: false,
+            isAddTransitModalVehiclesTableVisible: false,
 
             serverResponseMessage: '',
             isServerResponseModalOpen: false
@@ -76,6 +93,26 @@ class EditForwardingOrderPanel extends Component{
     // handle open/close add event modal
     handleAddEventModal = () => this.setState({ isAddEventModalOpen: !this.state.isAddEventModalOpen })
 
+    // handle open/close add transit modal
+    handleAddTransitModal = () => this.setState({ isAddTransitModalOpen: !this.state.isAddTransitModalOpen })
+
+    // handle visibility of add transit modal tables
+    handleAddTransitModalTransportersTableVisibility = () => this.setState({ isAddTransitModalTransportersTableVisible: !this.state.isAddTransitModalTransportersTableVisible })
+    handleAddTransitModalDriversTableVisibility = () => this.setState({ isAddTransitModalDriversTableVisible: !this.state.isAddTransitModalDriversTableVisible })
+    handleAddTransitModalVehiclesTableVisibility = () => this.setState({ isAddTransitModalVehiclesTableVisible: !this.state.isAddTransitModalVehiclesTableVisible })
+
+    // handle selected transporter / driver / vehicle for new transit
+    handleSelectedTransporterForNewTransit = (transporter) => {
+        this.setState({ 
+            newTransitSelectedTransporter: transporter, 
+            isAddTransitModalTransportersTableVisible: false,
+            newTransitSelectedDriver: '',
+            newTransitSelectedVehicle: ''
+         })
+    }
+    handleSelectedDriverForNewTransit = (driver) => this.setState({ newTransitSelectedDriver: driver, isAddTransitModalDriversTableVisible: false })
+    handleSelectedVehicleForNewTransit = (vehicle) => this.setState({ newTransitSelectedVehicle: vehicle, isAddTransitModalVehiclesTableVisible: false })
+
     // handle open edit additional description modal
     handleOpenEditAdditionalDescriptionModal = () => this.setState({ isEditAdditionalDescriptionModalOpen: true })
 
@@ -88,6 +125,10 @@ class EditForwardingOrderPanel extends Component{
     // handle close server response modal
     handleCloseServerResponseModal = () => this.setState({ isServerResponseModalOpen: false })
 
+    // handle save button
+    handleSaveButton = () => {
+        this.addOrUpdateEvents()
+    }
 
     addEvent = () => {
         var _events = this.state.events
@@ -103,9 +144,8 @@ class EditForwardingOrderPanel extends Component{
             'contactPersonPhoneNumber': this.state.newEventContactPersonPhoneNumber,
             'eventPlace': this.state.newEventPlace,
             'eventStreetAddress': this.state.newEventStreetAddress,
-            'forwardingOrderId': this.state.forwardingOrder?.id
+            'forwardingOrderId': 0
         })
-
 
         this.setState({
             events: _events,
@@ -119,6 +159,12 @@ class EditForwardingOrderPanel extends Component{
             newEventPlace: '',
             newEventStreetAddress: ''
         })
+    }
+
+    removeEvent = (event) => {
+        var _events = this.state.events.filter(x => x.id !== event.id );
+        var len = _events.length
+        this.setState({ events: _events, eventsQuantity: len })
     }
 
     // GET call to API to get forwardingOrder by id
@@ -263,13 +309,199 @@ class EditForwardingOrderPanel extends Component{
         catch(error){
             console.log(error)
         }
+    }
 
+    // GET call to API to get all transporters
+    async getTransporters(){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/transporters',
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
+                
+            })
 
+            const data = await response.data
+            data.length === 0 ? this.setState({ transporters: [] }) : this.setState({ transporters: data })
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
+    // GET call to API to get all drivers
+    async getDrivers(){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/drivers',
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
+                
+            })
+
+            const data = await response.data
+            data.length === 0 ? this.setState({ drivers: [] }) : this.setState({ drivers: data })
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
+    // GET call to API to get all vehicles
+    async getVehicles(){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/vehicles',
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
+                
+            })
+
+            const data = await response.data
+            data.length === 0 ? this.setState({ vehicles: [] }) : this.setState({ vehicles: data })
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
+    // GET call to API to get events by forwarding order id
+    async getEventsByForwardingOrder(forwardingOrderId){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/events/forwarding-orders/' + forwardingOrderId, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            })
+
+            const data = await response.data
+            if(data.length === 0){
+                this.setState({ events: [], eventsQuantity: 0 })
+                return
+            }
+
+            this.setState({ events: data, eventsQuantity: data.length })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    // GET call to API to get all transits by forwarding order
+    async getTransitsByForwardingOrder(forwardingOrderId){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/transits/forwarding-orders/' + forwardingOrderId, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            })
+
+            const data = await response.data
+            if(data.length === 0){
+                this.setState({ transits: [], transitsQuantity: 0 })
+                return
+            }
+
+            this.setState({ transits: data, transitsQuantity: data.length })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    // PUT call to API to add or update events
+    async addOrUpdateEvents(){
+        try
+        {
+            var newOrUpdatedEvents = [];
+            this.state.events.map(x => {
+                if(x.forwardingOrderId === 0){
+                    newOrUpdatedEvents.push({
+                        'eventName': x.eventName,
+                        'eventStartTime': x.eventStartTime,
+                        'eventEndTime': x.eventEndTime,
+                        'contactPersonFirstName': x.contactPersonFirstName,
+                        'contactPersonLastName': x.contactPersonLastName,
+                        'contactPersonPhoneNumber': x.contactPersonPhoneNumber,
+                        'eventPlace': x.eventPlace,
+                        'eventStreetAddress': x.eventStreetAddress,
+                        'forwardingOrderId': this.state.forwardingOrder?.id
+                    })
+                    return
+                }
+
+                newOrUpdatedEvents.push({
+                    'id': x.id,
+                    'eventStartTime': x.eventStartTime,
+                    'eventEndTime': x.eventEndTime,
+                    'contactPersonFirstName': x.contactPersonFirstName,
+                    'contactPersonLastName': x.contactPersonLastName,
+                    'contactPersonPhoneNumber': x.contactPersonPhoneNumber,
+                    'eventPlace': x.eventPlace,
+                    'eventStreetAddress': x.eventStreetAddress,
+                    'forwardingOrderId': x.forwardingOrderId
+                })
+            })
+
+            const response = await axios.put('https://localhost:44394/events/' + this.state.forwardingOrder?.id,
+            {
+                'events': newOrUpdatedEvents
+            },
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
+            })
+
+            this.setState({ isServerResponseModalOpen: true, serverResponseMessage: response.data.message })
+        }
+        catch(error){
+            if(error.response){
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponseMessage: "Nie podano danych załadunku/rozładunku.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponseMessage: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
+            }
+            console.log(error)
+        }
     }
 
     async componentDidMount(){
         await this.getForwardingOrderById(this.props.match.params.id)
         await this.getOrdersByForwardingOrder(this.props.match.params.id)
+        await this.getEventsByForwardingOrder(this.props.match.params.id)
+        await this.getTransitsByForwardingOrder(this.props.match.params.id)
+        await this.getTransporters()
+        await this.getVehicles()
+        await this.getDrivers()
         await this.getAllLoads()
     }
 
@@ -280,8 +512,7 @@ class EditForwardingOrderPanel extends Component{
                     <Col xs='9' style={{ minWidth: 450 }}>
                         <div className='Orders-Header'>Zlecenie spedycji</div>
                     </Col>
-
-                    <Col style={{ minWidth: 120, marginTop: 10, textAlign: 'right' }}>
+                    <Col style={{ minWidth: 120, marginTop: 10}}>
                         <NavLink className='Add-User-Nav-Link' to={{
                             pathname: '/spedytor/zlecenia' }}>
                                 <Button 
@@ -290,7 +521,14 @@ class EditForwardingOrderPanel extends Component{
                                     Wróć
                                 </Button>
                         </NavLink>
-                        
+                    </Col>
+                    <Col style={{ minWidth: 120, marginTop: 10}}>
+                        <Button 
+                            className="Orders-Button" 
+                            variant="light"
+                            onClick={this.handleSaveButton}>
+                                Zapisz
+                        </Button>
                     </Col>
                 </Row>
                 <Row>
@@ -489,7 +727,7 @@ class EditForwardingOrderPanel extends Component{
                             <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Orders-Stats-Header' style={{ fontSize: 18 }}>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 22 }}>
                                             <CgNotes size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Szczegóły zamówienia</span>
                                         </div>
                                     </Col>
@@ -499,7 +737,7 @@ class EditForwardingOrderPanel extends Component{
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row style={{ textAlign: 'center', marginTop: 5, textAlign: 'left' }}>
+                                <Row style={{ marginTop: 5, textAlign: 'left' }}>
                                     <Col>
                                         <div className='Tile-Data-Label' style={{ fontSize: 12 }}>
                                             <FaWeightHanging size='1.3em' style={{ color: '#50ee9c' }}/><span>&nbsp;&nbsp;</span>
@@ -508,7 +746,7 @@ class EditForwardingOrderPanel extends Component{
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row style={{ textAlign: 'center', textAlign: 'left' }}>
+                                <Row style={{ textAlign: 'left' }}>
                                     <Col>
                                         <div className='Tile-Data-Label' style={{ fontSize: 12 }}>
                                             <FaWeight size='1.3em' style={{ color: '#50ee9c' }}/><span>&nbsp;&nbsp;</span>
@@ -517,7 +755,7 @@ class EditForwardingOrderPanel extends Component{
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row style={{ textAlign: 'center', textAlign: 'left' }}>
+                                <Row style={{ textAlign: 'left' }}>
                                     <Col>
                                         <div className='Tile-Data-Label' style={{ fontSize: 12 }}>
                                             <FaGlassWhiskey size='1.3em' style={{ color: '#50ee9c' }}/><span>&nbsp;&nbsp;</span>
@@ -527,7 +765,7 @@ class EditForwardingOrderPanel extends Component{
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row style={{ textAlign: 'center', textAlign: 'left' }}>
+                                <Row style={{ textAlign: 'left' }}>
                                     <Col>
                                         <div className='Tile-Data-Label' style={{ fontSize: 12 }}>
                                             <FiMap size='1.3em' style={{ color: '#50ee9c' }}/>
@@ -542,7 +780,7 @@ class EditForwardingOrderPanel extends Component{
                                         </div>
                                     </Col>
                                 </Row>
-                                <Row style={{ textAlign: 'center', textAlign: 'left' }}>
+                                <Row style={{ textAlign: 'left' }}>
                                     <Col>
                                         <div className='Tile-Data-Label' style={{ fontSize: 12 }}>
                                             <FaWarehouse size='1.3em' style={{ color: '#50ee9c' }}/>
@@ -681,7 +919,7 @@ class EditForwardingOrderPanel extends Component{
                 }
                 <Row style={{ marginTop: 25, marginBottom: 35 }}>
                     <Col>
-                        <div  className='Orders-Sub-Tile' style={{ maxWidth: 600 }}>
+                        <div className='Orders-Sub-Tile' style={{ maxWidth: 1200 }}>
                             <Container>
                                 <Row>
                                     <Col xs='9'>
@@ -694,25 +932,32 @@ class EditForwardingOrderPanel extends Component{
                                             <MdShowChart size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>0</span>
                                         </div>
                                     </Col>
-                                </Row>
-                                <Row style={{ paddingTop: 15 }}>
-                                    <Col xs='9'>
-                                    </Col>
                                     <Col>
                                         <Button 
                                             className="Yellow-Button" 
                                             variant="light"
                                             style={{width: '80px'}}
-                                            onClick={this.handleOpenAddLoadModal}>
+                                            onClick={this.handleAddTransitModal}>
                                                  <MdAdd size='1.0em'/><span>&nbsp;</span><span>Dodaj</span>
                                         </Button>
                                     </Col>
                                 </Row>
+                                {this.state.transitsQuantity === 0 &&
+                                <Row style={{ textAlign: 'center' }}>
+                                    <Col>
+                                        <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
+                                            Brak
+                                        </div>
+                                    </Col>
+                                </Row>
+                                }
                             </Container>
                         </div>
                     </Col>
+                </Row>
+                <Row style={{ marginBottom: 35 }}> 
                     <Col>
-                        <div  className='Orders-Sub-Tile' style={{ maxWidth: 600 }}>
+                        <div  className='Orders-Sub-Tile' style={{ maxWidth: 1200 }}>
                             <Container>
                                 <Row>
                                     <Col xs='9'>
@@ -725,33 +970,6 @@ class EditForwardingOrderPanel extends Component{
                                             <MdShowChart size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>{this.state.eventsQuantity}</span>
                                         </div>
                                     </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <MDBDataTable
-                                            className='Customers-Data-Table'
-                                            style={{color: '#bdbbbb'}}
-                                            maxHeight="35vh"
-                                            scrollY
-                                            small
-                                            data={{
-                                                columns: eventsColumns,
-                                                rows:
-                                                    this.state.events.map((event) => (
-                                                        {
-                                                            name: event.eventName,
-                                                            startTime: event.eventStartTime,
-                                                            endTime: event.eventEndTime,
-                                                            place: event.eventPlace
-                                                        }
-                                                    ))
-                                            }}
-                                        />
-                                    </Col>
-                                </Row>
-                                <Row style={{ paddingBottom: 10 }}>
-                                    <Col xs='9'>
-                                    </Col>
                                     <Col>
                                         <Button 
                                             className="Purple-Button" 
@@ -762,6 +980,47 @@ class EditForwardingOrderPanel extends Component{
                                         </Button>
                                     </Col>
                                 </Row>
+                                {this.state.eventsQuantity === 0 && 
+                                <Row style={{ textAlign: 'center'}}>
+                                    <Col>
+                                        <div className='Tile-Header' style={{ fontSize: 22, color: '#c76eff' }}>Brak</div>
+                                    </Col>
+                                </Row>
+                                }
+                                {this.state.eventsQuantity !== 0 &&
+                                <Row style={{ marginTop: 15 }}>
+                                    <Col>
+                                        <MDBDataTable
+                                            className='Customers-Data-Table'
+                                            style={{ color: '#bdbbbb' }}
+                                            maxHeight="35vh"
+                                            scrollY
+                                            small
+                                            data={{
+                                                columns: eventsColumns,
+                                                rows:
+                                                    this.state.events.map((event) => (
+                                                        {
+                                                            name: event.eventName,
+                                                            startTime: event.eventStartTime.replace('T', ' '),
+                                                            endTime: event.eventEndTime.replace('T', ' '),
+                                                            contactPerson: event.contactPersonFirstName + ' ' + event.contactPersonLastName,
+                                                            contactPhoneNumber: event.contactPersonPhoneNumber,
+                                                            place: event.eventPlace,
+                                                            address: event.eventStreetAddress,
+                                                            delete: 
+                                                            <RiDeleteBin6Line 
+                                                                size='1.3em' 
+                                                                className='Delete-Load-Icon'
+                                                                onClick={this.removeEvent.bind(this, event)}
+                                                            />
+                                                        }
+                                                    ))
+                                            }}
+                                        />
+                                    </Col>
+                                </Row>
+                                }
                             </Container>
                         </div>
                     </Col>
@@ -881,7 +1140,7 @@ class EditForwardingOrderPanel extends Component{
                                     </label>
                                 </Col>
                             </Row>
-                            <Row style={{marginTop: '10px', paddingLeft: '10px'}}>
+                            <Row style={{marginTop: 35, paddingLeft: '10px'}}>
                                 <Col>
                                     <FormControl>
                                         <TextField
@@ -1049,7 +1308,7 @@ class EditForwardingOrderPanel extends Component{
                                             id="additionalInformation" 
                                             label='Adres'
                                             color="primary"
-                                            style={{ width: 150 }}
+                                            style={{ width: 250 }}
                                             onChange={this.handleChange('newEventStreetAddress')}
                                             InputLabelProps={{
                                                 style:{
@@ -1068,11 +1327,542 @@ class EditForwardingOrderPanel extends Component{
                             <Row style={{textAlign: 'center', marginTop: 40 }}>
                                 <Col>
                                     <Button 
-                                        className="Tile-Button" 
+                                        className="Purple-Button" 
                                         variant="light"
                                         style={{width: '110px'}}
                                         onClick={() => {
                                             this.addEvent();
+                                            close()
+                                        }}>
+                                            <MdDone size='1.0em'/><span>&nbsp;</span><span>Zatwierdź</span>
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Container>
+                        )
+                    }
+                </Popup>
+                <Popup 
+                    modal
+                    open={this.state.isAddTransitModalOpen}
+                    onClose={this.handleAddTransitModal}
+                    contentStyle={{
+                        width: '50vw',
+                        height: '95vh',
+                        overflowY: 'scroll',
+                        backgroundColor: '#202125',
+                        borderColor: '#202125',
+                        borderRadius: '15px'}}>
+                    {
+                        close => (
+                            <Container>
+                            <Row style={{textAlign: 'center'}}>
+                                <Col>
+                                    <label className='Orders-Header'>
+                                        <AiOutlineCar size='1.5em'/><span>&nbsp;&nbsp;</span><span>Dodawanie przejazdu</span>
+                                    </label>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: 30, paddingLeft: '10px'}}>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label='Trasa (skrót)'
+                                            color="primary"
+                                            onChange={this.handleChange('newTransitRouteShortPath')}
+                                            style={{ width: 250 }}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: 'whitesmoke'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label=
+                                                { 
+                                                    <div>
+                                                        <GiPathDistance/><span>&nbsp;&nbsp;</span><span>Długość trasy (km)</span>
+                                                    </div>
+                                                }
+                                            color="primary"
+                                            type='number'
+                                            onChange={this.handleChange('newTransitTransportDistance')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: 'whitesmoke'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{ marginTop: 25 }}>
+                                <Col>
+                                    <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
+                                        <FaMapMarkerAlt size='1.5em'/><span>&nbsp;&nbsp;</span><span>Przejazd z:</span>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: 15 , paddingLeft: 10 }}>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label=
+                                            { 
+                                                <div>
+                                                    <HiOutlineOfficeBuilding /><span>&nbsp;&nbsp;</span><span>Adres</span>
+                                                </div>
+                                            }
+                                            color="primary"
+                                            onChange={this.handleChange('newTransitSourceStreetAddress')}
+                                            style={{ width: 250 }}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: 'whitesmoke'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label=
+                                            { 
+                                                <div>
+                                                    <MdLocalPostOffice /><span>&nbsp;&nbsp;</span><span>Kod pocztowy</span>
+                                                </div>
+                                            }
+                                            color="primary"
+                                            onChange={this.handleChange('newTransitSourceZipCode')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: 'whitesmoke'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: 5 , paddingLeft: 10 }}>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label=
+                                            { 
+                                                <div>
+                                                    <MdLocationCity /><span>&nbsp;&nbsp;</span><span>Miasto</span>
+                                                </div>
+                                            }
+                                            color="primary"
+                                            onChange={this.handleChange('newTransitSourceCity')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: 'whitesmoke'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <FaFlagUsa /><span>&nbsp;&nbsp;</span><span>Kraj</span>
+                                                </div>
+                                            }
+                                                    
+                                            color="primary"
+                                            onChange={this.handleChange('newTransitSourceCountry')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: 'whitesmoke'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{ marginTop: 15 }}>
+                                <Col>
+                                    <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
+                                        <FaMapMarker size='1.5em'/><span>&nbsp;&nbsp;</span><span>Przejazd do:</span>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: 15 , paddingLeft: 10 }}>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label=
+                                            { 
+                                                <div>
+                                                    <HiOutlineOfficeBuilding /><span>&nbsp;&nbsp;</span><span>Adres</span>
+                                                </div>
+                                            }
+                                            color="primary"
+                                            onChange={this.handleChange('newTransitDestinationStreetAddress')}
+                                            style={{ width: 250 }}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: 'whitesmoke'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label=
+                                            { 
+                                                <div>
+                                                    <MdLocalPostOffice /><span>&nbsp;&nbsp;</span><span>Kod pocztowy</span>
+                                                </div>
+                                            }
+                                            color="primary"
+                                            onChange={this.handleChange('newTransitDestinationZipCode')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: 'whitesmoke'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{marginTop: 15 , paddingLeft: 10 }}>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label=
+                                            { 
+                                                <div>
+                                                    <MdLocationCity /><span>&nbsp;&nbsp;</span><span>Miasto</span>
+                                                </div>
+                                            }
+                                            color="primary"
+                                            onChange={this.handleChange('newTransitDestinationCity')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: 'whitesmoke'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label=
+                                            { 
+                                                <div>
+                                                    <FaFlagUsa /><span>&nbsp;&nbsp;</span><span>Kraj</span>
+                                                </div>
+                                            }
+                                            color="primary"
+                                            onChange={this.handleChange('newTransitDestinationCountry')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: 'whitesmoke'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{ marginTop: 25 }}>
+                                <Col xs='4'> 
+                                    <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
+                                        <RiTruckFill size='1.5em'/><span>&nbsp;&nbsp;</span><span>Przewoźnik: </span>
+                                    </div>
+                                </Col>
+                                <Col>
+                                    <Button 
+                                        className="Yellow-Button" 
+                                        variant="light"
+                                        style={{width: '110px'}}
+                                        onClick={this.handleAddTransitModalTransportersTableVisibility}>
+                                            <MdEdit size='1.0em'/><span>&nbsp;</span>
+                                            <span>{this.state.newTransitSelectedTransporter === '' ? 'Dodaj' : 'Zmień'}</span>
+                                    </Button>
+                                </Col>
+                            </Row>
+                            <Row style={{ marginTop: 10 }}>
+                                <Col>
+                                    <div className='Tile-Header' style={{ fontSize: 22, color: 'whitesmoke' }}>
+                                        {this.state.newTransitSelectedTransporter?.fullName}
+                                    </div>
+                                </Col>
+                            </Row>
+                            {this.state.isAddTransitModalTransportersTableVisible &&
+                            <Row style={{ marginTop: 10 }}>
+                                <Col>
+                                    <MDBDataTable
+                                            className='Customers-Data-Table'
+                                            style={{ color: '#bdbbbb' }}
+                                            maxHeight="35vh"
+                                            scrollY
+                                            small
+                                            data={{
+                                                columns: transportersColumns,
+                                                rows:
+                                                    this.state.transporters.map((transporter) => (
+                                                        {
+                                                            transporterFullName: transporter.fullName,
+                                                            city: transporter.city,
+                                                            nip: transporter.nip,
+                                                            select: 
+                                                                <ImCheckboxChecked
+                                                                    className='Transporter-Details-Icon' 
+                                                                    onClick={this.handleSelectedTransporterForNewTransit.bind(this, transporter)}
+                                                                    size='1.4em'/>,
+                                                        }
+                                                    ))
+                                            }}
+                                        />
+                                </Col>
+                            </Row>
+                            }
+                            {this.state.newTransitSelectedTransporter !== '' &&
+                            <div>
+                            <Row style={{ marginTop: 25 }}>
+                                <Col xs='4'> 
+                                    <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
+                                        <GiFullMotorcycleHelmet size='1.5em'/><span>&nbsp;&nbsp;</span><span>Kierowca: </span>
+                                    </div>
+                                </Col>
+                                <Col>
+                                    <Button 
+                                        className="Yellow-Button" 
+                                        variant="light"
+                                        style={{width: '110px'}}
+                                        onClick={this.handleAddTransitModalDriversTableVisibility}>
+                                            <MdEdit size='1.0em'/><span>&nbsp;</span>
+                                            <span>{this.state.newTransitSelectedDriver === '' ? 'Dodaj' : 'Zmień'}</span>
+                                    </Button>
+                                </Col>
+                            </Row>
+                            <Row style={{ marginTop: 10 }}>
+                                <Col>
+                                    <div className='Tile-Header' style={{ fontSize: 22, color: 'whitesmoke' }}>
+                                        {this.state.newTransitSelectedDriver?.firstName}<span>&nbsp;</span>{this.state.newTransitSelectedDriver?.lastName}
+                                    </div>
+                                </Col>
+                            </Row>
+                            {this.state.isAddTransitModalDriversTableVisible &&
+                            <Row style={{ marginTop: 10 }}>
+                                <Col>
+                                    <MDBDataTable
+                                            className='Customers-Data-Table'
+                                            style={{ color: '#bdbbbb' }}
+                                            maxHeight="35vh"
+                                            scrollY
+                                            small
+                                            data={{
+                                                columns: driversColumns,
+                                                rows:
+                                                    this.state.drivers.map((driver) => (
+                                                        {
+                                                            driverFirstName: driver.firstName,
+                                                            driverLastName: driver.lastName,
+                                                            phoneNumber: driver.contactPhoneNumber,
+                                                            mail: driver.mail,
+                                                            select: 
+                                                                <ImCheckboxChecked
+                                                                    className='Transporter-Details-Icon' 
+                                                                    onClick={this.handleSelectedDriverForNewTransit.bind(this, driver)}
+                                                                    size='1.4em'/>,
+                                                        }
+                                                    ))
+                                            }}
+                                        />
+                                </Col>
+                            </Row>
+                            }
+                            <Row style={{ marginTop: 25 }}>
+                                <Col xs='4'> 
+                                    <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
+                                        <FaTruckMoving size='1.5em'/><span>&nbsp;&nbsp;</span><span>Pojazd: </span>
+                                    </div>
+                                </Col>
+                                <Col>
+                                    <Button 
+                                        className="Yellow-Button" 
+                                        variant="light"
+                                        style={{width: '110px'}}
+                                        onClick={this.handleAddTransitModalVehiclesTableVisibility}>
+                                            <MdEdit size='1.0em'/><span>&nbsp;</span>
+                                            <span>{this.state.newTransitSelectedVehicle === '' ? 'Dodaj' : 'Zmień'}</span>
+                                    </Button>
+                                </Col>
+                            </Row>
+                            <Row style={{ marginTop: 10 }}>
+                                <Col>
+                                    <div className='Tile-Header' style={{ fontSize: 22, color: 'whitesmoke' }}>
+                                        {this.state.newTransitSelectedVehicle?.brand}<span>&nbsp;</span>{this.state.newTransitSelectedVehicle?.model}
+                                    </div>
+                                </Col>
+                            </Row>
+                            {this.state.isAddTransitModalVehiclesTableVisible &&
+                            <Row style={{ marginTop: 10 }}>
+                                <Col>
+                                    <MDBDataTable
+                                            className='Customers-Data-Table'
+                                            style={{ color: '#bdbbbb' }}
+                                            maxHeight="35vh"
+                                            scrollY
+                                            small
+                                            data={{
+                                                columns: vehiclesColumns,
+                                                rows:
+                                                    this.state.vehicles.map((vehicle) => (
+                                                        {
+                                                            vehicleBrand: vehicle.brand,
+                                                            vehicleModel: vehicle.model,
+                                                            vehicleLoadingCapacity: vehicle.loadingCapacity,
+                                                            vehicleTrailer: vehicle.trailer,
+                                                            vehicleType: vehicle.vehicleType.typeName,
+                                                            select: 
+                                                                <ImCheckboxChecked
+                                                                    className='Transporter-Details-Icon' 
+                                                                    onClick={this.handleSelectedVehicleForNewTransit.bind(this, vehicle)}
+                                                                    size='1.4em'/>,
+                                                        }
+                                                    ))
+                                            }}
+                                        />
+                                </Col>
+                            </Row>
+                            }
+                            </div>
+                            }
+                            <Row style={{ marginTop: 25 }}>
+                                <Col>
+                                    <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
+                                        <FaRegMoneyBillAlt size='1.5em'/><span>&nbsp;&nbsp;</span><span>Szczegóły finansowe</span>
+                                    </div>
+                                </Col>
+                            </Row>
+                            <Row style={{ marginTop: 15, paddingLeft: 10 }}>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label='Cena netto (zł)'
+                                            color="primary"
+                                            type='number'
+                                            style={{ width: 150 }}
+                                            onChange={this.handleChange('newTransitNetPrice')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: 'whitesmoke'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                                <Col>
+                                    <FormControl>
+                                        <TextField
+                                            id="additionalInformation" 
+                                            label='Cena brutto (zł)'
+                                            color="primary"
+                                            type='number'
+                                            style={{ width: 150 }}
+                                            onChange={this.handleChange('newTransitGrossPrice')}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: 'whitesmoke'
+                                                },
+                                            }} 
+                                        />
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{textAlign: 'center', marginTop: 40 }}>
+                                <Col>
+                                    <Button 
+                                        className="Yellow-Button" 
+                                        variant="light"
+                                        style={{width: '110px'}}
+                                        onClick={() => {
                                             close()
                                         }}>
                                             <MdDone size='1.0em'/><span>&nbsp;</span><span>Zatwierdź</span>
@@ -1132,23 +1922,142 @@ const eventsColumns =
         label: 'Nazwa',
         field: 'name',
         sort: 'asc',
-        width: 150,
+        width: 125,
     },
     {
         label: 'Czas rozp.',
         field: 'startTime',
         sort: 'asc',
-        width: 100
+        width: 125
     },
     {
         label: 'Czas zakończ.',
         field: 'endTime',
         sort: 'asc',
-        width: 100
+        width: 125
+    },
+    {
+        label: 'Kontakt',
+        field: 'contactPerson',
+        sort: 'asc',
+        width: 125
+    },
+    {
+        label: 'Nr. kontaktowy',
+        field: 'contactPhoneNumber',
+        sort: 'asc',
+        width: 125
     },
     {
         label: 'Miejsce',
         field: 'place',
-        sort: 'asc'
+        sort: 'asc',
+        width: 125
     },
+    {
+        label: 'Adres',
+        field: 'address',
+        sort: 'asc',
+        width: 125
+    },
+    {
+        label: '',
+        field: 'delete',
+        sort: 'asc'
+    }
 ];
+
+const transportersColumns =
+[
+    {
+        label: 'Przewoźnik',
+        field: 'transporterFullName',
+        sort: 'asc',
+        width: 150,
+    },
+    {
+        label: 'Miasto',
+        field: 'city',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: 'NIP',
+        field: 'nip',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: '',
+        field: 'select',
+        sort: 'asc',
+        width: 50
+    }
+]
+
+const driversColumns =
+[
+    {
+        label: 'Imię',
+        field: 'driverFirstName',
+        sort: 'asc',
+        width: 150,
+    },
+    {
+        label: 'Nazwisko',
+        field: 'driverLastName',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: 'Nr. telefonu',
+        field: 'phoneNumber',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: 'Adres email',
+        field: 'mail',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: '',
+        field: 'select'
+    }
+]
+const vehiclesColumns =
+[
+    {
+        label: 'Marka',
+        field: 'vehicleBrand',
+        sort: 'asc',
+        width: 150,
+    },
+    {
+        label: 'Model',
+        field: 'vehicleModel',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: 'Pojemność załadowania',
+        field: 'vehicleLoadingCapacity',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: 'Naczepa',
+        field: 'vehicleTrailer',
+        width: 150
+    },
+    {
+        label: 'Typ pojazdu',
+        field: 'vehicleType',
+        width: 150
+    },
+    {
+        label: '',
+        field: 'select'
+    }
+]
