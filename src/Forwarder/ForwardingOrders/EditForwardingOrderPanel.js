@@ -10,7 +10,8 @@ import { ImCheckboxChecked } from 'react-icons/im';
 import { HiOutlineOfficeBuilding } from 'react-icons/hi';
 import { AiOutlineCar, AiOutlineUser } from 'react-icons/ai';
 import { GiPathDistance, GiFullMotorcycleHelmet } from 'react-icons/gi';
-import { Tooltip, FormControl, TextField } from '@material-ui/core';
+import { SiStatuspage } from 'react-icons/si';
+import { Tooltip, FormControl, TextField, InputLabel, Select, MenuItem } from '@material-ui/core';
 import { FiChevronDown, FiChevronUp, FiMap } from 'react-icons/fi';
 import { getSessionCookie } from '../../sessions';
 import { MDBDataTable } from 'mdbreact';
@@ -31,6 +32,9 @@ class EditForwardingOrderPanel extends Component{
             allLoads: [],
             allLoadsQuantity: '',
 
+            orderStatuses: [],
+            newOrderStatusIdForOrder: '',
+
             events: [],
             eventsQuantity: 0,
 
@@ -45,6 +49,22 @@ class EditForwardingOrderPanel extends Component{
 
             vehicles: [],
             newTransitSelectedVehicle: '',
+
+            paymentForms: [],
+            newTransitSelectedPaymentFormId: '',
+
+            newTransitRouteShortPath: '',
+            newTransitNetPrice: '',
+            newTransitGrossPrice: '',
+            newTransitSourceStreetAddress: '',
+            newTransitSourceZipCode: '',
+            newTransitSourceCity: '',
+            newTransitSourceCountry: '',
+            newTransitDestinationStreetAddress: '',
+            newTransitDestinationZipCode: '',
+            newTransitDestinationCity: '',
+            newTransitDestinationCountry: '',
+            newTransitTransportDistance: '',
 
             selectedOrder: '',
             formatDate: '',
@@ -101,7 +121,7 @@ class EditForwardingOrderPanel extends Component{
     handleAddTransitModalDriversTableVisibility = () => this.setState({ isAddTransitModalDriversTableVisible: !this.state.isAddTransitModalDriversTableVisible })
     handleAddTransitModalVehiclesTableVisibility = () => this.setState({ isAddTransitModalVehiclesTableVisible: !this.state.isAddTransitModalVehiclesTableVisible })
 
-    // handle selected transporter / driver / vehicle for new transit
+    // handle selected transporter / driver / vehicle / payment form for new transit
     handleSelectedTransporterForNewTransit = (transporter) => {
         this.setState({ 
             newTransitSelectedTransporter: transporter, 
@@ -112,6 +132,7 @@ class EditForwardingOrderPanel extends Component{
     }
     handleSelectedDriverForNewTransit = (driver) => this.setState({ newTransitSelectedDriver: driver, isAddTransitModalDriversTableVisible: false })
     handleSelectedVehicleForNewTransit = (vehicle) => this.setState({ newTransitSelectedVehicle: vehicle, isAddTransitModalVehiclesTableVisible: false })
+    handleSelectedPaymentFormIdForNewTransit = (event) => this.setState({ newTransitSelectedPaymentFormId: event.target.value }) 
 
     // handle open edit additional description modal
     handleOpenEditAdditionalDescriptionModal = () => this.setState({ isEditAdditionalDescriptionModalOpen: true })
@@ -124,6 +145,10 @@ class EditForwardingOrderPanel extends Component{
 
     // handle close server response modal
     handleCloseServerResponseModal = () => this.setState({ isServerResponseModalOpen: false })
+
+    // handle open order status of order modal
+    handleOpenChangeOrderStatusModal = (order) => this.setState({ isChangeOrderStatusModalOpen: true, newOrderStatusIdForOrder: order.orderStatusId, selectedOrder: order })
+    handleCloseChangeOrderStatusModal = () => this.setState({ isChangeOrderStatusModalOpen: false })
 
     // handle save button
     handleSaveButton = () => {
@@ -165,6 +190,60 @@ class EditForwardingOrderPanel extends Component{
         var _events = this.state.events.filter(x => x.id !== event.id );
         var len = _events.length
         this.setState({ events: _events, eventsQuantity: len })
+    }
+
+    addTransit = () => {
+        var _transits = this.state.transits
+        var len = _transits.length
+        var newId = len === 0 ? 1 : _transits[len-1].id+1
+        _transits.push({
+            'id': newId,
+            'routeShortPath': this.state.newTransitRouteShortPath,
+            'netPrice': this.state.newTransitNetPrice,
+            'grossPrice': this.state.newTransitGrossPrice,
+            'transitSourceStreetAddress': this.state.newTransitSourceStreetAddress,
+            'transitSourceZipCode': this.state.newTransitSourceZipCode,
+            'transitSourceCity': this.state.newTransitSourceCity,
+            'transitSourceCountry': this.state.newTransitSourceCountry,
+            'transitDestinationStreetAddress': this.state.newTransitDestinationStreetAddress,
+            'transitDestinationZipCode': this.state.newTransitDestinationZipCode,
+            'transitDestinationCity': this.state.newTransitDestinationCity,
+            'transitDestinationCountry': this.state.newTransitDestinationCountry,
+            'transportDistance': this.state.newTransitTransportDistance,
+            'paymentFormId': this.state.newTransitSelectedPaymentFormId,
+            'transporter': this.state.newTransitSelectedTransporter,
+            'vehicle': this.state.newTransitSelectedVehicle,
+            'driver': this.state.newTransitSelectedDriver,
+            'isNew': 1
+        })
+
+        console.log(_transits)
+
+        this.setState({
+            transits: _transits,
+            transitsQuantity: _transits.length,
+            newTransitRouteShortPath: '',
+            newTransitNetPrice: '',
+            newTransitSourceStreetAddress: '',
+            newTransitSourceCity: '',
+            newTransitSourceZipCode: '',
+            newTransitSourceCountry: '',
+            newTransitDestinationStreetAddress: '',
+            newTransitDestinationCity: '',
+            newTransitDestinationZipCode: '',
+            newTransitDestinationCountry: '',
+            newTransitTransportDistance: '',
+            newTransitSelectedPaymentFormId: this.state.paymentForms[0]?.id,
+            newTransitSelectedTransporter: '',
+            newTransitSelectedDriver: '',
+            newTransitSelectedVehicle: ''
+        })
+    }
+
+    removeTransit = (transit) => {
+        var _transits = this.state.transits.filter(x => x.id !== transit.id );
+        var len = _transits.length
+        this.setState({ transits: _transits, transitsQuantity: len })
     }
 
     // GET call to API to get forwardingOrder by id
@@ -377,6 +456,48 @@ class EditForwardingOrderPanel extends Component{
         }
     }
 
+    // GET call to API to get all payment forms
+    async getPaymentForms(){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/payment-forms',
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
+            })
+
+            const data = await response.data
+            data.length === 0 ? this.setState({ paymentForms: [], newTransitSelectedPaymentFormId: '' }) : this.setState({ paymentForms: data, newTransitSelectedPaymentFormId: data[0]?.id })
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
+    // GET call to API to get order statuses
+    async getOrderStatuses(){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/order-statuses',
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
+            })
+
+            const data = await response.data
+            data.length === 0 ? this.setState({ orderStatuses: [] }) : this.setState({ orderStatuses: data })
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
+
     // GET call to API to get events by forwarding order id
     async getEventsByForwardingOrder(forwardingOrderId){
         try
@@ -473,13 +594,156 @@ class EditForwardingOrderPanel extends Component{
                 },
             })
 
-            this.setState({ isServerResponseModalOpen: true, serverResponseMessage: response.data.message })
+            await this.addOrUpdateTransits()
         }
         catch(error){
             if(error.response){
                 if(error.response.data.message === undefined){
                     this.setState({
                         serverResponseMessage: "Nie podano danych załadunku/rozładunku.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponseMessage: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
+            }
+            console.log(error)
+        }
+    }
+
+    // PUT call to API to add or update transits
+    async addOrUpdateTransits(){
+        try
+        {
+            var newOrUpdatedTransits = [];
+            this.state.transits.map(x => {
+                if(x.isNew !== null && x.isNew === 1){
+                    newOrUpdatedTransits.push({
+                        'routeShortPath': x.routeShortPath,
+                        'netPrice': parseFloat(x.netPrice),
+                        'grossPrice': parseFloat(x.grossPrice),
+                        'transitSourceStreetAddress': x.transitSourceStreetAddress,
+                        'transitSourceZipCode': x.transitSourceZipCode,
+                        'transitSourceCity': x.transitSourceCity,
+                        'transitSourceCountry': x.transitSourceCountry,
+                        'transitDestinationStreetAddress': x.transitDestinationStreetAddress,
+                        'transitDestinationZipCode': x.transitDestinationZipCode,
+                        'transitDestinationCity': x.transitDestinationCity,
+                        'transitDestinationCountry': x.transitDestinationCountry,
+                        'transportDistance': parseFloat(x.transportDistance),
+                        'paymentFormId': x.paymentFormId,
+                        'transporterId': x.transporter?.id,
+                        'vehicleId': x.vehicle?.id,
+                        'driverId': x.driver?.id,
+                    })
+                    return
+                }
+
+                // for already existing
+                newOrUpdatedTransits.push({
+                        'id': x.id,
+                        'routeShortPath': x.routeShortPath,
+                        'netPrice': parseFloat(x.netPrice),
+                        'grossPrice': parseFloat(x.grossPrice),
+                        'transitSourceStreetAddress': x.transitSourceStreetAddress,
+                        'transitSourceZipCode': x.transitSourceZipCode,
+                        'transitSourceCity': x.transitSourceCity,
+                        'transitSourceCountry': x.transitSourceCountry,
+                        'transitDestinationStreetAddress': x.transitDestinationStreetAddress,
+                        'transitDestinationZipCode': x.transitDestinationZipCode,
+                        'transitDestinationCity': x.transitDestinationCity,
+                        'transitDestinationCountry': x.transitDestinationCountry,
+                        'transportDistance': parseFloat(x.transportDistance),
+                        'paymentFormId': x.paymentFormId,
+                        'transporterId': x.transporter?.id,
+                        'vehicleId': x.vehicle?.id,
+                        'driverId': x.driver?.id,
+                })
+            })
+
+            const response = await axios.put('https://localhost:44394/transits/' + this.state.forwardingOrder?.id,
+            {
+                'transits': newOrUpdatedTransits
+            },
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
+            })
+
+            this.setState({ isServerResponseModalOpen: true, serverResponseMessage: "Zakutalizowano dane zlecenia spedycji." })
+        }
+        catch(error){
+            if(error.response){
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponseMessage: "Nie podano danych przejazdów.",
+                        isServerResponseModalOpen: true
+                    })
+                }
+                else{
+                    this.setState({
+                        serverResponseMessage: error.response.data.message,
+                        isServerResponseModalOpen: true
+                    })
+                }
+            }
+            console.log(error)
+        }
+    }
+
+    // PUT call to API to update order status of order
+    async updateOrderStatusOfOrder(){
+        try
+        {
+            const response = await axios.put('https://localhost:44394/orders/' + this.state.selectedOrder?.id,
+            {
+                'orderCreationDate': this.state.selectedOrder?.orderCreationDate,
+                'orderExpectedDate': this.state.selectedOrder?.orderExpectedDate,
+                'orderRealizationDate': this.state.selectedOrder?.orderRealizationDate,
+                'netPrice': this.state.selectedOrder?.netPrice,
+                'grossPrice': this.state.selectedOrder?.grossPrice,
+                'totalNetWeight': this.state.selectedOrder?.totalNetWeight,
+                'totalGrossWeight': this.state.selectedOrder?.totalGrossWeight,
+                'totalVolume': this.state.selectedOrder?.totalVolume,
+                'transportDistance': this.state.selectedOrder?.transportDistance,
+                'isClientVerified': this.state.selectedOrder?.isClientVerified,
+                'isAvailableAtWarehouse': this.state.selectedOrder?.isAvailableAtWarehouse,
+                'destinationStreetAddress': this.state.selectedOrder?.destinationStreetAddress,
+                'destinationZipCode': this.state.selectedOrder?.destinationZipCode,
+                'destinationCountry': this.state.selectedOrder?.destinationCountry,
+                'customerAdditionalInstructions': this.state.selectedOrder?.customerAdditionalInstructions,
+                'clientId': this.state.selectedOrder?.clientId,
+                'vehicleTypeId': this.state.selectedOrder?.vehicleTypeId,
+                'ordererId': this.state.selectedOrder?.ordererId,
+                'orderStatusId': this.state.newOrderStatusIdForOrder,
+                'paymentFormId': this.state.selectedOrder?.paymentFormId,
+                'warehouseId': this.state.selectedOrder?.warehouseId,
+                'consultantId': this.state.selectedOrder?.consultantId,
+                'forwardingOrderId': this.state.selectedOrder?.forwardingOrderId
+            },
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
+            })
+
+            await this.getOrdersByForwardingOrder(this.props.match.params.id)
+            this.setState({ isServerResponseModalOpen: true, serverResponseMessage: response.data.message })
+        }
+        catch(error){
+            if(error.response){
+                if(error.response.data.message === undefined){
+                    this.setState({
+                        serverResponseMessage: "Nie podano danych zamówienia.",
                         isServerResponseModalOpen: true
                     })
                 }
@@ -503,6 +767,8 @@ class EditForwardingOrderPanel extends Component{
         await this.getVehicles()
         await this.getDrivers()
         await this.getAllLoads()
+        await this.getPaymentForms()
+        await this.getOrderStatuses()
     }
 
     render(){
@@ -685,11 +951,11 @@ class EditForwardingOrderPanel extends Component{
                                                     orderNumber: order.orderNumber,
                                                     client: order.client?.clientFirstName + ' ' + order.client?.clientLastName,
                                                     path: order.warehouse?.city + '-' + order.destinationCity,
-                                                    expectedDate: order.orderExpectedDate.split('T')[0],
+                                                    expectedDate: order.orderExpectedDate?.split('T')[0],
                                                     orderStatus: 
                                                     <div>
                                                         <Row>
-                                                            <Col>
+                                                            <Col xs='8'>
                                                                 <div 
                                                                     className='Order-Status-Block'
                                                                     style={{
@@ -709,6 +975,17 @@ class EditForwardingOrderPanel extends Component{
                                                                     </div>
                                                                 </Tooltip>
                                                             </Col>
+                                                            <Col>
+                                                                <Tooltip title="Edytuj status zamówienia" aria-label="add">
+                                                                    <div className='User-Details-Button'>
+                                                                        <MdEdit 
+                                                                            className='Warehouse-Details-Icon' 
+                                                                            size='1.0em'
+                                                                            onClick={this.handleOpenChangeOrderStatusModal.bind(this, order)}
+                                                                         />
+                                                                    </div>
+                                                                </Tooltip>
+                                                            </Col>
                                                         </Row>
                                                     </div>
                                                 }))
@@ -723,11 +1000,11 @@ class EditForwardingOrderPanel extends Component{
                 {this.state.selectedOrder !== '' &&
                 <Row style={{ marginTop: 25 }}>
                     <Col>
-                        <div className='Orders-Sub-Tile' style={{ maxWidth: 600, height: 250 }}>
+                        <div className='Orders-Sub-Tile' style={{ maxWidth: 600, height: 260 }}>
                             <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Orders-Stats-Header' style={{ fontSize: 22 }}>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 18 }}>
                                             <CgNotes size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Szczegóły zamówienia</span>
                                         </div>
                                     </Col>
@@ -929,7 +1206,8 @@ class EditForwardingOrderPanel extends Component{
                                     </Col>
                                     <Col>
                                         <div className='Orders-Stats-Header' style={{ fontSize: 20, color: '#f2f540' }}>
-                                            <MdShowChart size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>0</span>
+                                            <MdShowChart size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span>
+                                            <span>{this.state.transitsQuantity}</span>
                                         </div>
                                     </Col>
                                     <Col>
@@ -948,6 +1226,50 @@ class EditForwardingOrderPanel extends Component{
                                         <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
                                             Brak
                                         </div>
+                                    </Col>
+                                </Row>
+                                }
+                                {this.state.transitsQuantity !== 0 &&
+                                <Row style={{ marginTop: 15 }}>
+                                    <Col>
+                                        <MDBDataTable
+                                            className='Customers-Data-Table'
+                                            style={{ color: '#bdbbbb' }}
+                                            maxHeight="35vh"
+                                            scrollY
+                                            small
+                                            data={{
+                                                columns: transitsColumns,
+                                                rows:
+                                                    this.state.transits.map((transit) => (
+                                                        {
+                                                            routeShortPath: transit.routeShortPath,
+                                                            transitSource: transit.transitSourceStreetAddress + ' ' + transit.transitSourceCity,
+                                                            transitDestination: transit.transitDestinationStreetAddress + ' ' + transit.transitDestinationCity,
+                                                            transitDates: 'Not implemented',
+                                                            transporter: transit.transporter?.fullName,
+                                                            driver: transit.driver?.firstName + ' ' + transit.driver?.lastName,
+                                                            vehicle: transit.vehicle?.brand + ' ' + transit.vehicle?.model,
+                                                            select:
+                                                                <Tooltip title="Pokaż szczegóły przejazdu" aria-label="add">
+                                                                    <div>
+                                                                        <BiShowAlt className='Delete-Load-Icon' size='1.5em' />
+                                                                    </div>
+                                                                </Tooltip>,
+                                                            delete: 
+                                                                <Tooltip title="Usuń przejazd" aria-label="add">
+                                                                    <div>
+                                                                        <RiDeleteBin6Line 
+                                                                            size='1.3em' 
+                                                                            className='Delete-Load-Icon'
+                                                                            onClick={this.removeTransit.bind(this,transit)}/>
+                                                                    </div>
+                                                                </Tooltip>
+                                                                
+                                                        }
+                                                    ))
+                                            }}
+                                        />
                                     </Col>
                                 </Row>
                                 }
@@ -1031,7 +1353,7 @@ class EditForwardingOrderPanel extends Component{
                     onClose={this.handleCloseEditAdditionalDescriptionModal}
                     contentStyle={{
                         width: '50vw',
-                        height: '45vh',
+                        height: '50vh',
                         backgroundColor: '#202125',
                         borderColor: '#202125',
                         borderRadius: '15px',
@@ -1041,10 +1363,12 @@ class EditForwardingOrderPanel extends Component{
                             <Container>
                                 <Row style={{textAlign: 'center'}}>
                                     <Col>
-                                        <label className='Edit-User-Modal-Header'>Edycja dodatkowych informacji o zleceniu</label>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 26 }}>
+                                            <CgNotes size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Edycja dodatkowych informacji o zleceniu</span>
+                                        </div>
                                     </Col>
                                 </Row>
-                                <Row style={{ marginTop: 25, textAlign: 'center' }}>
+                                <Row style={{ marginTop: 60, textAlign: 'center' }}>
                                     <Col>
                                         <FormControl  noValidate autoComplete="off">
                                             <TextField
@@ -1122,6 +1446,79 @@ class EditForwardingOrderPanel extends Component{
                 </Popup>
                 <Popup 
                     modal
+                    open={this.state.isChangeOrderStatusModalOpen}
+                    onClose={this.handleCloseChangeOrderStatusModal}
+                    closeOnDocumentClick={false}
+                    contentStyle={{
+                        width: '40vw',
+                        height: '40vh',
+                        backgroundColor: '#202125',
+                        borderColor: '#202125',
+                        borderRadius: '15px',
+                    }}>
+                    {
+                        close => (
+                            <Container>
+                                <Row style={{ textAlign: 'center' }}>
+                                    <Col>
+                                        <label className='Edit-User-Modal-Header' style={{ fontSize: 30 }}>
+                                            <SiStatuspage size='1.3em'/><span>&nbsp;&nbsp;</span>Zmiana statusu zamówienia
+                                        </label>
+                                    </Col>
+                                </Row>
+                                <Row style={{ textAlign: 'center', marginTop: 40 }}>
+                                    <Col>
+                                        <FormControl>
+                                            <InputLabel id="genderLabel">
+                                                <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Status zamówienia
+                                            </InputLabel>
+                                                <Select
+                                                    id="selectPaymentForm"
+                                                    color="primary"
+                                                    value={this.state.newOrderStatusIdForOrder}
+                                                    style={{width: '300px'}}
+                                                    InputLabelProps={{
+                                                        style:{
+                                                            color: 'whitesmoke'
+                                                        },
+                                                    }}
+                                                    onChange={this.handleChange('newOrderStatusIdForOrder')}>
+                                                        {this.state.orderStatuses.map((orderStatus) => (
+                                                            <MenuItem key={orderStatus.id} value={orderStatus.id}>{orderStatus.statusName}</MenuItem>
+                                                        ))}
+                                                    </Select>
+                                        </FormControl>
+                                    </Col>
+                                </Row>
+                                <Row style={{ textAlign: 'center', marginTop: 50 }}>
+                                    <Col>
+                                        <Button 
+                                            className="Orders-Button" 
+                                            variant="light"
+                                            onClick={() => {
+                                                close()
+                                            }}>
+                                            Zamknij
+                                        </Button>
+                                    </Col>
+                                    <Col>
+                                        <Button 
+                                            className="Orders-Button" 
+                                            variant="light"
+                                            onClick={() => {
+                                                this.updateOrderStatusOfOrder()
+                                                close()
+                                            }}>
+                                            Zatwierdź
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        )
+                    }
+                </Popup>
+                <Popup 
+                    modal
                     open={this.state.isAddEventModalOpen}
                     onClose={this.handleAddEventModal}
                     contentStyle={{
@@ -1135,12 +1532,12 @@ class EditForwardingOrderPanel extends Component{
                             <Container>
                             <Row style={{textAlign: 'center'}}>
                                 <Col>
-                                    <label className='Orders-Header'>
-                                        Dodawanie załadunku / rozładunku
-                                    </label>
+                                    <div className='Orders-Header' style={{ color: '#c76eff' }}>
+                                        <CgGym size='1.5em'/><span>&nbsp;&nbsp;</span><span>Dodawanie załadunku/rozładunku</span>
+                                    </div>
                                 </Col>
                             </Row>
-                            <Row style={{marginTop: 35, paddingLeft: '10px'}}>
+                            <Row style={{marginTop: 60, paddingLeft: '10px'}}>
                                 <Col>
                                     <FormControl>
                                         <TextField
@@ -1344,6 +1741,7 @@ class EditForwardingOrderPanel extends Component{
                 </Popup>
                 <Popup 
                     modal
+                    closeOnDocumentClick={false}
                     open={this.state.isAddTransitModalOpen}
                     onClose={this.handleAddTransitModal}
                     contentStyle={{
@@ -1358,12 +1756,12 @@ class EditForwardingOrderPanel extends Component{
                             <Container>
                             <Row style={{textAlign: 'center'}}>
                                 <Col>
-                                    <label className='Orders-Header'>
+                                    <label className='Orders-Header' style={{ color: '#f2f540' }}>
                                         <AiOutlineCar size='1.5em'/><span>&nbsp;&nbsp;</span><span>Dodawanie przejazdu</span>
                                     </label>
                                 </Col>
                             </Row>
-                            <Row style={{marginTop: 30, paddingLeft: '10px'}}>
+                            <Row style={{marginTop: 50, paddingLeft: '10px'}}>
                                 <Col>
                                     <FormControl>
                                         <TextField
@@ -1856,7 +2254,33 @@ class EditForwardingOrderPanel extends Component{
                                     </FormControl>
                                 </Col>
                             </Row>
-                            <Row style={{textAlign: 'center', marginTop: 40 }}>
+                            <Row style={{ marginTop: 15, paddingLeft: 10 }}>
+                                <Col>
+                                    <FormControl>
+                                        <InputLabel id="genderLabel">
+                                            <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Forma płatności
+                                        </InputLabel>
+                                            <Select
+                                                id="selectPaymentForm"
+                                                color="primary"
+                                                value={this.state.newTransitSelectedPaymentFormId}
+                                                style={{width: '300px'}}
+                                                InputLabelProps={{
+                                                    style:{
+                                                        color: 'whitesmoke'
+                                                    },
+                                                }}
+                                                onChange={this.handleSelectedPaymentFormIdForNewTransit}>
+                                                    {this.state.paymentForms.map((paymentForm) => (
+                                                        <MenuItem key={paymentForm.id} value={paymentForm.id}>{paymentForm.paymentName}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                    </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{textAlign: 'center', marginTop: 40, marginBottom: 15 }}>
+                                <Col>
+                                </Col>
                                 <Col>
                                     <Button 
                                         className="Yellow-Button" 
@@ -1865,8 +2289,22 @@ class EditForwardingOrderPanel extends Component{
                                         onClick={() => {
                                             close()
                                         }}>
+                                            Zamknij
+                                    </Button>
+                                </Col>
+                                <Col>
+                                    <Button 
+                                        className="Yellow-Button" 
+                                        variant="light"
+                                        style={{width: '110px'}}
+                                        onClick={() => {
+                                            this.addTransit()
+                                            close()
+                                        }}>
                                             <MdDone size='1.0em'/><span>&nbsp;</span><span>Zatwierdź</span>
                                     </Button>
+                                </Col>
+                                <Col>
                                 </Col>
                             </Row>
                         </Container>
@@ -1990,8 +2428,7 @@ const transportersColumns =
     {
         label: '',
         field: 'select',
-        sort: 'asc',
-        width: 50
+        sort: 'asc'
     }
 ]
 
@@ -2026,6 +2463,7 @@ const driversColumns =
         field: 'select'
     }
 ]
+
 const vehiclesColumns =
 [
     {
@@ -2059,5 +2497,57 @@ const vehiclesColumns =
     {
         label: '',
         field: 'select'
+    }
+]
+
+const transitsColumns =
+[
+    {
+        label: 'Trasa',
+        field: 'routeShortPath',
+        sort: 'asc',
+        width: 150,
+    },
+    {
+        label: 'Transport z:',
+        field: 'transitSource',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: 'Transport do:',
+        field: 'transitDestination',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: 'Data rozp. / zakończ.',
+        field: 'transitDates',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: 'Przewoźnik',
+        field: 'transporter',
+        width: 150
+    },
+    {
+        label: 'Kierowca',
+        field: 'driver',
+        width: 100
+    },
+    {
+        label: 'Pojazd',
+        field: 'vehicle',
+        width: 100
+    },
+    {
+        label: '',
+        field: 'select',
+        width: 50
+    },
+    {
+        label: '',
+        field: 'delete'
     }
 ]

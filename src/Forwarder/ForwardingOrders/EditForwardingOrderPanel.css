@@ -66,3 +66,7 @@
 .MuiInputBase-root{
     color: whitesmoke !important;
 }
+
+#selectPaymentForm{
+    color: whitesmoke;
+}
