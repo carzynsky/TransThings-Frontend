@@ -5,7 +5,6 @@ import { HiOutlineRefresh } from 'react-icons/hi';
 import { MdAdd, MdEdit, MdShowChart } from 'react-icons/md';
 import { FiChevronDown } from 'react-icons/fi';
 import { FaRegFilePdf } from 'react-icons/fa';
-import { BiTask } from 'react-icons/bi';
 import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
 import { Select, FormControl, MenuItem, InputLabel, Tooltip } from '@material-ui/core';
@@ -196,7 +195,7 @@ class OrdersDashboard extends Component{
                                                         forwardingOrderNumber: order.forwardingOrder?.forwardingOrderNumber,
                                                         client: order.client.clientFirstName + ' ' + order.client.clientLastName,
                                                         path: order.warehouse.city + '-' + order.destinationCity,
-                                                        expectedDate: order.orderExpectedDate.split('T')[0],
+                                                        expectedDate: order.orderExpectedDate?.split('T')[0],
                                                         orderStatus: 
                                                         <div>
                                                             <div 
@@ -229,15 +228,6 @@ class OrdersDashboard extends Component{
                                                                             </div>
                                                                         </Tooltip>
                                                                     </Col>
-                                                                    {order.orderStatus?.statusName === 'Zaakceptowane' && 
-                                                                        <Col xs='2'>
-                                                                            <Tooltip title="Utwórz zlecenie spedycji" aria-label="add">
-                                                                                <div className='User-Details-Button'>
-                                                                                    <BiTask size='1.0em' className='User-Details-Icon'/>
-                                                                                </div>
-                                                                            </Tooltip>
-                                                                        </Col>
-                                                                    }
                                                                 </Row>
                                                             </Container>
                                                         </div>

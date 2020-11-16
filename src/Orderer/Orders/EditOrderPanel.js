@@ -74,11 +74,15 @@ class EditOrderPanel extends Component{
             selectConsultantAsForwarder: false,
             additionalInformation: null,
             forwardingOrderId: null,
+            forwardingOrderNumber: '',
+            forwardingOrders: [],
+            forwarder: '',
 
             isModalOpen: false,
             selectedPopup: '',
             isAddLoadModalOpen: false,
             isCreateForwardingOrderModalOpen: false,
+            isAssignForwardingOrderModalOpen: false,
             isServerResponseModalOpen: false,
             isOk: false
         }
@@ -115,6 +119,8 @@ class EditOrderPanel extends Component{
                 selectedPaymentFormId: data.paymentFormId,
                 selectedOrderStatusId: data.orderStatusId,
                 selectedVehicleTypeId: data.vehicleTypeId,
+                forwardingOrderNumber: data.forwardingOrder?.forwardingOrderNumber,
+                forwarder: data.forwardingOrder?.forwarder,
                 forwardingOrderId: data.forwardingOrderId,
                 netPrice: data.netPrice?.toFixed(2),
                 grossPrice: data.grossPrice?.toFixed(2),
@@ -255,6 +261,31 @@ class EditOrderPanel extends Component{
             this.setState({
                 loads: data
             })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    // GET call to API to get forwardingOrders
+    async getForwardingOrders(){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/forwarding-orders/', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            });
+
+            const data = await response.data;
+            if(data.length === 0){
+                this.setState({ forwardingOrders: [] })
+                return
+            }
+
+            this.setState({ forwardingOrders: data })
         }
         catch(error){
             console.log(error);
@@ -496,6 +527,14 @@ class EditOrderPanel extends Component{
     // handle selected consultant
     handleSelectedConsultant = (consultant) => this.setState({ selectedConsultant: consultant })
 
+    // handle selected (assigned) forwarding order to this transport order
+    handleSelectedAssignedForwardingOrder = (forwardingOrder) => this.setState({ 
+        forwardingOrderId: forwardingOrder?.id, 
+        isAssignForwardingOrderModalOpen: false ,
+        forwardingOrderNumber: forwardingOrder.forwardingOrderNumber,
+        forwarder: forwardingOrder.forwarder
+    })
+
     // handle open modal for new load
     handleOpenAddLoadModal = () => this.setState({ isAddLoadModalOpen: true })
 
@@ -507,6 +546,10 @@ class EditOrderPanel extends Component{
 
     // handle close create forwarding order modal
     handleCloseCreateForwardingOrderModal = () => this.setState({ isCreateForwardingOrderModalOpen: false })
+
+    // handle open / close assign existing forwarding order to this transport order modal
+    handleOpenAssignForwardingOrderModal = () => this.setState({ isAssignForwardingOrderModalOpen: true })
+    handleCloseAssignForwardingOrderModal = () => this.setState({ isAssignForwardingOrderModalOpen: false })
 
     // handle add created load to table
     handleConfirmAddLoad = () => {
@@ -563,13 +606,14 @@ class EditOrderPanel extends Component{
     handleExpectedDate = (date) => this.setState({ orderExpectedDate: date })
 
     async componentDidMount(){
-        await this.getWarehouses();
-        await this.getPaymentForms();
-        await this.getVehicleTypes();
-        await this.getOrderStatuses();
-        await this.getForwarders();
+        await this.getWarehouses()
+        await this.getPaymentForms()
+        await this.getVehicleTypes()
+        await this.getOrderStatuses()
+        await this.getForwarders()
         await this.getOrderById(this.props.match.params.id);
-        await this.getLoads();
+        await this.getLoads()
+        await this.getForwardingOrders()
     };
 
     render(){
@@ -613,7 +657,7 @@ class EditOrderPanel extends Component{
                 <Row>
                     <Col>
                         <div className='Orders-Header' style={{color: '#f75353', fontSize: 24}}>
-                            <BiTask /><span>&nbsp;&nbsp;</span><span>{this.state.order?.forwardingOrder === null ? 'brak' : this.state.order?.forwardingOrder?.forwardingOrderNumber}</span>
+                            <BiTask /><span>&nbsp;&nbsp;</span><span>{this.state.forwardingOrderNumber === undefined ? 'brak' : this.state.forwardingOrderNumber}</span>
                         </div>
                     </Col>
                 </Row>
@@ -712,8 +756,8 @@ class EditOrderPanel extends Component{
                                 </Row>
                                 <Row style={{textAlign: 'center', marginTop: 10}}>
                                     <Col>
-                                        <div className='Tile-Data-Label' style={{ fontSize: 20 }}>{this.state.order?.forwardingOrderId === null ? 'brak' 
-                                        : <span><span>{this.state.order?.forwardingOrder?.forwarder?.firstName}</span><span>&nbsp;</span><span>{this.state.order?.forwardingOrder?.forwarder?.lastName}</span></span>}</div>
+                                        <div className='Tile-Data-Label' style={{ fontSize: 20 }}>{this.state.forwarder === undefined ? 'brak' 
+                                        : <span><span>{this.state.forwarder?.firstName}</span><span>&nbsp;</span><span>{this.state.forwarder?.lastName}</span></span>}</div>
                                     </Col>
                                 </Row>
                             </Container>
@@ -745,7 +789,8 @@ class EditOrderPanel extends Component{
                                         <Button 
                                             className="Orders-Button" 
                                             variant="light"
-                                            style={{ width: 100, marginTop: 15 }}>
+                                            style={{ width: 100, marginTop: 15 }}
+                                            onClick={this.handleOpenAssignForwardingOrderModal}>
                                             Przypisz
                                         </Button>
                                     </Col>
@@ -1705,7 +1750,6 @@ class EditOrderPanel extends Component{
                         )
                     }
                 </Popup>
-
                 <Popup 
                     modal
                     open={this.state.isModalOpen && this.state.selectedPopup === 'confirm'}
@@ -1752,7 +1796,6 @@ class EditOrderPanel extends Component{
                         )
                     }
                 </Popup>
-
                 <Popup 
                     modal
                     open={this.state.isServerResponseModalOpen}
@@ -1806,7 +1849,6 @@ class EditOrderPanel extends Component{
                         )
                     }
                 </Popup>
-
                 <Popup 
                     modal
                     open={this.state.isCreateForwardingOrderModalOpen}
@@ -1874,6 +1916,57 @@ class EditOrderPanel extends Component{
                                                 close()
                                             }}>Utwórz
                                         </Button>
+                                    </Col>
+                                </Row>
+                            </Container>
+                        )
+                    }
+                </Popup>
+                <Popup 
+                    modal
+                    open={this.state.isAssignForwardingOrderModalOpen}
+                    onClose={this.handleCloseAssignForwardingOrderModal}
+                    contentStyle={{
+                        width: '55vw',
+                        height: '75vh',
+                        backgroundColor: '#202125',
+                        borderColor: '#202125',
+                        borderRadius: '15px',
+                    }}>
+                    {
+                        close => (
+                            <Container>
+                                <Row style={{textAlign: 'center'}}>
+                                    <Col>
+                                        <label className='Edit-User-Modal-Header'>Przypisz zamówienie do istniejącego zlecenia spedycji</label>
+                                    </Col>
+                                </Row>
+                                <Row style={{ marginTop: 25 }}>
+                                    <Col>
+                                        <MDBDataTable
+                                            className='Customers-Data-Table'
+                                            style={{ color: '#bdbbbb' }}
+                                            maxHeight="35vh"
+                                            scrollY
+                                            small
+                                            data={{
+                                                columns: forwardingOrdersColumns,
+                                                rows:
+                                                    this.state.forwardingOrders.map((forwardingOrder) => (
+                                                        {
+                                                            forwardingOrderNumber: forwardingOrder.forwardingOrderNumber,
+                                                            createDate: forwardingOrder.createDate,
+                                                            forwarder: forwardingOrder.forwarder?.firstName + ' ' + forwardingOrder.forwarder?.lastName,
+                                                            contactPhoneNumber: forwardingOrder.constactPhoneNumber,
+                                                            select: 
+                                                                <ImCheckboxChecked
+                                                                    className='Transporter-Details-Icon' 
+                                                                    onClick={this.handleSelectedAssignedForwardingOrder.bind(this, forwardingOrder)}
+                                                                    size='1.4em'/>,
+                                                        }
+                                                    ))
+                                            }}
+                                        />
                                     </Col>
                                 </Row>
                             </Container>
@@ -1988,5 +2081,38 @@ const forwardersColumns =
         field: 'select',
         sort: 'asc',
         width: 250
+    }
+]
+
+const forwardingOrdersColumns = 
+[
+    {
+        label: 'Nr. zlecenia',
+        field: 'forwardingOrderNumber',
+        sort: 'asc',
+        width: '250'
+    },
+    {
+        label: 'Data utworzenia',
+        field: 'createDate',
+        sort: 'asc',
+        width: '250'
+    },
+    {
+        label: 'Spedytor',
+        field: 'forwarder',
+        sort: 'asc',
+        width: '250'
+    },
+    {
+        label: 'Nr. kontaktowy',
+        field: 'contactPhoneNumber',
+        sort: 'asc',
+        width: '250'
+    },
+    {
+        label: '',
+        field: 'select',
+        sort: 'asc'
     }
 ]
