@@ -22,7 +22,6 @@ export const Routes = () => {
             <Route path='/informacje' component={About}></Route>
             <Route path='/kontakt' component={Contact}></Route>
 
-            <Route path='/admin/konfiguracja' component={getSessionCookie().role === admin ? AdminMainPanel : NotFound }></Route>
             <Route path='/admin/uzytkownicy' component={getSessionCookie().role === admin ? AdminMainPanel : NotFound }></Route>
             <Route path='/admin/kontrahenci' component={getSessionCookie().role === admin ? AdminMainPanel : NotFound }></Route>
             <Route path='/admin/przewoznicy' component={getSessionCookie().role === admin ? AdminMainPanel : NotFound }></Route>
@@ -37,6 +36,7 @@ export const Routes = () => {
             <Route path='/pracownik-zamowien/profil' component={getSessionCookie().role === orderer ? OrdererMainPanel : NotFound }></Route>
 
             <Route path='/spedytor/zlecenia' component={getSessionCookie().role === forwarder ? ForwarderMainPanel : NotFound }></Route>
+            <Route path='/spedytor/przewoznicy' component={getSessionCookie().role === forwarder ? ForwarderMainPanel : NotFound }></Route>
             <Route path='/spedytor/konsultacje-spedycji' component={getSessionCookie().role === forwarder ? ForwarderMainPanel : NotFound }></Route>
             <Route path='/spedytor/magazyny' component={getSessionCookie().role === forwarder ? ForwarderMainPanel : NotFound }></Route>
             <Route path='/spedytor/profil' component={getSessionCookie().role === forwarder ? ForwarderMainPanel : NotFound }></Route>

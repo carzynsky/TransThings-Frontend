@@ -9,6 +9,7 @@ import { MdEdit, MdAdd, MdDone } from 'react-icons/md';
 import { ImCross } from 'react-icons/im';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { BiArrowBack } from 'react-icons/bi';
+import { Tooltip } from '@material-ui/core';
 import axios from 'axios';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
@@ -136,16 +137,6 @@ class DriversPanel extends Component{
         return(
             <Container>
                 <Row style={{marginTop: '50px'}}>
-                    {/* <Col style={{marginTop: '100px'}}>
-                        <NavLink className="Add-User-Nav-Link" to= '/admin/przewoznicy/'>
-                            <Button 
-                                className="Drivers-Redirect-Button" 
-                                variant="light"
-                                style={{width: '160px'}}
-                                >Wróć do przewoźników
-                            </Button>
-                        </NavLink>
-                    </Col> */}
                     <Col>
                         <div className='Transporter-Tile' style={{backgroundColor: 'transparent', color: '#e6e947'}}>
                             <Container>
@@ -156,6 +147,8 @@ class DriversPanel extends Component{
                                 </Row>
                             </Container>
                         </div>
+                    </Col>
+                    <Col>
                     </Col>
                     <Col>
                         <div className='Transporter-Tile'>
@@ -191,23 +184,6 @@ class DriversPanel extends Component{
                             </Container>
                         </div>
                     </Col>
-                    <Col>
-                        <div className='Transporter-Tile'>
-                            <Container>
-                            <Row style={{textAlign: 'left', paddingTop: '10px'}}>
-                                    <Col>
-                                        <label className='Driver-Info-Stats-Sub'>Inne</label>
-                                    </Col>
-                                </Row>
-                                <Row style={{textAlign: 'left'}}>
-                                    <Col>
-                                        <label className='Driver-Info-Stats'>-</label>
-                                    </Col>
-                                </Row>
-
-                            </Container>
-                        </div>
-                    </Col>
                 </Row>
                 <Row>
                     <Col>
@@ -237,6 +213,7 @@ class DriversPanel extends Component{
                                         </Button>
                                     </Col>
                                     <Col>
+                                        {this.state.token.role === 'Admin' &&
                                         <NavLink className="Add-User-Nav-Link" to={{
                                             pathname: '/admin/przewoznicy/' + this.state.transporterName + '/kierowcy/dodaj',
                                             transporterIdProps: this.state.transporterId
@@ -247,6 +224,7 @@ class DriversPanel extends Component{
                                                     <MdAdd size='1.0em'/><span>&nbsp;</span><span>Dodaj</span>
                                             </Button>
                                         </NavLink>
+                                        }
                                     </Col>
                                 </Row>
                                 <Row>
@@ -281,7 +259,7 @@ class DriversPanel extends Component{
                                                     label: 'Adres email',
                                                     field: 'mail',
                                                     sort: 'asc',
-                                                    width: 150
+                                                    width: 550
                                                 },
                                                 {
                                                     label: '',
@@ -290,8 +268,7 @@ class DriversPanel extends Component{
                                                 },
                                                 {
                                                     label: '',
-                                                    field: 'delete',
-                                                    width: 50
+                                                    field: 'delete'
                                                 }
                                             ],
                                             rows: this.state.drivers.map((driver) => (
@@ -305,13 +282,27 @@ class DriversPanel extends Component{
                                                             to={{
                                                             pathname: '/admin/przewoznicy/' + this.state.transporterName + '/kierowcy/edytuj/' + driver.id,
                                                             driverProps: driver}}>
-                                                            <MdEdit className='Driver-Details-Icon' size='1.4em'/>
+                                                            <Tooltip title="Edycja kierowcy" aria-label="add"> 
+                                                                <div>
+                                                                {this.state.token.role === 'Admin' &&
+                                                                    <MdEdit className='Driver-Details-Icon' size='1.4em'/>
+                                                                }
+                                                                </div>
+                                                            </Tooltip>
                                                         </NavLink>,
                                                         delete:
-                                                            <RiDeleteBin6Line 
-                                                                size='1.4em'
-                                                                className='Driver-Details-Icon'
-                                                                onClick={this.handleOpenModal.bind(this, driver)}/>
+                                                            <Tooltip title="Usuń kierowcę" aria-label="add">
+                                                                <div>
+                                                                {this.state.token.role === 'Admin' &&
+
+                                                                    <RiDeleteBin6Line 
+                                                                    size='1.4em'
+                                                                    className='Driver-Details-Icon'
+                                                                    onClick={this.handleOpenModal.bind(this, driver)}/>
+                                                                }
+                                                                </div>
+                                                            </Tooltip>
+                                                            
                                                     }
                                                 ))
                                         }}

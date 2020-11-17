@@ -100,7 +100,7 @@ class Home extends Component {
                     setSessionCookie(response.data);
                     switch(response.data.role){
                         case 'Admin':{
-                            history.push('/admin/konfiguracja');
+                            history.push('/admin/uzytkownicy');
                             break;
                         }
                         case 'Forwarder':{
@@ -158,7 +158,7 @@ class Home extends Component {
         // NOTE: checking for cookie should be here
         switch(this.state.role){
             case 'Admin':{
-                history.push('/admin/konfiguracja');
+                history.push('/admin/uzytkownicy');
                 break;
             }
             case 'Forwarder':{

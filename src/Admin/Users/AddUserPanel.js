@@ -85,7 +85,7 @@ class AddUserPanel extends Component{
                 
             });
             this.setState({
-                serverResponse: response.data.message,
+                serverResponse: response.data.message + ', hasło: ' + response.data.generatedPassword,
                 isServerResponseModalOpen: true
             })
         }
@@ -321,6 +321,26 @@ class AddUserPanel extends Component{
                                         </Select>
                                     </FormControl>
                                 </Col>
+                                <Col>
+                                    <FormControl  noValidate autoComplete="off">
+                                        <TextField 
+                                            id="userLogin" 
+                                            label="Login" 
+                                            color="primary"
+                                            onChange={this.handleChange('login')}
+                                            autoComplete="new-password"
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            InputProps={{
+                                                style: {
+                                                    color: '#5CDB95'
+                                                }
+                                            }} />
+                                    </FormControl>
+                                </Col>
                             </Row>
                             <Row style={{marginTop: '20px'}}>
                                 <Col>
@@ -447,6 +467,7 @@ class AddUserPanel extends Component{
                                     <Popup 
                                         modal
                                         open={this.state.isServerResponseModalOpen}
+                                        closeOnDocumentClick={false}
                                         contentStyle={{
                                             width: '30vw',
                                             height: '25vh',

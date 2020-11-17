@@ -12,7 +12,9 @@ class CustomerRoutes extends Component {
                     <Route path='/admin/kontrahenci' exact component={CustomersDashboard}></Route>
                     <Route path='/pracownik-zamowien/kontrahenci' exact component={CustomersDashboard}></Route>
                     <Route path='/admin/kontrahenci/edytuj/:id' component={EditCustomerPanel}></Route>
+                    <Route path='/pracownik-zamowien/kontrahenci/edytuj/:id' component={EditCustomerPanel}></Route>
                     <Route path='/admin/kontrahenci/dodaj' component={AddCustomerPanel}></Route>
+                    <Route path='/pracownik-zamowien/kontrahenci/dodaj' component={AddCustomerPanel}></Route>
                 </Switch>
             </BrowserRouter>
         );

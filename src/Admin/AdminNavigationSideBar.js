@@ -45,10 +45,6 @@ const AdminNavigationSideBar = () => {
                         </Col>
                     </Row>
                 </div>
-                {/* activeStyle={{ backgroundColor: '#5CDB95', color: '#1a1a1d', boxShadow: '2px 2px 15px -4px rgba(92,219,149,1)', borderRadius: '2px'}} */}
-                <NavLink exact activeStyle={{color: 'white'}} className="Admin-Nav-Link" to= '/admin/konfiguracja'>
-                    <HiCog color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>Konfiguracja</span>
-                </NavLink>
                 <NavLink activeStyle={{ color: 'white'}} className="Admin-Nav-Link" to= '/admin/uzytkownicy'>
                     <AiOutlineUser color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>Użytkownicy</span>
                 </NavLink>

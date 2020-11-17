@@ -3,9 +3,10 @@ import { Row, Col, Container, Button} from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import { MDBDataTable } from 'mdbreact';
 import { getSessionCookie } from '../../sessions';
-import { MdEdit, MdDone } from 'react-icons/md';
+import { MdEdit, MdDone, MdShowChart } from 'react-icons/md';
 import { HiUserAdd } from 'react-icons/hi';
 import { FaUserTie } from 'react-icons/fa';
+import { Tooltip } from '@material-ui/core';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { ImCross } from 'react-icons/im';
 import Popup from 'reactjs-popup';
@@ -123,57 +124,26 @@ class CustomersDashboard extends Component{
     render(){
         return(
             <Container>
-                <Row>
-                    <Col>
-                        <div className='Customer-Tile' style={{backgroundColor: 'transparent'}}>
-                            <Container>
-                                <Row className='Customers-Huge-Icon'>
-                                    <Col>
-                                        <FaUserTie size='6.0em'/>
-                                    </Col>
-                                </Row>
-                            </Container>
-                        </div>
-                    </Col>
-                    <Col>
-                        <div className='Customer-Tile'>
-                            <Container>
-                                <Row>
-                                    <Col>
-                                        <label className="Customer-Info-Header">Wszystkich</label>
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col>
-                                        <label className="Customer-Info-Header" style={{color: 'white', fontSize: '30px'}}>{this.state.customersCount}</label>
-                                    </Col>
-                                </Row>
-                            </Container>
-                        </div>
-                    </Col>
-                    <Col>
-                        <div className='Customer-Tile'>
-                        <Container>
-                                <Row>
-                                    <Col>
-                                        <label className="Customer-Info-Header">Inne</label>
-                                    </Col>
-                                </Row>
-                            </Container>
-                        </div>
-                    </Col>
-                </Row>
-
-                <Row>
+                <Row style={{ marginTop: 100 }}>
                     <Col>
                         <div className='Customers-Data-Table-Container'>
                             <Container>
                                 <Row>
                                     <Col>
-                                        <label className="Customer-Info-Header">Lista kontrahentów</label>
+                                        <div className="Customer-Info-Header">
+                                            <FaUserTie size='2.0em' style={{ paddingBottom: 10 }}/><span>&nbsp;&nbsp;</span><span style={{ fontSize: 26 }}>Lista kontrahentów</span>
+                                        </div>
+                                    </Col>
+                                    <Col>
+                                        <div className="Customer-Info-Header">
+                                            <MdShowChart size='1.5em'/><span>&nbsp;&nbsp;</span><span style={{ fontSize: 26 }}>{this.state.customersCount}</span>
+                                        </div>
                                     </Col>
                                     <Col style={{textAlign: 'right', paddingRight: '30px'}}>
-                                        <NavLink className="Add-User-Nav-Link" to= '/admin/kontrahenci/dodaj'>
+                                        <NavLink className="Add-User-Nav-Link" to={{
+                                            pathname: this.state.token.role === 'Admin' ? '/admin/kontrahenci/dodaj' 
+                                            : '/pracownik-zamowien/kontrahenci/dodaj'
+                                        }}>
                                             <Button 
                                                 className="Add-Customer-Redirect-Button" 
                                                 variant="light">
@@ -182,7 +152,7 @@ class CustomersDashboard extends Component{
                                         </NavLink>
                                     </Col>
                                 </Row>
-                                <Row>
+                                <Row style={{paddingTop: 25 }}>
                                 <MDBDataTable
                                     className='Customers-Data-Table'
                                     style={{color: '#bdbbbb'}}
@@ -241,7 +211,6 @@ class CustomersDashboard extends Component{
                                             {
                                                 label: '',
                                                 field: 'delete',
-                                                width: 50
                                             }
                                         ],
                                         rows: this.state.customers.map((customer) => (
@@ -255,18 +224,24 @@ class CustomersDashboard extends Component{
                                                     streetName: customer.streetName,
                                                     phoneNumber1: customer.contactPhoneNumber1,
                                                     edit:
-                                                        <NavLink className="Add-User-Nav-Link" push to={{
-                                                            pathname: '/admin/kontrahenci/edytuj/' + customer.id
-                                                        }}>
-                                                            <MdEdit size='1.3em' className='Customer-Details-Icon'/>
-                                                        </NavLink>,
+                                                        <Tooltip title="Edycja kontrahenta" aria-label="add">
+                                                            <NavLink className="Add-User-Nav-Link" push to={{
+                                                                pathname: this.state.token.role === 'Admin' ?
+                                                                '/admin/kontrahenci/edytuj/' + customer.id 
+                                                                : '/pracownik-zamowien/kontrahenci/edytuj/' + customer.id
+                                                            }}>
+                                                                <MdEdit size='1.3em' className='Customer-Details-Icon'/>
+                                                            </NavLink>
+                                                        </Tooltip>,
                                                     delete:
-                                                        <div>
-                                                            <RiDeleteBin6Line 
-                                                                size='1.3em' 
-                                                                className='Customer-Details-Icon'
-                                                                onClick={this.handleOpenModal.bind(this, customer)}/>
-                                                        </div>
+                                                            <Tooltip title="Usuń kontrahenta" aria-label="add">
+                                                                <div>
+                                                                    <RiDeleteBin6Line 
+                                                                        size='1.3em' 
+                                                                        className='Customer-Details-Icon'
+                                                                        onClick={this.handleOpenModal.bind(this, customer)}/>
+                                                                </div>
+                                                            </Tooltip>
                                                 }
                                             ))
                                     }}

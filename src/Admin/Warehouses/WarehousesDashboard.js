@@ -10,6 +10,7 @@ import { FaFax, FaWarehouse } from 'react-icons/fa';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { NavLink } from 'react-router-dom';
 import { MDBDataTable } from 'mdbreact';
+import { Tooltip } from '@material-ui/core';
 import axios from 'axios';
 import { getSessionCookie } from '../../sessions';
 import Popup from 'reactjs-popup';
@@ -273,30 +274,37 @@ class WarehousesDashboard extends Component{
                                                             streetAddress: warehouse.streetAddress,
                                                             city: warehouse.city,
                                                             zipCode: warehouse.zipCode,
-                                                            select: <div className='User-Details-Button' onClick={this.handleDetailsClick.bind(this, warehouse)}>
-                                                                        <CgMoreO className='Warehouse-Details-Icon'/>
-                                                                    </div>,
+                                                            select: 
+                                                            <Tooltip title="Szczegóły magazynu" aria-label="add">
+                                                                <div className='User-Details-Button' onClick={this.handleDetailsClick.bind(this, warehouse)}>
+                                                                    <CgMoreO className='Warehouse-Details-Icon'/>
+                                                                </div>
+                                                            </Tooltip>
+                                                           ,
                                                             edit:
                                                                 <div>
                                                                     {this.state.token.role === 'Admin' && 
                                                                     <NavLink className="Add-User-Nav-Link" to={{
                                                                         pathname: '/admin/magazyny/edytuj',
                                                                         warehouseProps: warehouse}}>
-                                                                        <div className='User-Details-Button'>
-                                                                            <MdEdit className='Warehouse-Details-Icon' size='1.0em'/>
-                                                                        </div>
+                                                                        <Tooltip title="Edycja magazynu" aria-label="add">
+                                                                            <div className='User-Details-Button'>
+                                                                                <MdEdit className='Warehouse-Details-Icon' size='1.0em'/>
+                                                                            </div>
+                                                                        </Tooltip>
                                                                     </NavLink>
                                                                     }
                                                                 </div>,
                                                             delete:
-                                                                <div className='User-Details-Button'>
-                                                                    {this.state.token.role === 'Admin' &&
-                                                                    <RiDeleteBin6Line 
-                                                                        className='Warehouse-Details-Icon'
-                                                                        onClick={this.handleOpenModal.bind(this, warehouse)}
-                                                                    />
-                                                                }
+                                                                <Tooltip title="Usuń magazyn" aria-label="add">
+                                                                    <div className='User-Details-Button'>
+                                                                        {this.state.token.role === 'Admin' &&
+                                                                        <RiDeleteBin6Line 
+                                                                            className='Warehouse-Details-Icon'
+                                                                            onClick={this.handleOpenModal.bind(this, warehouse)}/>
+                                                                        }
                                                                 </div>
+                                                                </Tooltip>
                                                         }
                                                     ))
                                             }}

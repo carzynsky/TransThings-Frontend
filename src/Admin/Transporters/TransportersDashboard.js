@@ -6,10 +6,11 @@ import { getSessionCookie } from '../../sessions';
 import { CgMoreO } from 'react-icons/cg';
 import { GiFullMotorcycleHelmet } from 'react-icons/gi';
 import { FaTruckMoving, FaRoute } from 'react-icons/fa';
-import { MdEdit, MdAdd, MdDone } from 'react-icons/md';
+import { MdEdit, MdAdd, MdDone, MdShowChart } from 'react-icons/md';
 import { AiOutlineMail } from 'react-icons/ai';
 import { ImCross } from 'react-icons/im';
 import { RiDeleteBin6Line, RiTruckFill } from 'react-icons/ri';
+import { Tooltip } from '@material-ui/core';
 import axios from 'axios';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
@@ -138,10 +139,16 @@ class TransportersDashboard extends Component{
                         <div className='Transporters-Data-Table-Container'>
                             <Container>
                                 <Row>
-                                    <Col>
+                                    <Col xs='6'>
                                         <label className='Transporter-Table-Header'>Lista przewoźników</label>
                                     </Col>
+                                    <Col>
+                                        <div className='Transporter-Table-Header'>
+                                            <MdShowChart size='1.3em'/><span>&nbsp;</span><span>{this.state.transportersQuantity}</span>
+                                        </div>
+                                    </Col>
                                     <Col style={{textAlign: 'right'}}>
+                                        {this.state.token.role === 'Admin' &&
                                         <NavLink className="Add-User-Nav-Link" to='/admin/przewoznicy/dodaj'>
                                             <Button 
                                                 className="Add-Tranporter-Redirect-Button" 
@@ -149,6 +156,7 @@ class TransportersDashboard extends Component{
                                                     <MdAdd size='1.0em'/><span>&nbsp;</span><span>Dodaj</span>
                                             </Button>
                                         </NavLink>
+                                            }
                                     </Col>
                                 </Row>
                                 <Row>
@@ -215,21 +223,36 @@ class TransportersDashboard extends Component{
                                                         city: transporter.city,
                                                         zipCode: transporter.zipCode,
                                                         nip: transporter.nip,
-                                                        select: 
-                                                            <CgMoreO 
-                                                                className='Transporter-Details-Icon' 
-                                                                onClick={this.handleDetailsClick.bind(this, transporter)}
-                                                                size='1.4em'/>,
+                                                        select:
+                                                        <Tooltip title="Szczegóły przewoźnika" aria-label="add"> 
+                                                                <div>
+                                                                    <CgMoreO 
+                                                                        className='Transporter-Details-Icon' 
+                                                                        onClick={this.handleDetailsClick.bind(this, transporter)}
+                                                                        size='1.4em'/>
+                                                                </div>
+                                                        </Tooltip>,
                                                         edit:
+                                                        <div>
+                                                        {this.state.token.role === 'Admin' && 
                                                         <NavLink className="Add-User-Nav-Link" to={{
                                                             pathname: '/admin/przewoznicy/'+ transporter.fullName +'/edytuj',
                                                             transporterProps: transporter}}>
-                                                            <MdEdit className='Transporter-Details-Icon' size='1.4em'/>
-                                                        </NavLink>,
+                                                            <Tooltip title="Edycja przewoźnika" aria-label="add"> 
+                                                                <div>
+                                                                    <MdEdit className='Transporter-Details-Icon' size='1.4em'/>
+                                                                </div>
+                                                            </Tooltip>
+                                                        </NavLink>
+                                                        }
+                                                        </div>
+                                                       ,
                                                         delete:
                                                         <div>
+                                                            {this.state.token.role === 'Admin' &&
                                                             <Popup 
                                                             trigger={
+                                                                <Tooltip title="Usuń przewoźnika" aria-label="add"> 
                                                                 <div>
                                                                      <RiDeleteBin6Line 
                                                                         size='1.4em'
@@ -237,6 +260,7 @@ class TransportersDashboard extends Component{
                                                                         onClick={this.handleDetailsClick.bind(this, transporter)}
                                                                     />
                                                                 </div>
+                                                                </Tooltip>
                                                                
                                                             }
                                                             modal
@@ -290,6 +314,7 @@ class TransportersDashboard extends Component{
                                                             </div>
                                                             )}
                                                         </Popup>
+                                                        }
                                                         </div>
                                                     }
                                                 ))
@@ -338,7 +363,7 @@ class TransportersDashboard extends Component{
                         </div>
                     </Col>
                     <Col xs='4'>
-                    <div className='Transporters-Data-Table-Container' style={{minWidth: '200px'}}>
+                    <div className='Transporters-Data-Table-Container' style={ {minWidth: '200px' }}>
                         <Container>
                             <Row>
                                 <Col>
@@ -401,74 +426,6 @@ class TransportersDashboard extends Component{
                         </Container>
                     </div>
                     </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <div className='Transporter-Tile'>
-                            <Container>
-                                <Row style={{textAlign: 'left', paddingTop: '10px'}}>
-                                    <Col>
-                                        <label className='Transporter-Info-Stats-Sub'>Wszystkich przewoźników</label>
-                                    </Col>
-                                </Row>
-                                <Row style={{textAlign: 'center'}}>
-                                    <Col>
-                                        <label className='Transporter-Info-Stats'>{this.state.transportersQuantity}</label>
-                                    </Col>
-                                </Row>
-                            </Container>
-                        </div>
-                    </Col>
-                    <Col>
-                        <div className='Transporter-Tile'>
-                            <Container>
-                            <Row style={{textAlign: 'left', paddingTop: '10px'}}>
-                                    <Col>
-                                        <label className='Transporter-Info-Stats-Sub'>Nowych w tym roku</label>
-                                    </Col>
-                                </Row>
-                                <Row style={{textAlign: 'center'}}>
-                                    <Col>
-                                        <label className='Transporter-Info-Stats'>8</label>
-                                    </Col>
-                                </Row>
-
-                            </Container>
-                        </div>
-                    </Col>
-                    <Col>
-                        <div className='Transporter-Tile'>
-                            <Container>
-                                <Row style={{textAlign: 'left', paddingTop: '10px'}}>
-                                    <Col>
-                                        <label className='Transporter-Info-Stats-Sub'>Nowych w tym miesiącu</label>
-                                    </Col>
-                                </Row>
-                                <Row style={{textAlign: 'center'}}>
-                                    <Col>
-                                        <label className='Transporter-Info-Stats'>3</label>
-                                    </Col>
-                                </Row>
-                            </Container>
-                        </div>
-                    </Col>
-                    <Col>
-                        <div className='Transporter-Tile'>
-                            <Container>
-                                <Row style={{textAlign: 'left', paddingTop: '10px'}}>
-                                    <Col>
-                                        <label className='Transporter-Info-Stats-Sub'>Nowych w tym tygodniu</label>
-                                    </Col>
-                                </Row>
-                                <Row style={{textAlign: 'center'}}>
-                                    <Col>
-                                        <label className='Transporter-Info-Stats'>3</label>
-                                    </Col>
-                                </Row>
-                            </Container>
-                        </div>
-                    </Col>
-
                 </Row>
             </Container>
         );

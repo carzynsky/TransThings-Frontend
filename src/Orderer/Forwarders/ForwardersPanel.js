@@ -162,19 +162,18 @@ class ForwardersPanel extends Component{
                                                         label: 'Login',
                                                         field: 'login',
                                                         sort: 'asc',
-                                                        width: '150'
+                                                        width: 150
                                                     },
                                                     {
                                                         label: 'Adres email',
                                                         field: 'mail',
                                                         sort: 'asc',
-                                                        width: '150'
+                                                        width: 250
                                                     },
                                                     {
                                                         label: '',
                                                         field: 'select',
                                                         sort: 'asc',
-                                                        width: '150'
                                                     }
                                                 ],
                                                 rows: this.state.forwarders.map((forwarder) => (

@@ -17,13 +17,12 @@ function AdminMainPanel() {
         <BrowserRouter>
             <Container className="Panel-Container" fluid>
                 <Row>
-                    <Col xs='2'>
+                    <Col xs='2' style={{ position: 'fixed' }}>
                         <AdminNavigationSideBar />
                     </Col>
-                    <Col xs='10'>
+                    <Col xs='10' style={{ marginLeft: 250 }}>
                         <Switch>
-                            <Route path='/admin/konfiguracja' exact component={ConfigurationPanel}></Route>
-                            <Route path='/admin/uzytkownicy' component={UsersRoutes}></Route>
+                            <Route path='/admin/uzytkownicy' exact component={UsersRoutes}></Route>
                             <Route path='/admin/kontrahenci' component={CustomerRoutes}></Route>
                             <Route path='/admin/magazyny' component={WarehousesRoutes}></Route>
                             <Route path='/admin/statystyki' component={LoadingPage}></Route>

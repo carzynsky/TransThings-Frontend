@@ -6,6 +6,7 @@ import { MDBDataTable } from 'mdbreact';
 import { Doughnut } from 'react-chartjs-2';
 import { HiUserAdd, HiOutlineRefresh } from 'react-icons/hi';
 import { RiFileHistoryLine, RiDeleteBin6Line } from 'react-icons/ri';
+import { Tooltip } from '@material-ui/core';
 import { CgMoreO }from 'react-icons/cg';
 import { MdEdit, MdDone } from 'react-icons/md';
 import { ImCross } from 'react-icons/im';
@@ -26,6 +27,7 @@ class UsersPanel extends Component{
             isServerResponseModalOpen: false,
             isModalOpen: false,
             addUserRedirect: false,
+            stats: '',
             initials: '',
             selectedUser: {
                 id: '',
@@ -41,8 +43,8 @@ class UsersPanel extends Component{
             },
             doughnutChartData: {
                 labels: [
-                    'Spedytor',
                     'Admin',
+                    'Spedytor',
                     'Pracownik zamówień'
                 ],
                 datasets: [{
@@ -51,7 +53,7 @@ class UsersPanel extends Component{
                     backgroundColor: [
                     '#db675c',
                     '#5cdb95',
-                    ' #dbb35c'
+                    '#dbb35c'
                     ],
                     hoverBackgroundColor: [
                     '#FF6384',
@@ -138,8 +140,52 @@ class UsersPanel extends Component{
         }
     }
 
+    // GET call to API to get users stats
+    async getUsersStats(){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/users/stats', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            });
+
+            const data = await response.data;
+            console.log(data)
+            this.setState({ 
+                stats: data,
+                doughnutChartData: {
+                    labels: [
+                        'Admin',
+                        'Spedytor',
+                        'Pracownik zamówień'
+                    ],
+                    datasets: [{
+                        data: [data?.adminsQuantity, data?.forwardersQuantity, data?.orderersQuantity],
+                        borderColor: '#202125',
+                        backgroundColor: [
+                        '#db675c',
+                        '#5cdb95',
+                        '#dbb35c'
+                        ],
+                        hoverBackgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56'
+                        ]
+                    }]
+                }
+             })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
      // DELETE call to api for removing selected user
-     async deleteUser(){
+    async deleteUser(){
         await this.deleteUserLoginHistory();
         try
         {
@@ -178,7 +224,7 @@ class UsersPanel extends Component{
     }
 
     // DELETE call to api for removing selected user's all login history
-     async deleteUserLoginHistory(){
+    async deleteUserLoginHistory(){
         try
         {
             await axios.delete('https://localhost:44394/login-histories/users/' + this.state.selectedUser.id, {
@@ -195,8 +241,9 @@ class UsersPanel extends Component{
     }
 
     async componentDidMount(){
-        await this.getUserRoles();
-        await this.getUsers();
+        await this.getUserRoles()
+        await this.getUsers()
+        await this.getUsersStats()
     }
 
     handleDetailsClick = (data) => {
@@ -274,7 +321,7 @@ class UsersPanel extends Component{
                                     <Col>
                                         <Circle
                                             animate={true}
-                                            progress={95}
+                                            progress={this.state.stats?.todaysSuccessfulLoginRate}
                                             animationDuration="1s"
                                             textColor="whitesmoke"
                                             bgColor="whitesmoke"
@@ -293,12 +340,12 @@ class UsersPanel extends Component{
                                 <Row style={{paddingTop: '10px'}}>
                                     <Col>
                                         <label className="Log-Stats-Header-SubMessage">Dzisiaj</label>
-                                        <label className="User-Details-SubMessage" style={{fontSize: '10px'}}>(wszystkich logowań)</label>
+                                        <label className="User-Details-SubMessage" style={{ fontSize: 10 }}>(wszystkich logowań)</label>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <label className="Log-Stats-Header-SubMessage">122</label>
+                                        <label className="Log-Stats-Header-SubMessage" style={{ fontSize: 32 }}>{this.state.stats?.todaysLoginAttempts}</label>
                                     </Col>
                                 </Row>
                             </Container>
@@ -314,7 +361,17 @@ class UsersPanel extends Component{
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <label className="User-Details-SubMessage">arkadiusz.carzynski</label>
+                                        <label className="User-Details-SubMessage">{this.state.stats?.lastLoggedUser?.firstName} {this.state.stats?.lastLoggedUser?.lastName}</label>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <label className="User-Details-SubMessage">{this.state.stats?.lastLoggedUser?.login}</label>
+                                    </Col>
+                                </Row>
+                                <Row>
+                                    <Col>
+                                        <label className="User-Details-SubMessage">{this.state.stats?.lastLoggedUser?.userRole}</label>
                                     </Col>
                                 </Row>
                             </Container>
@@ -346,53 +403,20 @@ class UsersPanel extends Component{
                         scrollY
                         small
                         data={{
-                            columns: [
-                                {
-                                    label: 'Imię',
-                                    field: 'firstName',
-                                    sort: 'asc',
-                                    width: 150
-                                },
-                                {
-                                    label: 'Nazwisko',
-                                    field: 'lastName',
-                                    sort: 'asc',
-                                    width: 150
-                                },
-                                {
-                                    label: 'Login',
-                                    field: 'login',
-                                    sort: 'asc',
-                                    width: 150
-                                },
-                                {
-                                    label: 'Adres email',
-                                    field: 'mail',
-                                    sort: 'asc',
-                                    width: 150
-                                },
-                                {
-                                    label: 'Rola',
-                                    field: 'role',
-                                    sort: 'asc'
-                                },
-                                {
-                                    label: '',
-                                    field: 'select',
-                                    sort: 'asc'
-                                },
-                            ],
+                            columns: usersColumns,
                             rows: this.state.users.map((user) => (
-                                
                                     {
                                         firstName: user.firstName,
                                         lastName: user.lastName,
                                         login: user.login,
                                         mail: user.mail,
                                         role: user.userRole,
-                                        select: <label className='User-Details-Button' onClick={this.handleDetailsClick.bind(this, user)}>
-                                                    <CgMoreO className='User-Details-Icon'/>
-                                                </label>
+                                        select: 
+                                                <Tooltip title="Wyświetl szczegóły użytkownika" aria-label="add">
+                                                    <label className='User-Details-Button' onClick={this.handleDetailsClick.bind(this, user)}>
+                                                        <CgMoreO className='User-Details-Icon' size='1.0em'/>
+                                                    </label>
+                                                </Tooltip>
                                     }
                                 ))
                         }}
@@ -408,22 +432,28 @@ class UsersPanel extends Component{
                                 <Col xs='4'>
                                 </Col>
                                 <Col xs ='1'style={{paddingTop: '15px'}}>
-                                    <NavLink className="Add-User-Nav-Link" to={{
-                                        pathname: '/admin/uzytkownicy/edytuj/' + this.state.selectedUser.id,
-                                        state: { from: this.props.location.pathname }
-                                    }}>
-                                      <MdEdit size='1.5em' className='User-Details-Icon'/>
-                                    </NavLink>
+                                    <Tooltip title="Edycja użytkownika" aria-label="add">
+                                        <NavLink className="Add-User-Nav-Link" to={{
+                                            pathname: '/admin/uzytkownicy/edytuj/' + this.state.selectedUser.id,
+                                            state: { from: this.props.location.pathname }
+                                        }}>
+                                        {this.state.selectedUser?.userRole !== 'Admin' &&
+                                        <MdEdit size='1.5em' className='User-Details-Icon'/>
+                                        }
+                                        </NavLink>
+                                    </Tooltip>
                                 </Col>
                                 <Col xs ='1' style={{paddingTop: '15px'}}>
-                                    <NavLink className="Add-User-Nav-Link" to={{
-                                        pathname: '/admin/uzytkownicy/historia-logowan/' + this.state.selectedUser.id
-                                    }}>
-                                      <RiFileHistoryLine size='1.5em' className='User-Details-Icon-Login-History-Redirect'/>
-                                    </NavLink>
+                                    <Tooltip title="Historia logowań" aria-label="add">
+                                        <NavLink className="Add-User-Nav-Link" to={{
+                                                pathname: '/admin/uzytkownicy/historia-logowan/' + this.state.selectedUser.id
+                                            }}>
+                                            <RiFileHistoryLine size='1.5em' className='User-Details-Icon-Login-History-Redirect'/>
+                                        </NavLink>
+                                    </Tooltip>
                                 </Col>
                                 <Col xs ='1' style={{paddingTop: '15px'}}>
-                                    {this.state.selectedUser.login !== this.state.token.login &&
+                                    {this.state.selectedUser.login !== this.state.token.login && this.state.selectedUser?.userRole !== 'Admin' &&
                                     <div>
                                         <Popup 
                                             trigger={
@@ -570,3 +600,41 @@ class UsersPanel extends Component{
     }
 }
 export default UsersPanel;
+
+const usersColumns =
+[
+    {
+        label: 'Imię',
+        field: 'firstName',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: 'Nazwisko',
+        field: 'lastName',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: 'Login',
+        field: 'login',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: 'Adres email',
+        field: 'mail',
+        sort: 'asc',
+        width: 150
+    },
+    {
+        label: 'Rola',
+        field: 'role',
+        sort: 'asc'
+    },
+    {
+        label: '',
+        field: 'select',
+        sort: 'asc'
+    },
+]

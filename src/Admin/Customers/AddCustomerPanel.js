@@ -144,7 +144,8 @@ class AddCustomerPanel extends Component{
                                 </Col>
                                 <Col>
                                     <NavLink className="Admin-Nav-Link" to={{
-                                        pathname: '/admin/kontrahenci'
+                                        pathname: this.state.token.role === 'Admin' ? '/admin/kontrahenci'
+                                        : '/pracownik-zamowien/kontrahenci'
                                     }}>
                                         <Button 
                                             className="Edit-Customer-Redirect-Button" 

@@ -956,6 +956,7 @@ class AddOrderPanel extends Component{
                                             id="additionalInformation" 
                                             label='Ilość (szt)'
                                             color="primary"
+                                            type='number'
                                             onChange={this.handleChange('addLoadAmount')}
                                             value={this.state.addLoadAmount}
                                             style={{minWidth: '0px'}}
@@ -978,6 +979,7 @@ class AddOrderPanel extends Component{
                                             id="additionalInformation" 
                                             label='Waga poj. sztuki (kg)'
                                             color="primary"
+                                            type='number'
                                             value={this.state.addLoadWeight}
                                             onChange={this.handleChange('addLoadWeight')}
                                             InputLabelProps={{

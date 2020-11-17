@@ -9,6 +9,7 @@ import { ImCross } from 'react-icons/im';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 import { BiArrowBack } from 'react-icons/bi';
 import { HiOutlineRefresh } from 'react-icons/hi';
+import { Tooltip } from '@material-ui/core';
 import axios from 'axios';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
@@ -216,11 +217,13 @@ class VehiclesPanel extends Component{
                                             pathname: '/admin/przewoznicy/' + this.state.transporterName + '/pojazdy/dodaj',
                                             transporterIdProps: this.state.transporterId
                                         }}>
+                                            {this.state.token.role === 'Admin' &&
                                             <Button 
                                                 className="Add-Vehicle-Redirect-Button" 
                                                 variant="light">
                                                     <MdAdd size='1.0em'/><span>&nbsp;</span><span>Dodaj</span>
                                             </Button>
+                                            }
                                         </NavLink>
                                     </Col>
                                 </Row>
@@ -275,8 +278,7 @@ class VehiclesPanel extends Component{
                                                 },
                                                 {
                                                     label: '',
-                                                    field: 'delete',
-                                                    width: 50
+                                                    field: 'delete'
                                                 }
                                             ],
                                             rows: this.state.vehicles.map((vehicle) => (
@@ -293,13 +295,25 @@ class VehiclesPanel extends Component{
                                                             pathname: '/admin/przewoznicy/' + this.state.transporterName + '/pojazdy/edytuj/' + this.state.selectedVehicle.id,
                                                             }}
                                                             >
-                                                            <MdEdit className='Vehicle-Details-Icon' size='1.4em'/>
+                                                            <Tooltip title="Edycja pojazdu" aria-label="add">
+                                                                <div>
+                                                                    {this.state.token.role === 'Admin' &&
+                                                                    <MdEdit className='Vehicle-Details-Icon' size='1.4em'/>
+                                                                    }
+                                                                </div>
+                                                            </Tooltip>
                                                         </NavLink>,
                                                         delete:
-                                                            <RiDeleteBin6Line 
-                                                                size='1.4em'
-                                                                className='Vehicle-Details-Icon'
-                                                                onClick={this.handleOpenModal.bind(this, vehicle)}/>
+                                                            <Tooltip title="Usuń pojazd" aria-label="add">
+                                                                <div>
+                                                                    {this.state.token.role === 'Admin' &&
+                                                                    <RiDeleteBin6Line 
+                                                                        size='1.4em'
+                                                                        className='Vehicle-Details-Icon'
+                                                                        onClick={this.handleOpenModal.bind(this, vehicle)}/>
+                                                                    }
+                                                                </div>
+                                                            </Tooltip>
                                                     }
                                                 ))
                                         }}
