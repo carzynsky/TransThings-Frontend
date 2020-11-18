@@ -18,7 +18,7 @@ function AdminMainPanel() {
         <BrowserRouter>
             <Container className="Panel-Container" fluid>
                 <Row>
-                    <Col xs='2' style={{position: 'fixed'}}>
+                    <Col xs='2' style={{position: 'fixed', height: '100%' }}>
                         <OrdererNavigationSidebar />
                     </Col>
                     <Col xs='10' style={{marginLeft: '250px'}}>

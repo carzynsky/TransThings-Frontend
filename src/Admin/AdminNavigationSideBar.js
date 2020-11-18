@@ -4,7 +4,6 @@ import { NavLink } from 'react-router-dom';
 import history from '../history.js';
 import * as Cookies from 'js-cookie';
 import { getSessionCookie } from '../sessions';
-import { HiCog } from 'react-icons/hi';
 import { AiOutlineUser, AiOutlinePoweroff } from 'react-icons/ai';
 import { FaUserTie, FaWarehouse } from 'react-icons/fa';
 import { RiTruckFill } from 'react-icons/ri';
@@ -45,29 +44,29 @@ const AdminNavigationSideBar = () => {
                         </Col>
                     </Row>
                 </div>
-                <NavLink activeStyle={{ color: 'white'}} className="Admin-Nav-Link" to= '/admin/uzytkownicy'>
-                    <AiOutlineUser color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>Użytkownicy</span>
+                <NavLink activeStyle={{ backgroundColor: '#5CDB95', borderRadius: 3, color: '#202125', boxShadow: '2px 2px 10px -2px rgba(92,219,149,1)' }} className="Admin-Nav-Link" to= '/admin/uzytkownicy'>
+                    <AiOutlineUser size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>Użytkownicy</span>
                 </NavLink>
-                <NavLink activeStyle={{color: 'white'}} className="Admin-Nav-Link" to= '/admin/kontrahenci'>
-                    <FaUserTie color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Kontrahenci</span>
+                <NavLink activeStyle={{ backgroundColor: '#5CDB95', borderRadius: 3, color: '#202125', boxShadow: '2px 2px 10px -2px rgba(92,219,149,1)' }} className="Admin-Nav-Link" to= '/admin/kontrahenci'>
+                    <FaUserTie  size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Kontrahenci</span>
                 </NavLink>
-                <NavLink activeStyle={{color: 'white'}} className="Admin-Nav-Link" to= '/admin/przewoznicy'>
-                    <RiTruckFill color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Przewoźnicy</span>
+                <NavLink activeStyle={{ backgroundColor: '#5CDB95', borderRadius: 3, color: '#202125', boxShadow: '2px 2px 10px -2px rgba(92,219,149,1)' }} className="Admin-Nav-Link" to= '/admin/przewoznicy'>
+                    <RiTruckFill  size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Przewoźnicy</span>
                 </NavLink>
-                <NavLink activeStyle={{color: 'white'}} className="Admin-Nav-Link" to= '/admin/magazyny'>
-                    <FaWarehouse color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Magazyny</span>
+                <NavLink activeStyle={{ backgroundColor: '#5CDB95', borderRadius: 3, color: '#202125', boxShadow: '2px 2px 10px -2px rgba(92,219,149,1)' }} className="Admin-Nav-Link" to= '/admin/magazyny'>
+                    <FaWarehouse  size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Magazyny</span>
                 </NavLink>
-                <NavLink activeStyle={{color: 'white'}} className="Admin-Nav-Link" to= '/admin/statystyki'>
-                    <BiStats color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Statystyki</span>
+                <NavLink activeStyle={{ backgroundColor: '#5CDB95', borderRadius: 3, color: '#202125', boxShadow: '2px 2px 10px -2px rgba(92,219,149,1)' }} className="Admin-Nav-Link" to= '/admin/statystyki'>
+                    <BiStats  size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Statystyki</span>
                 </NavLink>
-                <NavLink activeStyle={{color: 'white'}} className="Admin-Nav-Link" to= '/admin/profil'>
-                    <CgProfile color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Profil</span>
+                <NavLink activeStyle={{ backgroundColor: '#5CDB95', borderRadius: 3, color: '#202125', boxShadow: '2px 2px 10px -2px rgba(92,219,149,1)' }} className="Admin-Nav-Link" to= '/admin/profil'>
+                    <CgProfile size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Profil</span>
                 </NavLink>
                 <NavLink className='Admin-Nav-Link' onClick={handleBackHome} to="/">
-                    <BiHomeSmile color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Powrót</span>
+                    <BiHomeSmile size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Powrót</span>
                 </NavLink>
                 <NavLink className='Admin-Nav-Link' onClick={handleLogout} to="/">
-                    <AiOutlinePoweroff color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Wyloguj</span>
+                    <AiOutlinePoweroff size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Wyloguj</span>
                 </NavLink>
             </Nav>
         </Container>

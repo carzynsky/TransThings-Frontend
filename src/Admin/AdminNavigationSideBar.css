@@ -2,7 +2,7 @@
 
 .Navigation-Container{
     margin-left: -20px;
-    height: 762px;
+    height: 100%;
     width: 280px;
     background-color:#202125;
     font-family: 'Overpass', sans-serif;
@@ -15,10 +15,11 @@
     color:#5CDB95;
     font-size: 13px;
     font-family: 'Overpass', sans-serif;
-    padding-top: 10px;
+    padding-top: 5px;
+    padding-left: 5px;
     height: 35px;
     margin-top: 20px;
-    width: 130px;
+    width: 135px;
     text-align: left;
 }
 

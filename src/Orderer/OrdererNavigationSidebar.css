@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Overpass:wght@700&display=swap');
 
 .Orderer-Navigation-Container{
-    height: 754px;
+    height: 100%;
     width: 280px;
     background-color:#05386B;
     font-family: 'Overpass', sans-serif;
@@ -14,10 +14,11 @@
     color:#5CDB95;
     font-size: 13px;
     font-family: 'Overpass', sans-serif;
-    padding-top: 10px;
+    padding-top: 5px;
+    padding-left: 5px;
     height: 35px;
     margin-top: 20px;
-    width: 160px;
+    width: 175px;
     text-align: left;
 }
 

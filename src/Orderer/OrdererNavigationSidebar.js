@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Nav, Container, Row, Col } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import history from '../history.js';
@@ -12,7 +12,8 @@ import { CgProfile, CgFileDocument } from 'react-icons/cg';
 import './OrdererNavigationSidebar.css';
 
 const OrdererNavigationSideBar = () => {
-    
+    const [token, setToken] = useState(getSessionCookie())
+
     const handleLogout = (event) => {
         event.preventDefault();
         Cookies.remove('session');
@@ -30,7 +31,7 @@ const OrdererNavigationSideBar = () => {
                 <div style={{textAlign: 'center', paddingTop: '50px'}}>
                     <Row>
                         <Col>
-                            <div className='Icon-Avatar'>AC</div>
+                            <div className='Icon-Avatar'>{token?.initials}</div>
                         </Col>
                     </Row>
                     <Row style={{marginTop: '10px'}}>
@@ -40,34 +41,33 @@ const OrdererNavigationSideBar = () => {
                     </Row>
                     <Row style={{textAlign: 'center', paddingTop: '0px'}}>
                         <Col>
-                            <label>{getSessionCookie().login}</label>
+                            <label>{token?.login}</label>
                         </Col>
                     </Row>
                 </div>
-                {/* activeStyle={{ backgroundColor: '#5CDB95', color: '#1a1a1d', boxShadow: '2px 2px 15px -4px rgba(92,219,149,1)', borderRadius: '2px'}} */}
-                <NavLink exact activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/pracownik-zamowien/zamowienia'>
-                    <CgFileDocument color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>Zamówienia</span>
+                <NavLink exact activeStyle={{ backgroundColor: '#5CDB95', borderRadius: 3, color: '#202125', boxShadow: '2px 2px 10px -2px rgba(92,219,149,1)' }}className="Orderer-Nav-Link" to= '/pracownik-zamowien/zamowienia'>
+                    <CgFileDocument size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>Zamówienia</span>
                 </NavLink>
-                <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/pracownik-zamowien/zlecenia-spedycji'>
-                    <BiTask color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Zlecenia spedycji</span>
+                <NavLink activeStyle={{ backgroundColor: '#5CDB95', borderRadius: 3, color: '#202125', boxShadow: '2px 2px 10px -2px rgba(92,219,149,1)' }} className="Orderer-Nav-Link" to= '/pracownik-zamowien/zlecenia-spedycji'>
+                    <BiTask size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Zlecenia spedycji</span>
                 </NavLink>
-                <NavLink activeStyle={{ color: 'white'}} className="Orderer-Nav-Link" to= '/pracownik-zamowien/spedytorzy'>
-                    <RiUserVoiceFill color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>Spedytorzy</span>
+                <NavLink activeStyle={{ backgroundColor: '#5CDB95', borderRadius: 3, color: '#202125', boxShadow: '2px 2px 10px -2px rgba(92,219,149,1)' }} className="Orderer-Nav-Link" to= '/pracownik-zamowien/spedytorzy'>
+                    <RiUserVoiceFill size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span>Spedytorzy</span>
                 </NavLink>
-                <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/pracownik-zamowien/kontrahenci'>
-                    <FaUserTie color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Kontrahenci</span>
+                <NavLink activeStyle={{ backgroundColor: '#5CDB95', borderRadius: 3, color: '#202125', boxShadow: '2px 2px 10px -2px rgba(92,219,149,1)' }}className="Orderer-Nav-Link" to= '/pracownik-zamowien/kontrahenci'>
+                    <FaUserTie size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Kontrahenci</span>
                 </NavLink>
-                <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/pracownik-zamowien/magazyny'>
-                    <FaWarehouse color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Magazyny</span>
+                <NavLink activeStyle={{ backgroundColor: '#5CDB95', borderRadius: 3, color: '#202125', boxShadow: '2px 2px 10px -2px rgba(92,219,149,1)' }} className="Orderer-Nav-Link" to= '/pracownik-zamowien/magazyny'>
+                    <FaWarehouse size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Magazyny</span>
                 </NavLink>
-                <NavLink activeStyle={{color: 'white'}} className="Orderer-Nav-Link" to= '/pracownik-zamowien/profil'>
-                    <CgProfile color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Profil</span>
+                <NavLink activeStyle={{ backgroundColor: '#5CDB95', borderRadius: 3, color: '#202125', boxShadow: '2px 2px 10px -2px rgba(92,219,149,1)' }} className="Orderer-Nav-Link" to= '/pracownik-zamowien/profil'>
+                    <CgProfile size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Profil</span>
                 </NavLink>
                 <NavLink className='Orderer-Nav-Link' onClick={handleBackHome} to="/">
-                    <BiHomeSmile color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Powrót</span>
+                    <BiHomeSmile size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Powrót</span>
                 </NavLink>
                 <NavLink className='Orderer-Nav-Link' onClick={handleLogout} to="/">
-                    <AiOutlinePoweroff color='#5cdb95' size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Wyloguj</span>
+                    <AiOutlinePoweroff size='1.8em'/><span>&nbsp;&nbsp;&nbsp;&nbsp;</span><span >Wyloguj</span>
                 </NavLink>
             </Nav>
         </Container>
