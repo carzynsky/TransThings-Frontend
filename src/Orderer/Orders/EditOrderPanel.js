@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom';
 import { HiOutlineOfficeBuilding } from 'react-icons/hi';
 import { ImCheckboxChecked, ImOffice } from 'react-icons/im';
 import { BiPackage, BiMessageAdd, BiTask } from 'react-icons/bi';
-import { CgDetailsMore, CgFileDocument } from 'react-icons/cg';
+import { CgDetailsMore, CgFileDocument, CgCalendarDates } from 'react-icons/cg';
 import { RiDeleteBin6Line, RiTruckLine } from 'react-icons/ri';
 import { AiFillPhone } from 'react-icons/ai';
 import { GiPathDistance } from 'react-icons/gi';
@@ -52,6 +52,7 @@ class EditOrderPanel extends Component{
             totalGrossWeight: 0,
             totalVolume: 0,
             orderExpectedDate: null,
+            orderRealizationDate: null,
             destinationStreetAddress: '',
             destinationZipCode: '',
             destinationCity: '',
@@ -101,6 +102,7 @@ class EditOrderPanel extends Component{
             });
 
             const data = await response.data
+            console.log(data)
 
             this.setState({
                 order: data,
@@ -116,6 +118,7 @@ class EditOrderPanel extends Component{
                 destinationCountry: data.destinationCountry,
                 destinationCity: data.destinationCity,
                 orderExpectedDate: data.orderExpectedDate,
+                orderRealizationDate: data.orderRealizationDate,
                 selectedPaymentFormId: data.paymentFormId,
                 selectedOrderStatusId: data.orderStatusId,
                 selectedVehicleTypeId: data.vehicleTypeId,
@@ -330,7 +333,7 @@ class EditOrderPanel extends Component{
                 'orderExpectedDate': this.state.orderExpectedDate,
                 'totalNetWeight': this.state.totalNetWeight,
                 'totalGrossWeight': this.state.totalGrossWeight,
-                'totalVolume': this.state.totalVolume,
+                'totalVolume': parseFloat(this.state.totalVolume),
                 'destinationStreetAddress': this.state.destinationStreetAddress,
                 'destinationCity': this.state.destinationCity,
                 'destinationZipCode': this.state.destinationZipCode,
@@ -576,7 +579,7 @@ class EditOrderPanel extends Component{
             newLoadPackageType: null,
             totalNetWeight: parseInt(this.state.totalNetWeight) + this.state.addLoadAmount * this.state.addLoadWeight,
             totalGrossWeight: parseInt(this.state.totalGrossWeight) + this.state.addLoadAmount * this.state.addLoadWeight + parseInt(this.state.newLoadPackageWeight),
-            totalVolume: parseInt(this.state.totalVolume) + parseInt(this.state.newLoadVolume)
+            totalVolume: parseFloat(this.state.totalVolume) + parseFloat(this.state.newLoadVolume)
         })
     }
 
@@ -658,6 +661,18 @@ class EditOrderPanel extends Component{
                     <Col>
                         <div className='Orders-Header' style={{color: '#f75353', fontSize: 24}}>
                             <BiTask /><span>&nbsp;&nbsp;</span><span>{this.state.forwardingOrderNumber === undefined ? 'brak' : this.state.forwardingOrderNumber}</span>
+                        </div>
+                    </Col>
+                </Row>
+
+                <Row>
+                    <Col>
+                        <div className='Orders-Header' style={{color: '#f75353', fontSize: 24}}>
+                            {this.state.order?.orderRealizationDate !== null &&
+                            <div>
+                                <CgCalendarDates /><span>&nbsp;&nbsp;</span><span >Data zakończenia: </span><span style={{ color: 'whitesmoke' }}>{this.state.orderRealizationDate?.split('T')[0]}</span>
+                            </div>
+                            }
                         </div>
                     </Col>
                 </Row>

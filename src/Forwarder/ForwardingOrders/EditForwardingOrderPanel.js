@@ -773,6 +773,7 @@ class EditForwardingOrderPanel extends Component{
                 'isAvailableAtWarehouse': this.state.selectedOrder?.isAvailableAtWarehouse,
                 'destinationStreetAddress': this.state.selectedOrder?.destinationStreetAddress,
                 'destinationZipCode': this.state.selectedOrder?.destinationZipCode,
+                'destinationCity': this.state.selectedOrder?.destinationCity,
                 'destinationCountry': this.state.selectedOrder?.destinationCountry,
                 'customerAdditionalInstructions': this.state.selectedOrder?.customerAdditionalInstructions,
                 'clientId': this.state.selectedOrder?.clientId,

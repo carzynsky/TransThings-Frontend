@@ -17,9 +17,14 @@ class OrdersDashboard extends Component{
         this.state = {
             token: getSessionCookie(),
             orders: [],
-            ordersQuantity: ''
+            ordersQuantity: '',
+            selectedFilterId: 0,
+            orderStatuses: []
         }
     }
+
+    // handle filter data
+    handleChange = (name) => (data)  => {{this.setState({ [name]: data.target.value })}}
 
     // GET call to API to get forwarders
     async getOrders(){
@@ -52,8 +57,40 @@ class OrdersDashboard extends Component{
         }
     }
 
+    // GET call to API to order statuses
+    async getOrderStatuses(){
+        try
+        {
+            const response = await axios.get('https://localhost:44394/order-statuses', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                }
+            });
+
+            const data = await response.data
+            if(data.length === 0){
+                this.setState({ orderStatuses: [] })
+                return;
+            }
+
+            var _customOrderStatuses = [ {id: 0, statusName: 'Wszystkie' }]
+            data.map(x => (
+                _customOrderStatuses.push(x)
+            ))
+
+            console.log(_customOrderStatuses)
+            this.setState({ orderStatuses: _customOrderStatuses, selectedFilterId: 0 })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
     async componentDidMount(){
-        await this.getOrders();
+        await this.getOrderStatuses()
+        await this.getOrders()
     };
 
     render(){
@@ -100,16 +137,17 @@ class OrdersDashboard extends Component{
                                         <Select
                                             id="selectUserGender"
                                             color="primary"
-                                            value='A'
+                                            value={this.state.selectedFilterId}
                                             style={{minWidth: '150px'}}
+                                            onChange={this.handleChange('selectedFilterId')}
                                             InputLabelProps={{
                                                 style:{
                                                     color: 'whitesmoke'
                                                 },
                                             }}>
-                                            <MenuItem value={'A'}>Wszystkie</MenuItem>
-                                            <MenuItem value={'M'}>Utworzone</MenuItem>
-                                            <MenuItem value={'K'}>Zaakceptowane</MenuItem>
+                                            {this.state.orderStatuses.map(x => (
+                                                 <MenuItem key={x.id} value={x.id}>{x.statusName}</MenuItem>
+                                            ))}
                                         </Select>
                                     </FormControl>
                                 </Col>
@@ -189,7 +227,8 @@ class OrdersDashboard extends Component{
                                                         sort: 'asc'
                                                     }
                                                 ],
-                                                rows: this.state.orders.map((order) => (
+                                                rows: this.state.selectedFilterId === 0 ? 
+                                                this.state.orders.map((order) => (
                                                     {
                                                         orderNumber: order.orderNumber,
                                                         forwardingOrderNumber: order.forwardingOrder?.forwardingOrderNumber,
@@ -221,12 +260,43 @@ class OrdersDashboard extends Component{
                                                                             </Tooltip>
                                                                         </NavLink>
                                                                     </Col>
+                                                                </Row>
+                                                            </Container>
+                                                        </div>
+                                                           
+                                                    }
+                                                )) :
+                                                this.state.orders.filter(x => x.orderStatusId === this.state.selectedFilterId).map((order) => (
+                                                    {
+                                                        orderNumber: order.orderNumber,
+                                                        forwardingOrderNumber: order.forwardingOrder?.forwardingOrderNumber,
+                                                        client: order.client.clientFirstName + ' ' + order.client.clientLastName,
+                                                        path: order.warehouse.city + '-' + order.destinationCity,
+                                                        expectedDate: order.orderExpectedDate?.split('T')[0],
+                                                        orderStatus: 
+                                                        <div>
+                                                            <div 
+                                                                className='Order-Status-Block'
+                                                                style={{
+                                                                    backgroundColor: order.orderStatus?.statusName === 'Utworzone' ? ' #fff134' 
+                                                                    : order.orderStatus?.statusName === 'Anulowane' ? '#f75353' : '#34ff4c',
+                                                                    boxShadow: order.orderStatus?.statusName === 'Utworzone' ? '2px 2px 13px -4px #fff134'
+                                                                    : order.orderStatus?.statusName === 'Anulowane' ? '2px 2px 13px -4px #f75353'
+                                                                    : '2px 2px 13px -4px #34ff4c'}}>
+                                                                {order.orderStatus?.statusName}
+                                                            </div>
+                                                            <Container>
+                                                                <Row style={{marginTop: '5px'}}>
                                                                     <Col xs='2'>
-                                                                        <Tooltip title="Generowanie faktury" aria-label="add">
-                                                                            <div className='User-Details-Button'>
-                                                                                <FaRegFilePdf size='1.0em' className='User-Details-Icon'/>
-                                                                            </div>
-                                                                        </Tooltip>
+                                                                        <NavLink className="Add-User-Nav-Link" to={{
+                                                                            pathname: '/pracownik-zamowien/zamowienia/'+ order.id,
+                                                                            }}>
+                                                                            <Tooltip title="Edycja zamówienia" aria-label="add">
+                                                                                <div className='User-Details-Button' >
+                                                                                    <MdEdit size='1.0em' className='User-Details-Icon'/>
+                                                                                </div>
+                                                                            </Tooltip>
+                                                                        </NavLink>
                                                                     </Col>
                                                                 </Row>
                                                             </Container>
