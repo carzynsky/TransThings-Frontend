@@ -33,7 +33,9 @@ class EditUserPanel extends Component{
             userRoleId: '',
             serverResponse: '',
             isServerResponseModalOpen: false,
-            isModalOpen: false
+            isModalOpen: false,
+            isPeselValid: true,
+            peselErrorText: ''
         }
     }
 
@@ -143,9 +145,22 @@ class EditUserPanel extends Component{
 
     // handle change of text fields
     handleChange = (name) => (event) => {
+        var val = event.target.value
         this.setState({
-            [name]: event.target.value
-        });
+            [name]: val
+        })
+        if(name === 'peselNumber'){
+            let isNum = /^\d+$/.test(val)
+            if(!isNum) {
+                this.setState({ peselErrorText: 'Numer pesel może zawierać tylko cyfry.', isPeselValid: false })
+                return
+            }
+            if(val.length !== 11){
+                this.setState({ peselErrorText: 'Numer pesel musi zawierać 11 cyfr.', isPeselValid: false })
+                return
+            }
+            this.setState({ peselErrorText: '', isPeselValid: true })
+        }
       };
 
     handleBirthDateChange = (date) =>{
@@ -286,6 +301,8 @@ class EditUserPanel extends Component{
                                             color="primary"
                                             autoComplete="new-password"
                                             value={this.state.peselNumber}
+                                            error={!this.state.isPeselValid}
+                                            helperText={this.state.peselErrorText}
                                             onChange={this.handleChange('peselNumber')}
                                             InputLabelProps={{
                                                 style:{

@@ -29,9 +29,7 @@ class Home extends Component {
         let sessionCookie = getSessionCookie();
 
         if(sessionCookie.login === undefined){
-            this.setState({
-                isLogged: false
-            })
+            this.setState({ isLogged: false })
         }
         else{
             this.setState({
@@ -98,6 +96,7 @@ class Home extends Component {
             .then(response => {
                 setTimeout(() => {
                     setSessionCookie(response.data);
+
                     switch(response.data.role){
                         case 'Admin':{
                             history.push('/admin/uzytkownicy');
@@ -131,7 +130,7 @@ class Home extends Component {
                     }
     
                     this.setState({
-                        errorResponse: 'Server is offline. Try later.',
+                        errorResponse: 'Serwer jest offline. Spróbuj jeszcze raz.',
                         isLogging: false,
                         password: '',
                         redirect: false

@@ -153,7 +153,6 @@ class UsersPanel extends Component{
             });
 
             const data = await response.data;
-            console.log(data)
             this.setState({ 
                 stats: data,
                 doughnutChartData: {

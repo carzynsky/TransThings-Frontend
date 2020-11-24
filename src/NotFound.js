@@ -23,7 +23,7 @@ class NotFound extends Component{
             this.setState({
                 loaded: true
             })
-        }, 1200);
+        }, 1500);
     }
 
     render(){

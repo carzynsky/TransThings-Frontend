@@ -33,7 +33,9 @@ class AddUserPanel extends Component{
             userRoleId: '',
             serverResponse: '',
             isServerResponseModalOpen: false,
-            isModalOpen: false
+            isModalOpen: false,
+            isPeselValid: true,
+            peselErrorText: ''
         }
     }
 
@@ -110,9 +112,22 @@ class AddUserPanel extends Component{
 
     // handle change of text fields
     handleChange = (name) => (event) => {
+        var val = event.target.value
         this.setState({
-            [name]: event.target.value
+            [name]: val
         });
+        if(name === 'peselNumber'){
+            let isNum = /^\d+$/.test(val)
+            if(!isNum) {
+                this.setState({ peselErrorText: 'Numer pesel może zawierać tylko cyfry.', isPeselValid: false })
+                return
+            }
+            if(val.length !== 11){
+                this.setState({ peselErrorText: 'Numer pesel musi zawierać 11 cyfr.', isPeselValid: false })
+                return
+            }
+            this.setState({ peselErrorText: '', isPeselValid: true })
+        }
       };
 
     handleBirthDateChange = (date) =>{
@@ -128,9 +143,7 @@ class AddUserPanel extends Component{
       
     // handle open/close modal
     handleOpenModal = () => {
-        this.setState({
-            isModalOpen: true
-        })
+        if(this.state.isPeselValid) this.setState({ isModalOpen: true })
     }
 
     handleCloseModal = () => {
@@ -194,7 +207,7 @@ class AddUserPanel extends Component{
                                 <Col>
                                     <FormControl  noValidate autoComplete="off">
                                         <TextField 
-                                            id="driverLastName" 
+                                            id="userLastName" 
                                             label="Nazwisko" 
                                             color="primary"
                                             onChange={this.handleChange('lastName')}
@@ -238,6 +251,8 @@ class AddUserPanel extends Component{
                                         <TextField 
                                             id="userPeselNumber" 
                                             label="Pesel" 
+                                            error={!this.state.isPeselValid}
+                                            helperText={this.state.peselErrorText}
                                             color="primary"
                                             autoComplete="new-password"
                                             value={this.state.peselNumber}
@@ -403,18 +418,17 @@ class AddUserPanel extends Component{
                                     </NavLink>
                                 </Col>
                                 <Col>
+                                    <Button 
+                                        className="Edit-User-Redirect-Button" 
+                                        variant="light"
+                                        style={{marginLeft: '30px'}}
+                                        onClick={this.handleOpenModal}>
+                                            Zatwierdź
+                                        </Button>
                                     <Popup 
-                                        trigger={
-                                            <Button 
-                                                className="Edit-User-Redirect-Button" 
-                                                variant="light"
-                                                style={{marginLeft: '30px'}}>
-                                                    Zatwierdź
-                                            </Button>
-                                        }
                                         modal
                                         open={this.state.isModalOpen}
-                                        onOpen={this.handleOpenModal}
+                                        onClose={this.handleCloseModal}
                                         contentStyle={{
                                             width: '30vw',
                                             height: '25vh',

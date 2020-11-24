@@ -1,0 +1,30 @@
+.Order-Stats-Line-Chart-Tile{
+    background-color: #202125;
+    /* background-color: whitesmoke; */
+    height: 45vh;
+    border-radius: 15px;
+}
+
+.Order-Stats-Small-Tile{
+    background-color: #202125;
+    height: 20vh;
+    border-radius: 15px;
+}
+.Order-Stats-Text{
+    font-size: 36px;
+    font-family: 'Overpass', sans-serif;
+    color:rgba(248, 74, 112, 0.9);
+}
+.Order-Stats-Tile-Header{
+    padding-top: 15px;
+    padding-left: 25px;
+    font-size: 26px;
+    font-family: 'Overpass', sans-serif;
+    color:rgba(248, 74, 112, 0.9);
+}
+
+.Order-Stats-Medium-Tile{
+    background-color: #202125;
+    height: 45vh;
+    border-radius: 15px;
+}

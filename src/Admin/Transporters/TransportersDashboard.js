@@ -45,7 +45,8 @@ class TransportersDashboard extends Component{
             const data = await response.data;
             if(data.length === 0){
                 this.setState({
-                    selectedTransporter: ''
+                    selectedTransporter: '',
+                    transportersQuantity: 0
                 })
                 return;
             }
@@ -73,12 +74,13 @@ class TransportersDashboard extends Component{
                 }
             });
 
-            await this.getTransporters();
-
             this.setState({
                 serverResponse: response.data.message,
                 isServerResponseModalOpen: true
             })
+            
+            await this.getTransporters();
+
         }
         catch(error){
             if(error.response){

@@ -12,12 +12,14 @@ import { AiOutlineCar, AiOutlineUser } from 'react-icons/ai';
 import { GiPathDistance, GiFullMotorcycleHelmet } from 'react-icons/gi';
 import { SiStatuspage } from 'react-icons/si';
 import { Tooltip, FormControl, TextField, InputLabel, Select, MenuItem } from '@material-ui/core';
+import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import { FiChevronDown, FiChevronUp, FiMap } from 'react-icons/fi';
 import { getSessionCookie } from '../../sessions';
 import { MDBDataTable } from 'mdbreact';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import axios from 'axios';
+import DateFnsUtils from '@date-io/date-fns';
 import './EditForwardingOrderPanel.css';
 
 class EditForwardingOrderPanel extends Component{
@@ -56,6 +58,8 @@ class EditForwardingOrderPanel extends Component{
             newTransitSelectedPaymentFormId: '',
 
             newTransitRouteShortPath: '',
+            newTransitStartDate: '',
+            newTransitEndDate: '',
             newTransitNetPrice: '',
             newTransitGrossPrice: '',
             newTransitSourceStreetAddress: '',
@@ -108,6 +112,9 @@ class EditForwardingOrderPanel extends Component{
 
     // handle change generic
     handleChange = (name) => (event) => this.setState({ [name]: event.target.value })
+
+    handleStartDateChange = (event) => this.setState({ newTransitStartDate: event.target.value })
+    handleEndDateChange = (event) => this.setState({ newTransitEndDate: event.target.value })
 
     // handle dates
     handleEventStartTimeChange = (event) => this.setState({ newEventStartTime: event.target.value })
@@ -238,6 +245,8 @@ class EditForwardingOrderPanel extends Component{
             'routeShortPath': this.state.newTransitRouteShortPath,
             'netPrice': this.state.newTransitNetPrice,
             'grossPrice': this.state.newTransitGrossPrice,
+            'startDate': this.state.newTransitStartDate,
+            'endDate': this.state.newTransitEndDate,
             'transitSourceStreetAddress': this.state.newTransitSourceStreetAddress,
             'transitSourceZipCode': this.state.newTransitSourceZipCode,
             'transitSourceCity': this.state.newTransitSourceCity,
@@ -259,6 +268,8 @@ class EditForwardingOrderPanel extends Component{
             transitsQuantity: _transits.length,
             newTransitRouteShortPath: '',
             newTransitNetPrice: '',
+            newTransitStartDate: null,
+            newTransitEndDate: null,
             newTransitSourceStreetAddress: '',
             newTransitSourceCity: '',
             newTransitSourceZipCode: '',
@@ -681,6 +692,8 @@ class EditForwardingOrderPanel extends Component{
                     newOrUpdatedTransits.push({
                         'routeShortPath': x.routeShortPath,
                         'netPrice': parseFloat(x.netPrice),
+                        'startDate': x.startDate,
+                        'endDate': x.endDate,
                         'grossPrice': parseFloat(x.grossPrice),
                         'transitSourceStreetAddress': x.transitSourceStreetAddress,
                         'transitSourceZipCode': x.transitSourceZipCode,
@@ -704,6 +717,8 @@ class EditForwardingOrderPanel extends Component{
                         'id': x.id,
                         'routeShortPath': x.routeShortPath,
                         'netPrice': parseFloat(x.netPrice),
+                        'startDate': x.startDate,
+                        'endDate': x.endDate,
                         'grossPrice': parseFloat(x.grossPrice),
                         'transitSourceStreetAddress': x.transitSourceStreetAddress,
                         'transitSourceZipCode': x.transitSourceZipCode,
@@ -1313,7 +1328,7 @@ class EditForwardingOrderPanel extends Component{
                                                             routeShortPath: transit.routeShortPath,
                                                             transitSource: transit.transitSourceStreetAddress + ' ' + transit.transitSourceCity,
                                                             transitDestination: transit.transitDestinationStreetAddress + ' ' + transit.transitDestinationCity,
-                                                            transitDates: 'Not implemented',
+                                                            transitDates: transit.startDate?.replace('T', ' ') + ' - ' + transit.endDate?.replace('T', ' '),
                                                             transporter: transit.transporter?.fullName,
                                                             driver: transit.driver?.firstName + ' ' + transit.driver?.lastName,
                                                             vehicle: transit.vehicle?.brand + ' ' + transit.vehicle?.model,
@@ -2100,6 +2115,62 @@ class EditForwardingOrderPanel extends Component{
                                             }} 
                                         />
                                     </FormControl>
+                                </Col>
+                            </Row>
+                            <Row style={{ marginTop: 25, paddingLeft: 10 }}>
+                                <Col>
+                                    <FormControl noValidate>
+                                        <TextField
+                                            id="transitStartDate"
+                                            label="Czas rozpoczęcia"
+                                            type="datetime-local"
+                                            defaultValue={this.state.newTransitStartDate}
+                                            onChange={this.handleStartDateChange.bind(this)}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                                shrink: true
+                                            }}
+                                        />
+                                    </FormControl>
+                                </Col>
+                                <Col>
+                                    <FormControl noValidate>
+                                        <TextField
+                                            id="transitEndDate"
+                                            label="Czas zakończenia"
+                                            type="datetime-local"
+                                            defaultValue={this.state.newTransitEndDate}
+                                            onChange={this.handleEndDateChange.bind(this)}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                                shrink: true
+                                            }}
+                                        />
+                                    </FormControl>
+                                    {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                                        <KeyboardDatePicker
+                                            margin="normal"
+                                            id="user-date-picker-dialog"
+                                            label="Data zakończenia przejazdu"
+                                            format="MM/dd/yyyy"
+                                            color="primary"
+                                            value={this.state.newTransitEndDate}
+                                            onChange={this.handleEndDateChange.bind(this)}
+                                            KeyboardButtonProps={{
+                                                'aria-label': 'change date'
+                                            }}
+                                            style={{color: '#5CDB95'}}
+                                            InputLabelProps={{
+                                                style:{
+                                                    color: 'whitesmoke'
+                                                },
+                                            }}
+                                            />
+                                    </MuiPickersUtilsProvider> */}
                                 </Col>
                             </Row>
                             <Row style={{ marginTop: 25 }}>

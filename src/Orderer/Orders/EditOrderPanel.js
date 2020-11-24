@@ -344,8 +344,8 @@ class EditOrderPanel extends Component{
                 'warehouseId': this.state.selectedWarehouse?.id,
                 'customerAdditionalInstructions': this.state.customerAdditionalInstructions,
                 'transportDistance': this.state.transportDistance === '' ? null : parseFloat(this.state.transportDistance),
-                'netPrice': this.state.token.role === 'Orderer' ? parseFloat(this.state.netPrice) : parseFloat((this.state.totalGrossWeight * this.state.transportDistance * this.state.rate).toFixed(2)),
-                'grossPrice': this.state.token.role === 'Orderer' ? parseFloat(this.state.grossPrice) : parseFloat((this.state.totalGrossWeight * this.state.transportDistance * this.state.rate * 1.23).toFixed(2)),
+                'netPrice': this.state.token.role === 'Orderer' ? parseFloat(this.state.netPrice) : parseFloat(((parseFloat(this.state.totalGrossWeight) + parseFloat(this.state.totalVolume)) * this.state.transportDistance * this.state.rate).toFixed(2)),
+                'grossPrice': this.state.token.role === 'Orderer' ? parseFloat(this.state.grossPrice) : parseFloat(((parseFloat(this.state.totalGrossWeight) + parseFloat(this.state.totalVolume)) * this.state.transportDistance * this.state.rate * 1.23).toFixed(2)),
                 'isClientVerified': this.state.isClientVerified,
                 'isAvailableAtWarehouse': this.state.isAvailableAtWarehouse,
                 'orderStatusId': this.state.selectedOrderStatusId,
@@ -1464,14 +1464,14 @@ class EditOrderPanel extends Component{
                                         <Col>
                                             <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
                                                 <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Nowa kwota netto (zł)<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>
-                                                    {(this.state.totalGrossWeight * this.state.transportDistance * this.state.rate).toFixed(2)}
+                                                    {((parseFloat(this.state.totalGrossWeight) + parseFloat(this.state.totalVolume)) * this.state.transportDistance * this.state.rate).toFixed(2)}
                                                 </span>
                                             </div>
                                         </Col>
                                         <Col>
                                             <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
                                                 <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Nowa kwota brutto (zł)<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>
-                                                    {(this.state.totalGrossWeight * this.state.transportDistance * this.state.rate * 1.23).toFixed(2)}
+                                                    {((parseFloat(this.state.totalGrossWeight) + parseFloat(this.state.totalVolume)) * this.state.transportDistance * this.state.rate * 1.23).toFixed(2)}
                                                 </span>
                                             </div>
                                         </Col>

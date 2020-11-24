@@ -9,7 +9,9 @@ import TransportersRoutes from './Transporters/TransportersRoutes';
 import WarehousesRoutes from './Warehouses/WarehousesRoutes';
 import Profile from '../Profile';
 import EditUserPanel from './Users/EditUserPanel';
+import StatisticsDashboard from './Statistics/StatisticsDashboard';
 import './AdminMainPanel.css';
+import AddUserPanel from './Users/AddUserPanel';
 
 function AdminMainPanel() {
     return (
@@ -22,9 +24,10 @@ function AdminMainPanel() {
                     <Col xs='10' style={{ marginLeft: 250 }}>
                         <Switch>
                             <Route path='/admin/uzytkownicy' exact component={UsersRoutes}></Route>
+                            <Route path='/admin/uzytkownicy/dodaj' component={AddUserPanel}></Route>
                             <Route path='/admin/kontrahenci' component={CustomerRoutes}></Route>
                             <Route path='/admin/magazyny' component={WarehousesRoutes}></Route>
-                            <Route path='/admin/statystyki' component={LoadingPage}></Route>
+                            <Route path='/admin/statystyki' component={StatisticsDashboard}></Route>
                             <Route path='/admin/profil/edycja/:id' component={EditUserPanel}></Route>
                             <Route path='/admin/profil' component={Profile}></Route>
                             <Route path='/admin/przewoznicy' component={TransportersRoutes}></Route>
