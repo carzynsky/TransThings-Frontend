@@ -4,17 +4,17 @@
     height: 40px;
     font-size: 12px;
     text-align: center;
-    background-color: #e6e947;
-    border: solid 3px #e6e947;
+    background-color: #50ee9c;
+    border: solid 3px #50ee9c;
     color: #202125;
-    box-shadow: 2px 2px 15px -4px #e6e947;
+    box-shadow: 2px 2px 15px -4px#50ee9c;
 }
 
 .Driver-Info-Header{
     padding-top: 15px;
     font-size: 20px;
     font-family: 'Overpass', sans-serif;
-    color:#e6e947;
+    color:#50ee9c;
 }
 
 .Drivers-Data-Table{
@@ -29,19 +29,19 @@
     padding-top: 15px;
     font-size: 26px;
     font-family: 'Overpass', sans-serif;
-    color: #e6e947;
+    color: #50ee9c;
 }
 
 .Driver-Info-Stats-Sub{
     font-size: 14px;
     font-family: 'Overpass', sans-serif;
-    color:#e6e947;
+    color:#50ee9c;
 }
 
 .Driver-Info-Stats{
     font-size:50px;
     font-family: 'Overpass', sans-serif;
-    color:#e6e947;
+    color:#50ee9c;
 }
 
 .Add-Driver-Redirect-Button{
@@ -49,16 +49,16 @@
     width: 90px;
     height: 35px;
     font-size: 13px;
-    background-color: #e6e947;
-    box-shadow: 2px 2px 15px -4px #e6e947;
-    border: solid 3px #e6e947;
+    background-color:#50ee9c;
+    box-shadow: 2px 2px 15px -4px #50ee9c;
+    border: solid 3px #50ee9c;
     color: #202125;
     margin-top: 15px;
     margin-right: 15px;
 }
 
 .Driver-Details-Icon{
-    color: #e6e947;
+    color:#50ee9c;
     size: 1.0em;
 }
 .Driver-Details-Icon:hover{
@@ -80,16 +80,16 @@
     padding-top: 25px;
     font-size: 20px;
     font-family: 'Overpass', sans-serif;
-    color:#e6e947;
+    color:#50ee9c;
 }
 
 .Confirm-Delete-Driver-Button{
     font-family: 'Overpass', sans-serif;
     width: 110px;
     font-size: 13px;
-    background-color: #e6e947;
-    box-shadow: 2px 2px 15px -4px #e6e947;
-    border: solid 3px #e6e947;
+    background-color: #50ee9c;
+    box-shadow: 2px 2px 15px -4px #50ee9c;
+    border: solid 3px #50ee9c;
     color: #202125;
     margin-top: 5px;
     padding-top: 10px;

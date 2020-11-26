@@ -37,6 +37,15 @@ class AddCustomerPanel extends Component{
             apartmentNumber: '',
             serverResponse: '',
             isServerResponseModalOpen: false,
+
+            firstNameIsValid: true,
+            lastNameIsValid: true,
+            birthDateIsValid: true,
+            peselIsValid: true,
+            firstNameHelperText: '',
+            lastNameHelperText: '',
+            birthDateHelperText: '',
+            peselHelperText: '',
             isModalOpen: false
         }
     }
@@ -101,13 +110,57 @@ class AddCustomerPanel extends Component{
         this.setState({
             [name]: event.target.value
         });
+
+        if(name === 'clientPeselNumber'){
+            let val = event.target.value
+            let isNum = /^\d+$/.test(val)
+            if(!isNum) {
+                this.setState({ peselHelperText: 'Numer pesel może zawierać tylko cyfry.', peselIsValid: false })
+                return
+            }
+            if(val.length !== 11){
+                this.setState({ peselHelperText: 'Numer pesel musi zawierać 11 cyfr.', peselIsValid: false })
+                return
+            }
+            this.setState({ peselHelperText: '', peselIsValid: true })
+        }
+
       };
 
     // handle open/close modal
     handleOpenModal = () => {
-        this.setState({
-            isModalOpen: true
-        })
+        let isError = false
+        if(this.state.clientFirstName === ''){
+            this.setState({ firstNameIsValid: false, firstNameHelperText: 'Pole nie może być puste.' })
+                isError = true
+        }
+        else{
+            this.setState({ firstNameIsValid: true, firstNameHelperText: '' })
+        }
+
+        if(this.state.clientLastName === ''){
+            this.setState({ lastNameIsValid: false, lastNameHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ lastNameIsValid: true, lastNameHelperText: '' })
+        }
+
+        if(this.state.birthDate === null){
+            this.setState({ birthDateIsValid: false, birthDateHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ birthDateIsValid: true, birthDateHelperText: '' })
+        }
+
+        if(this.state.clientPeselNumber === ''){
+            this.setState({ peselIsValid: false, peselHelperText: 'Pole nie może być puste.'})
+            isError = true
+        }
+
+        if(isError || !this.state.peselIsValid) return
+        this.setState({ isModalOpen: true })
     }
 
     handleCloseModal = () => {
@@ -154,107 +207,19 @@ class AddCustomerPanel extends Component{
                                     </NavLink>
                                 </Col>
                                 <Col>
-                                    <Popup 
-                                        trigger={
-                                            <Button 
-                                                className="Edit-Customer-Redirect-Button" 
-                                                variant="light"
-                                                style={{marginLeft: '25px'}}>
-                                                    Utwórz
-                                            </Button>
-                                        }
-                                        modal
-                                        open={this.state.isModalOpen}
-                                        onOpen={this.handleOpenModal}
-                                        contentStyle={{
-                                            width: '30vw',
-                                            height: '25vh',
-                                            backgroundColor: '#202125',
-                                            borderColor: '#202125',
-                                            borderRadius: '15px',
-                                        }}
-                                        >
-                                        { close => (<div>
-                                            <Container>
-                                                <Row style={{textAlign: 'center'}}>
-                                                    <Col>
-                                                        <label className='Edit-Customer-Modal-Header'>Czy na pewno chcesz dodać kontrahenta {this.state.clientFirstName} {this.state.clientLastName}?</label>
-                                                    </Col>
-                                                </Row>
-                                                <Row style={{marginTop: '25px', textAlign: 'center'}}>
-                                                    <Col>
-                                                        <Button 
-                                                            className="Confirm-Edit-Customer-Button" 
-                                                            variant="light"
-                                                            onClick={() => {
-                                                                close()
-                                                            }}
-                                                            >
-                                                                <div>
-                                                                <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
-                                                                </div>
-                                                        </Button>
-                                                    </Col>
-                                                    <Col>
-                                                        <Button 
-                                                            className="Confirm-Edit-Customer-Button" 
-                                                            variant="light"
-                                                            onClick={() => {
-                                                                this.addCustomer();
-                                                                close();
-                                                            }}
-                                                            >
-                                                                <div>
-                                                                <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
-                                                                </div>
-                                                        </Button>
-                                                    </Col>
-                                                </Row>
-                                            </Container>
-                                        </div>
-                                        )}
-                                    </Popup>
-
-                                    <Popup 
-                                        modal
-                                        open={this.state.isServerResponseModalOpen}
-                                        contentStyle={{
-                                            width: '30vw',
-                                            height: '25vh',
-                                            backgroundColor: '#202125',
-                                            borderColor: '#202125',
-                                            borderRadius: '15px',
-                                            }}>
-                                        {
-                                            close => (
-                                                    <Container>
-                                                        <Row style={{textAlign: 'center'}}>
-                                                            <Col>
-                                                                <label className='Edit-Customer-Modal-Header'>{this.state.serverResponse}</label>
-                                                            </Col>
-                                                        </Row>
-                                                        <Row style={{textAlign: 'center', marginTop: '30px'}}>
-                                                            <Col>
-                                                                <Button 
-                                                                    className="Confirm-Edit-Customer-Button" 
-                                                                    variant="light"
-                                                                    onClick={() => {
-                                                                        this.handleCloseServerResponseModal();
-                                                                        close();
-                                                                    }}>
-                                                                    Zamknij
-                                                                </Button>
-                                                            </Col>
-                                                        </Row>
-                                                    </Container>
-                                                )
-                                            }
-                                    </Popup>
+                                    <Button 
+                                        className="Edit-Customer-Redirect-Button" 
+                                        variant="light"
+                                        onClick={this.handleOpenModal}
+                                        style={{marginLeft: '25px'}}>
+                                            Utwórz
+                                    </Button>
                                 </Col>
+                                    
                             </Row>
                             <Row style={{marginTop: '10px'}}>
                                 <Col>
-                                    <label className='Edit-Customer-Sub-Header'>Dane personalne</label>
+                                    <label className='Edit-Customer-Sub-Header' style={{ fontSize: 18 }}>Dane personalne</label>
                                 </Col>
                             </Row>
                             <Row>
@@ -262,9 +227,18 @@ class AddCustomerPanel extends Component{
                                     <FormControl  noValidate autoComplete="off">
                                         <TextField 
                                             id="clientFirstName" 
-                                            label="Imię" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Imię</span>
+                                                </div>
+                                            }
                                             color="primary"
                                             onChange={this.handleChange('clientFirstName')}
+                                            error={!this.state.firstNameIsValid}
+                                            helperText={this.state.firstNameHelperText}
                                             autoComplete="new-password"
                                             InputLabelProps={{
                                                 style:{
@@ -282,9 +256,18 @@ class AddCustomerPanel extends Component{
                                     <FormControl  noValidate autoComplete="off">
                                         <TextField 
                                             id="clientLastName" 
-                                            label="Nazwisko" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Nazwisko</span>
+                                                </div>
+                                            }
                                             color="primary"
                                             onChange={this.handleChange('clientLastName')}
+                                            error={!this.state.lastNameIsValid}
+                                            helperText={this.state.lastNameHelperText}
                                             autoComplete="new-password"
                                             InputLabelProps={{
                                                 style:{
@@ -300,7 +283,11 @@ class AddCustomerPanel extends Component{
                                 </Col>
                                 <Col>
                                     <FormControl>
-                                        <InputLabel id="genderLabel">Płeć</InputLabel>
+                                        <InputLabel id="genderLabel">
+                                            <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                            <span>&nbsp;</span>
+                                            <span>Płeć</span>
+                                        </InputLabel>
                                             <Select
                                                 id="selectCustomerGender"
                                                 color="primary"
@@ -324,11 +311,20 @@ class AddCustomerPanel extends Component{
                                         <KeyboardDatePicker
                                             margin="normal"
                                             id="customer-date-picker-dialog"
-                                            label="Data urodzenia"
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Data urodzenia</span>
+                                                </div>
+                                            }
                                             format="MM/dd/yyyy"
                                             color="primary"
                                             value={this.state.birthDate}
                                             onChange={this.handleDateChange.bind(this)}
+                                            error={!this.state.birthDateIsValid}
+                                            helperText={this.state.birthDateHelperText}
                                             KeyboardButtonProps={{
                                                 'aria-label': 'change date'
                                             }}
@@ -345,10 +341,19 @@ class AddCustomerPanel extends Component{
                                     <FormControl  noValidate autoComplete="off">
                                         <TextField 
                                             id="costumerPeselNumber" 
-                                            label="Pesel" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Pesel</span>
+                                                </div>
+                                            }
                                             color="primary"
                                             autoComplete="new-password"
                                             onChange={this.handleChange('clientPeselNumber')}
+                                            error={!this.state.peselIsValid}
+                                            helperText={this.state.peselHelperText}
                                             InputLabelProps={{
                                                 style:{
                                                     color: 'whitesmoke'
@@ -366,7 +371,7 @@ class AddCustomerPanel extends Component{
                             </Row>
                             <Row style={{marginTop: '20px'}}>
                                 <Col>
-                                    <label className='Edit-Customer-Sub-Header'>Dane firmy</label>
+                                    <label className='Edit-Customer-Sub-Header' style={{ fontSize: 18 }}>Dane firmy</label>
                                 </Col>
                             </Row>
                             <Row>
@@ -495,7 +500,7 @@ class AddCustomerPanel extends Component{
                             </Row>
                             <Row style={{marginTop: '20px'}}>
                                 <Col>
-                                <label className='Edit-Customer-Sub-Header'>Dane kontaktowe</label>
+                                <label className='Edit-Customer-Sub-Header' style={{ fontSize: 18 }}>Dane kontaktowe</label>
                                 </Col>
                             </Row>
                             <Row >
@@ -544,6 +549,94 @@ class AddCustomerPanel extends Component{
                     </div>
                     </Col>
                 </Row>
+                <Popup 
+                                        modal
+                                        open={this.state.isModalOpen}
+                                        onClose={this.handleCloseModal}
+                                        contentStyle={{
+                                            width: '30vw',
+                                            height: '25vh',
+                                            backgroundColor: '#202125',
+                                            borderColor: '#202125',
+                                            borderRadius: '15px',
+                                        }}
+                                        >
+                                        { close => (<div>
+                                            <Container>
+                                                <Row style={{textAlign: 'center'}}>
+                                                    <Col>
+                                                        <label className='Edit-Customer-Modal-Header'>Czy na pewno chcesz dodać kontrahenta {this.state.clientFirstName} {this.state.clientLastName}?</label>
+                                                    </Col>
+                                                </Row>
+                                                <Row style={{marginTop: '25px', textAlign: 'center'}}>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Confirm-Edit-Customer-Button" 
+                                                            variant="light"
+                                                            onClick={() => {
+                                                                close()
+                                                            }}
+                                                            >
+                                                                <div>
+                                                                <ImCross size='1.0em'/><span>&nbsp;</span><span>Nie</span>
+                                                                </div>
+                                                        </Button>
+                                                    </Col>
+                                                    <Col>
+                                                        <Button 
+                                                            className="Confirm-Edit-Customer-Button" 
+                                                            variant="light"
+                                                            onClick={() => {
+                                                                this.addCustomer();
+                                                                close();
+                                                            }}
+                                                            >
+                                                                <div>
+                                                                <MdDone size='1.5em'/><span>&nbsp;</span><span>Tak</span>
+                                                                </div>
+                                                        </Button>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        </div>
+                                        )}
+                                    </Popup>
+
+                                    <Popup 
+                                        modal
+                                        open={this.state.isServerResponseModalOpen}
+                                        contentStyle={{
+                                            width: '30vw',
+                                            height: '25vh',
+                                            backgroundColor: '#202125',
+                                            borderColor: '#202125',
+                                            borderRadius: '15px',
+                                            }}>
+                                        {
+                                            close => (
+                                                    <Container>
+                                                        <Row style={{textAlign: 'center'}}>
+                                                            <Col>
+                                                                <label className='Edit-Customer-Modal-Header'>{this.state.serverResponse}</label>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row style={{textAlign: 'center', marginTop: '30px'}}>
+                                                            <Col>
+                                                                <Button 
+                                                                    className="Confirm-Edit-Customer-Button" 
+                                                                    variant="light"
+                                                                    onClick={() => {
+                                                                        this.handleCloseServerResponseModal();
+                                                                        close();
+                                                                    }}>
+                                                                    Zamknij
+                                                                </Button>
+                                                            </Col>
+                                                        </Row>
+                                                    </Container>
+                                                )
+                                            }
+                                    </Popup>
             </Container>
         );
     }

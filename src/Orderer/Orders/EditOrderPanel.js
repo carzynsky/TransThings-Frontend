@@ -624,7 +624,7 @@ class EditOrderPanel extends Component{
             <Container>
                 <Row style={{marginTop: '50px'}}>
                     <Col xs='9' style={{minWidth: '500px'}}>
-                        <div className='Orders-Header' style={{color: '#f75353'}}>Edycja zamówienia transportu</div>
+                        <div className='Orders-Header'>Edycja zamówienia transportu</div>
                     </Col>
 
                     <Col xs='1' style={{minWidth: '120px', marginTop: '10px'}}>
@@ -652,14 +652,12 @@ class EditOrderPanel extends Component{
                 </Row>
                 <Row>
                     <Col>
-                        <div className='Orders-Header' style={{color: '#f75353', fontSize: 24}}>
+                        <div className='Orders-Header' style={{ fontSize: 18, color: 'whitesmoke' }}>
                             <CgFileDocument /><span>&nbsp;&nbsp;</span><span>{this.state.order?.orderNumber}</span>
                         </div>
                     </Col>
-                </Row>
-                <Row>
                     <Col>
-                        <div className='Orders-Header' style={{color: '#f75353', fontSize: 24}}>
+                        <div className='Orders-Header' style={{ fontSize: 18, color: 'whitesmoke' }}>
                             <BiTask /><span>&nbsp;&nbsp;</span><span>{this.state.forwardingOrderNumber === undefined ? 'brak' : this.state.forwardingOrderNumber}</span>
                         </div>
                     </Col>
@@ -667,10 +665,10 @@ class EditOrderPanel extends Component{
 
                 <Row>
                     <Col>
-                        <div className='Orders-Header' style={{color: '#f75353', fontSize: 24}}>
+                        <div className='Orders-Header' style={{ fontSize: 18, color: 'whitesmoke' }}>
                             {this.state.order?.orderRealizationDate !== null &&
                             <div>
-                                <CgCalendarDates /><span>&nbsp;&nbsp;</span><span >Data zakończenia: </span><span style={{ color: 'whitesmoke' }}>{this.state.orderRealizationDate?.split('T')[0]}</span>
+                                <CgCalendarDates /><span>&nbsp;&nbsp;</span><span >Data zakończenia: </span><span>{this.state.orderRealizationDate?.split('T')[0]}</span>
                             </div>
                             }
                         </div>
@@ -824,16 +822,21 @@ class EditOrderPanel extends Component{
                             <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{color: '#f75353'}}>
-                                            <FaUserTie size='1.5em'/><span>&nbsp;&nbsp;</span><span>Klient</span>
+                                        <div className='Orders-Header' style={{ fontSize: 20 }}>
+                                            <FaUserTie size='1.3em'/><span>&nbsp;&nbsp;</span><span>Klient</span>
                                         </div>
+                                    </Col>
+                                    <Col>
+                                        <label className='Orders-Header' style={{fontSize: 20, color: 'whitesmoke' }}>
+                                            {this.state.selectedClient?.clientFirstName} {this.state.selectedClient?.clientLastName}
+                                        </label>
                                     </Col>
                                 </Row>
 
                                 {this.state.selectedClient === null && 
                                 <Row>
                                     <Col>
-                                        <label className='Tile-Data-Label' style={{fontSize: '18px'}}>Nie wybrano</label>
+                                        <label className='Orders-Header' style={{ color: 'whitesmoke', fontSize: 18 }}>Nie wybrano</label>
                                     </Col>
                                 </Row>
                                 }
@@ -842,22 +845,15 @@ class EditOrderPanel extends Component{
                                 <div>
                                     <Row>
                                         <Col>
-                                            <label className='Tile-Data-Label' style={{fontSize: '22px'}}>
-                                                {this.state.selectedClient?.clientFirstName} {this.state.selectedClient?.clientLastName}
+                                            <label className='Tile-Data-Label'>
+                                                <span style={{ color: '#50ee9c' }}> <FaAddressCard /><span>&nbsp;&nbsp;</span>Pesel: </span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.clientPeselNumber}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}> <FaAddressCard /><span>&nbsp;&nbsp;</span>Pesel: </span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.clientPeselNumber}
-                                            </label>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}><ImOffice /> <span>&nbsp;&nbsp;</span>Firma:</span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.companyFullName === null ? 'brak danych' : this.state.selectedClient?.companyFullName}
+                                                <span style={{ color: '#50ee9c' }}><ImOffice /> <span>&nbsp;&nbsp;</span>Firma:</span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.companyFullName === null ? 'brak danych' : this.state.selectedClient?.companyFullName}
                                             </label>
                                         </Col>
                                         <Col>
@@ -866,31 +862,31 @@ class EditOrderPanel extends Component{
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>NIP: </span>{this.state.selectedClient?.nip === null ? 'brak danych' : this.state.selectedClient?.nip}
+                                                <span style={{ color: '#50ee9c' }}>NIP: </span>{this.state.selectedClient?.nip === null ? 'brak danych' : this.state.selectedClient?.nip}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}><HiOutlineOfficeBuilding /><span>&nbsp;&nbsp;</span>Adres:</span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.streetName} {this.state.selectedClient?.city} {this.state.selectedClient?.zipCode}
+                                                <span style={{ color: '#50ee9c' }}><HiOutlineOfficeBuilding /><span>&nbsp;&nbsp;</span>Adres:</span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.streetName} {this.state.selectedClient?.city} {this.state.selectedClient?.zipCode}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}> <AiFillPhone /><span>&nbsp;&nbsp;</span>Nr. kontaktowy(1):<span>&nbsp;&nbsp;</span></span>{this.state.selectedClient?.contactPhoneNumber1}
+                                                <span style={{ color: '#50ee9c' }}> <AiFillPhone /><span>&nbsp;&nbsp;</span>Nr. kontaktowy(1):<span>&nbsp;&nbsp;</span></span>{this.state.selectedClient?.contactPhoneNumber1}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}><AiFillPhone /><span>&nbsp;&nbsp;</span>Nr. kontaktowy(2):<span>&nbsp;&nbsp;</span></span>{this.state.selectedClient?.contactPhoneNumber2}
+                                                <span style={{ color: '#50ee9c' }}><AiFillPhone /><span>&nbsp;&nbsp;</span>Nr. kontaktowy(2):<span>&nbsp;&nbsp;</span></span>{this.state.selectedClient?.contactPhoneNumber2}
                                             </label>
                                         </Col>
                                     </Row>
@@ -906,9 +902,14 @@ class EditOrderPanel extends Component{
                         <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{color: '#f75353'}}>
-                                            <FaWarehouse size='1.5em'/><span>&nbsp;&nbsp;</span><span>Magazyn</span>
+                                        <div className='Orders-Header' style={{ fontSize: 20 }}>
+                                            <FaWarehouse size='1.3em'/><span>&nbsp;&nbsp;</span><span>Magazyn</span>
                                         </div>
+                                    </Col>
+                                    <Col>
+                                        <label className='Tile-Data-Label' style={{ fontSize: 18 }}>
+                                            {this.state.selectedWarehouse?.name}
+                                        </label>
                                     </Col>
                                     <Col style={{textAlign: 'right'}}>
                                         <Button 
@@ -923,7 +924,7 @@ class EditOrderPanel extends Component{
                                 {this.state.selectedWarehouse === null &&
                                 <Row>
                                     <Col>
-                                        <label className='Tile-Data-Label' style={{fontSize: '18px'}}>Nie wybrano</label>
+                                        <label className='Tile-Data-Label' style={{ fontSize: 18 }}>Nie wybrano</label>
                                     </Col>
                                 </Row>
                                 }
@@ -932,43 +933,36 @@ class EditOrderPanel extends Component{
                                 <div>
                                     <Row>
                                         <Col>
-                                            <label className='Tile-Data-Label' style={{fontSize: '22px'}}>
-                                                {this.state.selectedWarehouse?.name}
+                                            <label className='Tile-Data-Label'>
+                                                <span style={{color: '#50ee9c'}}>Adres: </span>{this.state.selectedWarehouse?.streetAddress} {this.state.selectedWarehouse?.zipCode} {this.state.selectedWarehouse?.city}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Adres: </span>{this.state.selectedWarehouse?.streetAddress} {this.state.selectedWarehouse?.zipCode} {this.state.selectedWarehouse?.city}
+                                                <span style={{color: '#50ee9c'}}>Dane osoby do kontaktu: </span>{this.state.selectedWarehouse?.contactPersonFirstName} {this.state.selectedWarehouse?.contactPersonLastName}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Dane osoby do kontaktu: </span>{this.state.selectedWarehouse?.contactPersonFirstName} {this.state.selectedWarehouse?.contactPersonLastName}
+                                                <span style={{color: '#50ee9c'}}>Nr. kontaktowy: </span>{this.state.selectedWarehouse?.contactPhoneNumber}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Nr. kontaktowy: </span>{this.state.selectedWarehouse?.contactPhoneNumber}
+                                                <span style={{color: '#50ee9c'}}>Adres email: </span>{this.state.selectedWarehouse?.mail}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Adres email: </span>{this.state.selectedWarehouse?.mail}
-                                            </label>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Fax: </span>{this.state.selectedWarehouse?.fax}
+                                                <span style={{color: '#50ee9c'}}>Fax: </span>{this.state.selectedWarehouse?.fax}
                                             </label>
                                         </Col>
                                     </Row>
@@ -985,8 +979,8 @@ class EditOrderPanel extends Component{
                             <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{color: '#f75353'}}>
-                                            <MdLocationOn size='1.5em'/><span>&nbsp;&nbsp;</span><span>Adres dostawy</span>
+                                        <div className='Orders-Header' style={{ fontSize: 20 }}>
+                                            <MdLocationOn size='1.3em'/><span>&nbsp;&nbsp;</span><span>Adres dostawy</span>
                                         </div>
                                     </Col>
                                 </Row>
@@ -1107,8 +1101,8 @@ class EditOrderPanel extends Component{
                         <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{color: '#f75353'}}>
-                                            <BiPackage size='1.5em'/><span>&nbsp;&nbsp;</span><span>Towary</span>
+                                        <div className='Orders-Header' style={{ fontSize: 20 }}>
+                                            <BiPackage size='1.3em'/><span>&nbsp;&nbsp;</span><span>Towary</span>
                                         </div>
                                     </Col>
                                     <Col style={{textAlign: 'right'}}>
@@ -1149,7 +1143,7 @@ class EditOrderPanel extends Component{
                                                         volume: load.volume,
                                                         delete: <RiDeleteBin6Line 
                                                                         size='1.3em' 
-                                                                        className='Delete-Load-Icon'
+                                                                        className='Table-Icon'
                                                                         onClick={this.handleDeleteSelectedLoad.bind(this, load)}/>
                                                     }
                                                 ))
@@ -1166,43 +1160,43 @@ class EditOrderPanel extends Component{
                             <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{color: '#f75353'}}>
-                                            <CgDetailsMore size='1.5em'/><span>&nbsp;&nbsp;</span><span>Szczegóły zamówienia</span>
+                                        <div className='Orders-Header' style={{ fontSize: 20 }}>
+                                            <CgDetailsMore size='1.3em'/><span>&nbsp;&nbsp;</span><span>Szczegóły zamówienia</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
                                         <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
-                                            <FaWeightHanging size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga netto (kg):<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalNetWeight}</span>
+                                            <FaWeightHanging size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga netto (kg):<span>&nbsp;&nbsp;</span><span style={{color: '#50ee9c'}}>{this.state.totalNetWeight}</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
                                         <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
-                                            <FaWeight size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga brutto (kg):<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalGrossWeight}</span>
+                                            <FaWeight size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga brutto (kg):<span>&nbsp;&nbsp;</span><span style={{color: '#50ee9c'}}>{this.state.totalGrossWeight}</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
                                         <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
-                                            <FaGlassWhiskey size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita objętość (LITR):<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalVolume}</span>
+                                            <FaGlassWhiskey size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita objętość (LITR):<span>&nbsp;&nbsp;</span><span style={{color: '#50ee9c'}}>{this.state.totalVolume}</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
                                         <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
-                                            <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita kwota netto (zł)<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.netPrice}</span>
+                                            <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita kwota netto (zł)<span>&nbsp;&nbsp;</span><span style={{color: '#50ee9c'}}>{this.state.netPrice}</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
                                         <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
-                                            <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita kwota brutto (zł)<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>
+                                            <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita kwota brutto (zł)<span>&nbsp;&nbsp;</span><span style={{color: '#50ee9c'}}>
                                             {this.state.grossPrice} </span>
                                         </div>
                                     </Col>
@@ -1263,8 +1257,8 @@ class EditOrderPanel extends Component{
                         <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{color: '#f75353'}}>
-                                            <BiMessageAdd size='1.5em'/><span>&nbsp;&nbsp;</span><span>Dodatkowe informacje</span>
+                                        <div className='Orders-Header' style={{ fontSize: 20 }}>
+                                            <BiMessageAdd size='1.3em'/><span>&nbsp;&nbsp;</span><span>Dodatkowe informacje</span>
                                         </div>
                                     </Col>
                                 </Row>
@@ -1287,7 +1281,7 @@ class EditOrderPanel extends Component{
                                                 }}
                                                 InputProps={{
                                                     style: {
-                                                        color: '#5c8bdb'
+                                                        color: 'whitesmoke'
                                                     },
                                                 }} />
                                         </FormControl>
@@ -1303,8 +1297,8 @@ class EditOrderPanel extends Component{
                             <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{color: '#f75353'}}>
-                                            <CgDetailsMore size='1.5em'/><span>&nbsp;&nbsp;</span><span>Weryfikacja</span>
+                                        <div className='Orders-Header' style={{ fontSize: 20 }}>
+                                            <CgDetailsMore size='1.3em'/><span>&nbsp;&nbsp;</span><span>Weryfikacja</span>
                                         </div>
                                     </Col>
                                 </Row>
@@ -1316,6 +1310,7 @@ class EditOrderPanel extends Component{
                                     </Col>
                                     <Col>
                                         <Checkbox 
+                                            color='primary'
                                             inputProps={{ 'aria-label': 'uncontrolled-checkbox' }} 
                                             checked={this.state.isClientVerified}
                                             onChange={this.handleChange('isClientVerified')}/>
@@ -1329,6 +1324,7 @@ class EditOrderPanel extends Component{
                                     </Col>
                                     <Col>
                                         <Checkbox 
+                                            color='primary'
                                             inputProps={{ 'aria-label': 'uncontrolled-checkbox' }} 
                                             checked={this.state.isAvailableAtWarehouse}
                                             onChange={this.handleChange('isAvailableAtWarehouse')}/>
@@ -1346,8 +1342,8 @@ class EditOrderPanel extends Component{
                                 <Container>
                                     <Row>
                                         <Col>
-                                            <div className='Tile-Header' style={{color: '#f75353'}}>
-                                                <BiMessageAdd size='1.5em'/><span>&nbsp;&nbsp;</span><span>Szczegóły trasy</span>
+                                            <div className='Orders-Header' style={{ fontSize: 20 }}>
+                                                <BiMessageAdd size='1.3em'/><span>&nbsp;&nbsp;</span><span>Szczegóły trasy</span>
                                             </div>
                                         </Col>
                                     </Row>
@@ -1356,17 +1352,17 @@ class EditOrderPanel extends Component{
                                             <Container>
                                                 <Row>
                                                     <Col>
-                                                        <label className='Tile-Data-Label' style={{fontSize: '26px', color: '#f75353'}}>Transport z:</label>
+                                                        <label className='Tile-Data-Label' style={{fontSize: 16 , color: '#50ee9c'}}>Transport z:</label>
                                                     </Col>
                                                 </Row>
-                                                <Row>
+                                                <Row style={{ marginTop: -5 }}>
                                                     <Col>
-                                                        <label className='Tile-Data-Label' style={{fontSize: '18px'}}>{this.state.selectedWarehouse?.name}</label>
+                                                        <label className='Tile-Data-Label' style={{ fontSize: 16 }}>{this.state.selectedWarehouse?.name}</label>
                                                     </Col>
                                                 </Row>
-                                                <Row>
+                                                <Row style={{ marginTop: -10}}>
                                                     <Col>
-                                                        <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
+                                                        <div className='Tile-Data-Label' style={{ fontSize: 16 }}>
                                                             {this.state.selectedWarehouse?.streetAddress}<span>&nbsp;&nbsp;</span>{this.state.selectedWarehouse?.zipCode}<span>&nbsp;&nbsp;</span>{this.state.selectedWarehouse?.city}
                                                         </div>
                                                     </Col>
@@ -1377,17 +1373,17 @@ class EditOrderPanel extends Component{
                                             <Container>
                                                 <Row>
                                                     <Col>
-                                                        <label className='Tile-Data-Label' style={{fontSize: '26px', color: '#f75353'}}>Transport do:</label>
+                                                        <label className='Tile-Data-Label' style={{ fontSize: 16, color: '#50ee9c' }}>Transport do:</label>
                                                     </Col>
                                                 </Row>
-                                                <Row>
+                                                <Row style={{ marginTop: -5 }}>
                                                     <Col>
-                                                        <label className='Tile-Data-Label' style={{fontSize: '18px' }}>{this.state.order?.client?.clientFirstName} {this.state.order?.client?.clientLastName}</label>
+                                                        <label className='Tile-Data-Label' style={{ fontSize: 16 }}>{this.state.order?.client?.clientFirstName} {this.state.order?.client?.clientLastName}</label>
                                                     </Col>
                                                 </Row>
-                                                <Row>
+                                                <Row style={{ marginTop: -10 }}>
                                                     <Col>
-                                                        <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
+                                                        <div className='Tile-Data-Label' style={{ fontSize: 16 }}>
                                                             {this.state.destinationStreetAddress}<span>&nbsp;&nbsp;</span>{this.state.destinationZipCode}<span>&nbsp;&nbsp;</span>{this.state.destinationCity}
                                                         </div>
                                                     </Col>
@@ -1397,10 +1393,10 @@ class EditOrderPanel extends Component{
                                     </Row>
                                     <Row style={{ marginTop: 15, paddingLeft: 15 }}>
                                         <Col>
-                                            <label className='Tile-Data-Label' style={{fontSize: '26px', color: '#f75353'}}>Optymalna trasa</label>
+                                            <label className='Tile-Data-Label' style={{fontSize: 18, color: '#50ee9c'}}>Optymalna trasa</label>
                                         </Col>
                                     </Row>
-                                    <Row style={{ paddingLeft: 15 }}>
+                                    <Row style={{ paddingLeft: 20 }}>
                                         <Col>
                                             <FormControl  noValidate autoComplete="off">
                                                 <TextField 
@@ -1460,7 +1456,7 @@ class EditOrderPanel extends Component{
                                         
                                     </Row>
                                     {this.state.token.role === 'Forwarder' &&
-                                     <Row style={{ paddingLeft: 10, marginTop: 10 }}>
+                                     <Row style={{ paddingLeft: 20, marginTop: 10 }}>
                                         <Col>
                                             <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
                                                 <FaRegMoneyBillAlt size='1.3em'/><span>&nbsp;&nbsp;</span>Nowa kwota netto (zł)<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>
@@ -1477,7 +1473,7 @@ class EditOrderPanel extends Component{
                                         </Col>
                                     </Row> 
                                     }
-                                    <Row style={{ paddingLeft: 15, marginTop: 15 }}>
+                                    <Row style={{ paddingLeft: 20, marginTop: 15 }}>
                                         <Col>
                                             <FormControl>
                                                 <InputLabel id="genderLabel">
@@ -1589,7 +1585,7 @@ class EditOrderPanel extends Component{
                             <Container>
                             <Row style={{textAlign: 'center'}}>
                                 <Col>
-                                    <label className='Orders-Header'>
+                                    <label className='Orders-Header' style={{ fontSize: 20 }}>
                                         Dodawanie towaru
                                     </label>
                                 </Col>
@@ -1602,7 +1598,6 @@ class EditOrderPanel extends Component{
                                             label='Nazwa'
                                             color="primary"
                                             onChange={this.handleChange('newLoadName')}
-                                            style={{minWidth: '0px'}}
                                             InputLabelProps={{
                                                 style:{
                                                     color: 'whitesmoke'
@@ -1628,6 +1623,7 @@ class EditOrderPanel extends Component{
                                             onChange={this.handleChange('addLoadAmount')}
                                             value={this.state.addLoadAmount}
                                             style={{minWidth: '0px'}}
+                                            type='number'
                                             InputLabelProps={{
                                                 style:{
                                                     color: 'whitesmoke'
@@ -1635,7 +1631,7 @@ class EditOrderPanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 },
                                             }} 
                                         />
@@ -1656,7 +1652,7 @@ class EditOrderPanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 },
                                             }} 
                                         />
@@ -1678,7 +1674,7 @@ class EditOrderPanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 },
                                             }} 
                                         />
@@ -1701,7 +1697,7 @@ class EditOrderPanel extends Component{
                                             InputProps={{
                                                 inputProps: { min: 0, max: 999999 },
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 },
                                             }} 
                                         />
@@ -1726,7 +1722,7 @@ class EditOrderPanel extends Component{
                                             InputProps={{
                                                 inputProps: { min: 0, max: 999999 },
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 },
                                             }} 
                                         />
@@ -1736,14 +1732,14 @@ class EditOrderPanel extends Component{
                             <Row style={{marginTop: '30px'}}>
                                 <Col>
                                     <label className='Tile-Data-Label'>
-                                        <span style={{color: '#f75353', fontSize: '18px'}}>Waga netto (kg): </span>
-                                        <span style={{fontSize: '18px'}}>{this.state.addLoadAmount * this.state.addLoadWeight}</span>
+                                        <span style={{ color: '#50ee9c', fontSize: 16 }}>Waga netto (kg): </span>
+                                        <span style={{ fontSize: 16 }}>{this.state.addLoadAmount * this.state.addLoadWeight}</span>
                                     </label>
                                 </Col>
                                 <Col>
                                     <label className='Tile-Data-Label'>
-                                        <span style={{color: '#f75353', fontSize: '18px'}}>Waga brutto (kg): </span>
-                                        <span style={{fontSize: '18px'}}>{this.state.addLoadAmount * this.state.addLoadWeight + parseInt(this.state.newLoadPackageWeight)}</span>
+                                        <span style={{ color: '#50ee9c', fontSize: 16 }}>Waga brutto (kg): </span>
+                                        <span style={{ fontSize: 16 }}>{this.state.addLoadAmount * this.state.addLoadWeight + parseInt(this.state.newLoadPackageWeight)}</span>
                                     </label>
                                 </Col>
                             </Row>

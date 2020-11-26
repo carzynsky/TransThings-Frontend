@@ -12,14 +12,12 @@ import { AiOutlineCar, AiOutlineUser } from 'react-icons/ai';
 import { GiPathDistance, GiFullMotorcycleHelmet } from 'react-icons/gi';
 import { SiStatuspage } from 'react-icons/si';
 import { Tooltip, FormControl, TextField, InputLabel, Select, MenuItem } from '@material-ui/core';
-import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/pickers';
 import { FiChevronDown, FiChevronUp, FiMap } from 'react-icons/fi';
 import { getSessionCookie } from '../../sessions';
 import { MDBDataTable } from 'mdbreact';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import axios from 'axios';
-import DateFnsUtils from '@date-io/date-fns';
 import './EditForwardingOrderPanel.css';
 
 class EditForwardingOrderPanel extends Component{
@@ -72,6 +70,13 @@ class EditForwardingOrderPanel extends Component{
             newTransitDestinationCountry: '',
             newTransitTransportDistance: '',
 
+            newTransitTransportDistanceIsValid: true,
+            newTransitTransportDistanceHelperText: '',
+            newTransitNetPriceIsValid: true,
+            newTransitNetPriceHelperText: '',
+            newTransitGrossPriceIsValid: true,
+            newTransitGrossPriceHelperText: '',
+
             selectedOrder: '',
             formatDate: '',
 
@@ -85,6 +90,13 @@ class EditForwardingOrderPanel extends Component{
             newEventStreetAddress: '',
             newEventOtherInformation: '',
             newEventForwardingOrderId: '',
+
+            newEventNameIsValid: true,
+            newEventNameHelperText: '',
+            newEventPlaceIsValid: true,
+            newEventPlaceHelperText: '',
+            newEventStreetAddressIsValid: true,
+            newEventStreetAddressHelperText: '',
 
             isOrdersTableVisible: false,
             isAllLoadsVisible: false,
@@ -121,10 +133,42 @@ class EditForwardingOrderPanel extends Component{
     handleEventEndTimeChange = (event) => this.setState({ newEventEndTime: event.target.value })
 
     // handle open/close add event modal
-    handleAddEventModal = () => this.setState({ isAddEventModalOpen: !this.state.isAddEventModalOpen })
+    handleAddEventModal = () => this.setState({ 
+        isAddEventModalOpen: !this.state.isAddEventModalOpen,
+        newEventNameIsValid: true,
+        newEventNameHelperText: '',
+        newEventPlaceIsValid: true,
+        newEventPlaceHelperText: '',
+        newEventStreetAddressIsValid: true,
+        newEventStreetAddressHelperText: ''
+     })
 
     // handle open/close add transit modal
-    handleAddTransitModal = () => this.setState({ isAddTransitModalOpen: !this.state.isAddTransitModalOpen })
+    handleOpenAddTransitModal = () => this.setState({ isAddTransitModalOpen: true })
+
+    handleCloseAddTransitModal = () => this.setState({
+        isAddTransitModalOpen: false,
+        newTransitRouteShortPath: '',
+        newTransitStartDate: '',
+        newTransitEndDate: '',
+        newTransitNetPrice: '',
+        newTransitGrossPrice: '',
+        newTransitSourceStreetAddress: '',
+        newTransitSourceZipCode: '',
+        newTransitSourceCity: '',
+        newTransitSourceCountry: '',
+        newTransitDestinationStreetAddress: '',
+        newTransitDestinationZipCode: '',
+        newTransitDestinationCity: '',
+        newTransitDestinationCountry: '',
+        newTransitTransportDistance: '',
+        newTransitNetPriceIsValid: true,
+        newTransitNetPriceHelperText: '',
+        newTransitGrossPriceIsValid: true,
+        newTransitGrossPriceHelperText: '',
+        newTransitTransportDistanceIsValid: true,
+        newTransitTransportDistanceHelperText: ''
+     })
 
     // handle visibility of add transit modal tables
     handleAddTransitModalTransportersTableVisibility = () => this.setState({ isAddTransitModalTransportersTableVisible: !this.state.isAddTransitModalTransportersTableVisible })
@@ -152,6 +196,8 @@ class EditForwardingOrderPanel extends Component{
             'routeShortPath': transit.routeShortPath,
             'netPrice': transit.netPrice,
             'grossPrice': transit.grossPrice,
+            'startDate': transit.startDate,
+            'endDate': transit.endDate,
             'transitSourceStreetAddress': transit.transitSourceStreetAddress,
             'transitSourceZipCode': transit.transitSourceZipCode,
             'transitSourceCity': transit.transitSourceCity,
@@ -219,6 +265,12 @@ class EditForwardingOrderPanel extends Component{
         this.setState({
             events: _events,
             eventsQuantity: _events.length,
+            newEventPlaceIsValid: true,
+            newEventPlaceHelperText: '',
+            newEventStreetAddressIsValid: true,
+            newEventStreetAddressHelperText: '',
+            newEventNameIsValid: true,
+            newEventNameHelperText: '',
             newEventName: '',
             newEventStartTime: '',
             newEventEndTime: '',
@@ -848,8 +900,13 @@ class EditForwardingOrderPanel extends Component{
         return(
             <Container>
                 <Row style={{ marginTop: 50 }}>
-                    <Col xs='9' style={{ minWidth: 450 }}>
+                    <Col xs='4' style={{ minWidth: 350 }}>
                         <div className='Orders-Header'>Zlecenie spedycji</div>
+                    </Col>
+                    <Col xs='5'>
+                        <div className='Orders-Header' style={{ fontSize: 22, paddingTop: 22, color: 'whitesmoke' }}>
+                            <BiTask /><span>&nbsp;&nbsp;</span><span>{this.state.forwardingOrder?.forwardingOrderNumber === null ? 'brak' : this.state.forwardingOrder?.forwardingOrderNumber}</span>
+                        </div>
                     </Col>
                     <Col style={{ minWidth: 120, marginTop: 10}}>
                         <NavLink className='Add-User-Nav-Link' to={{
@@ -870,13 +927,6 @@ class EditForwardingOrderPanel extends Component{
                         </Button>
                     </Col>
                 </Row>
-                <Row>
-                    <Col>
-                        <div className='Tile-Data-Label' style={{ fontSize: 20 }}>
-                            <BiTask /><span>&nbsp;&nbsp;</span><span>{this.state.forwardingOrder?.forwardingOrderNumber === null ? 'brak' : this.state.forwardingOrder?.forwardingOrderNumber}</span>
-                        </div>
-                    </Col>
-                </Row>
                 <Row style={{ marginTop: 25 }}>
                     <Col>
                         <div className='Orders-Sub-Tile'>
@@ -890,7 +940,7 @@ class EditForwardingOrderPanel extends Component{
                                 </Row>
                                 <Row style={{ textAlign: 'center' , marginTop: 10 }}>
                                     <Col>
-                                        <div className='Orders-Stats-Number' style={{ fontSize: 22, color: 'whitesmoke' }}>
+                                        <div className='Orders-Stats-Number' style={{ fontSize: 18, color: 'whitesmoke' }}>
                                             <span>{this.state.forwardingOrder?.forwarder?.firstName}</span><span>&nbsp;</span><span>{this.state.forwardingOrder?.forwarder?.lastName}</span>
                                         </div>
                                     </Col>
@@ -910,7 +960,7 @@ class EditForwardingOrderPanel extends Component{
                                 </Row>
                                 <Row style={{ textAlign: 'center', marginTop: 5 }}>
                                     <Col>
-                                        <div className='Orders-Stats-Header' style={{ fontSize: 20, color: 'whitesmoke' }}>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 18, color: 'whitesmoke' }}>
                                             {this.state.formatDate}
                                         </div>
                                     </Col>
@@ -936,9 +986,9 @@ class EditForwardingOrderPanel extends Component{
                                         </Button>
                                     </Col>
                                 </Row>
-                                <Row style={{ textAlign: 'center', marginTop: 5 }}>
+                                <Row style={{ textAlign: 'center' }}>
                                     <Col>
-                                        <div className='Orders-Stats-Header' style={{ fontSize: 12, color: 'whitesmoke' }}>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 14, color: 'whitesmoke' }}>
                                             {this.state.forwardingOrder?.additionalDescription}
                                         </div>
                                     </Col>
@@ -951,12 +1001,12 @@ class EditForwardingOrderPanel extends Component{
                     <div className='Forwarding-Order-Show-Nav' onClick={this.handleOrdersTableVisibility}>
                         {!this.state.isOrdersTableVisible &&
                             <div>
-                                <FiChevronDown size='1.2em' /><span>&nbsp;</span><span>Pokaż zamówienia</span>
+                                <FiChevronDown size='1.0em' /><span>&nbsp;</span><span style={{ fontSize: 18 }}>Pokaż zamówienia</span>
                             </div>
                         }
                         {this.state.isOrdersTableVisible &&
                             <div>
-                                <FiChevronUp size='1.2em' /><span>&nbsp;</span><span>Ukryj zamówienia</span>
+                                <FiChevronUp size='1.0em' /><span>&nbsp;</span><span style={{ fontSize: 18 }}>Ukryj zamówienia</span>
                             </div>
                         }
                     </div>
@@ -1155,12 +1205,12 @@ class EditForwardingOrderPanel extends Component{
                             <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{ fontSize: 18, color: '#f75353' }}>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 18 }}>
                                             <BiPackage size='1.5em'/><span>&nbsp;&nbsp;</span><span>Towary</span>
                                         </div>
                                     </Col>
                                     <Col>
-                                        <div className='Tile-Header' style={{ fontSize: 16, color: '#f75353' }}>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 16 }}>
                                             {this.state.selectedOrder?.orderNumber}
                                         </div>
                                     </Col>
@@ -1169,7 +1219,7 @@ class EditForwardingOrderPanel extends Component{
                                 {this.state.allLoads.length === 0 && 
                                     <Row>
                                         <Col>
-                                            <label className='Tile-Data-Label' style={{fontSize: '18px'}}>Brak towarów</label>
+                                            <label className='Orders-Stats-Header' style={{ fontSize: 18 }}>Brak towarów</label>
                                         </Col>
                                     </Row>
                                 }
@@ -1205,16 +1255,16 @@ class EditForwardingOrderPanel extends Component{
                 </div>
                 }
 
-                <Row style={{ marginTop: 15 }}>
-                    <div className='Forwarding-Order-Show-Nav-Red' onClick={this.handleAllLoadsVisibility}>
+                <Row style={{ marginTop: 5 }}>
+                    <div className='Forwarding-Order-Show-Nav' onClick={this.handleAllLoadsVisibility}>
                         {!this.state.isAllLoadsVisible &&
                             <div>
-                                <FiChevronDown size='1.2em' /><span>&nbsp;</span><span>Pokaż wszystkie towary</span>
+                                <FiChevronDown size='1.0em' /><span>&nbsp;</span><span style={{ fontSize: 18 }}>Pokaż wszystkie towary</span>
                             </div>
                         }
                         {this.state.isAllLoadsVisible &&
                             <div>
-                                <FiChevronUp size='1.2em' /><span>&nbsp;</span><span>Ukryj wszystkie towary</span>
+                                <FiChevronUp size='1.0em' /><span>&nbsp;</span><span style={{ fontSize: 18 }}>Ukryj wszystkie towary</span>
                             </div>
                         }
                     </div>
@@ -1226,12 +1276,12 @@ class EditForwardingOrderPanel extends Component{
                             <Container>
                                 <Row>
                                     <Col xs='9'>
-                                        <div className='Tile-Header' style={{ fontSize: 18, color: '#f75353' }}>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 18 }}>
                                             <BiPackage size='1.5em'/><span>&nbsp;&nbsp;</span><span>Wszystkie towary</span>
                                         </div>
                                     </Col>
                                     <Col>
-                                        <div className='Orders-Stats-Header' style={{ fontSize: 20, color: '#f75353' }}>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 20 }}>
                                             <MdShowChart size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>{this.state.allLoadsQuantity}</span>
                                         </div>
                                     </Col>
@@ -1273,31 +1323,31 @@ class EditForwardingOrderPanel extends Component{
                             <Container>
                                 <Row>
                                     <Col xs='8'>
-                                        <div className='Tile-Header' style={{ fontSize: 18, color: '#f2f540' }}>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 18 }}>
                                             <AiOutlineCar size='1.5em'/><span>&nbsp;&nbsp;</span><span>Przejazdy</span>
                                         </div>
                                     </Col>
                                     <Col xs='1'>
-                                        <div className='Orders-Stats-Header' style={{ fontSize: 20, color: '#f2f540' }}>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 20 }}>
                                             <MdShowChart size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span>
                                             <span>{this.state.transitsQuantity}</span>
                                         </div>
                                     </Col>
                                     <Col>
                                         <Button 
-                                            className="Yellow-Button" 
+                                            className="Green-Button" 
                                             variant="light"
-                                            style={{width: '100px'}}
+                                            style={{ width: 100 }}
                                             onClick={this.handleOpenAddExistingTransitModal}>
                                                  <MdAssignmentTurnedIn size='1.0em'/><span>&nbsp;</span><span>Przypisz</span>
                                         </Button>
                                     </Col>
                                     <Col>
                                         <Button 
-                                            className="Yellow-Button" 
+                                            className="Green-Button" 
                                             variant="light"
-                                            style={{width: '80px'}}
-                                            onClick={this.handleAddTransitModal}>
+                                            style={{ width: 80 }}
+                                            onClick={this.handleOpenAddTransitModal}>
                                                  <MdAdd size='1.0em'/><span>&nbsp;</span><span>Dodaj</span>
                                         </Button>
                                     </Col>
@@ -1305,7 +1355,7 @@ class EditForwardingOrderPanel extends Component{
                                 {this.state.transitsQuantity === 0 &&
                                 <Row style={{ textAlign: 'center' }}>
                                     <Col>
-                                        <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 22 }}>
                                             Brak
                                         </div>
                                     </Col>
@@ -1335,7 +1385,7 @@ class EditForwardingOrderPanel extends Component{
                                                             select:
                                                                 <Tooltip title="Pokaż szczegóły przejazdu" aria-label="add">
                                                                     <div>
-                                                                        <BiShowAlt className='Delete-Load-Icon' size='1.5em' />
+                                                                        <BiShowAlt className='Table-Icon' size='1.5em' />
                                                                     </div>
                                                                 </Tooltip>,
                                                             delete: 
@@ -1365,20 +1415,20 @@ class EditForwardingOrderPanel extends Component{
                             <Container>
                                 <Row>
                                     <Col xs='9'>
-                                        <div className='Tile-Header' style={{ fontSize: 18, color: '#c76eff' }}>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 18 }}>
                                             <CgGym size='1.5em'/><span>&nbsp;&nbsp;</span><span>Załadunki/Rozładunki</span>
                                         </div>
                                     </Col>
                                     <Col>
-                                        <div className='Orders-Stats-Header' style={{ fontSize: 20, color: '#c76eff' }}>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 20 }}>
                                             <MdShowChart size='1.5em'/><span>&nbsp;&nbsp;&nbsp;</span><span>{this.state.eventsQuantity}</span>
                                         </div>
                                     </Col>
                                     <Col>
                                         <Button 
-                                            className="Purple-Button" 
+                                            className="Green-Button" 
                                             variant="light"
-                                            style={{width: '80px'}}
+                                            style={{ width: 80 }}
                                             onClick={this.handleAddEventModal}>
                                                  <MdAdd size='1.0em'/><span>&nbsp;</span><span>Dodaj</span>
                                         </Button>
@@ -1387,7 +1437,7 @@ class EditForwardingOrderPanel extends Component{
                                 {this.state.eventsQuantity === 0 && 
                                 <Row style={{ textAlign: 'center'}}>
                                     <Col>
-                                        <div className='Tile-Header' style={{ fontSize: 22, color: '#c76eff' }}>Brak</div>
+                                        <div className='Orders-Stats-Header' style={{ fontSize: 22 }}>Brak</div>
                                     </Col>
                                 </Row>
                                 }
@@ -1415,7 +1465,7 @@ class EditForwardingOrderPanel extends Component{
                                                             delete: 
                                                             <RiDeleteBin6Line 
                                                                 size='1.3em' 
-                                                                className='Delete-Load-Icon'
+                                                                className='Table-Icon'
                                                                 onClick={this.removeEvent.bind(this, event)}
                                                             />
                                                         }
@@ -1605,7 +1655,7 @@ class EditForwardingOrderPanel extends Component{
                     onClose={this.handleAddEventModal}
                     contentStyle={{
                         width: '50vw',
-                        height: '95vh',
+                        height: '80vh',
                         backgroundColor: '#202125',
                         borderColor: '#202125',
                         borderRadius: '15px'}}>
@@ -1614,23 +1664,31 @@ class EditForwardingOrderPanel extends Component{
                             <Container>
                             <Row style={{textAlign: 'center'}}>
                                 <Col>
-                                    <div className='Orders-Header' style={{ color: '#c76eff' }}>
-                                        <CgGym size='1.5em'/><span>&nbsp;&nbsp;</span><span>Dodawanie załadunku/rozładunku</span>
+                                    <div className='Orders-Header' style={{ fontSize: 26 }}>
+                                        <CgGym size='1.2em'/><span>&nbsp;&nbsp;</span><span>Dodawanie załadunku/rozładunku</span>
                                     </div>
                                 </Col>
                             </Row>
-                            <Row style={{marginTop: 60, paddingLeft: '10px'}}>
+                            <Row style={{marginTop: 40, paddingLeft: '10px'}}>
                                 <Col>
                                     <FormControl>
                                         <TextField
                                             id="additionalInformation" 
-                                            label='Nazwa'
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Nazwa zdarzenia</span>
+                                                </div>
+                                            }
                                             color="primary"
                                             onChange={this.handleChange('newEventName')}
-                                            style={{minWidth: '0px'}}
+                                            error={!this.state.newEventNameIsValid}
+                                            helperText={this.state.newEventNameHelperText}
                                             InputLabelProps={{
                                                 style:{
-                                                    color: '#c76eff'
+                                                    color: 'whitesmoke'
                                                 },
                                             }}
                                             InputProps={{
@@ -1643,7 +1701,7 @@ class EditForwardingOrderPanel extends Component{
                                 </Col>
                             </Row>
 
-                            <Row style={{marginTop: '10px', paddingLeft: '10px'}}>
+                            <Row style={{marginTop: 10 , paddingLeft: 10 }}>
                                 <Col>
                                     <FormControl noValidate>
                                         <TextField
@@ -1654,7 +1712,7 @@ class EditForwardingOrderPanel extends Component{
                                             onChange={this.handleEventStartTimeChange.bind(this)}
                                             InputLabelProps={{
                                                 style:{
-                                                    color: '#c76eff'
+                                                    color: 'whitesmoke'
                                                 },
                                                 shrink: true
                                             }}
@@ -1671,7 +1729,7 @@ class EditForwardingOrderPanel extends Component{
                                             onChange={this.handleEventEndTimeChange.bind(this)}
                                             InputLabelProps={{
                                                 style:{
-                                                    color: '#c76eff'
+                                                    color: 'whitesmoke'
                                                 },
                                                 shrink: true
                                             }}
@@ -1679,10 +1737,10 @@ class EditForwardingOrderPanel extends Component{
                                     </FormControl>
                                 </Col>
                             </Row>
-                            <Row style={{ marginTop: 20 }}>
+                            <Row style={{ marginTop: 10 }}>
                                 <Col>
-                                    <div className='Orders-Stats-Header' style={{ fontSize: 18, color: '#c76eff' }}>
-                                        <AiOutlineUser size='1.6em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Dane osoby do kontaktu</span>
+                                    <div className='Orders-Stats-Header' style={{ fontSize: 16 }}>
+                                        <AiOutlineUser size='1.2em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Dane osoby do kontaktu</span>
                                     </div>
                                 </Col>
                             </Row>
@@ -1696,7 +1754,7 @@ class EditForwardingOrderPanel extends Component{
                                             onChange={this.handleChange('newEventContactPersonFirstName')}
                                             InputLabelProps={{
                                                 style:{
-                                                    color: '#c76eff'
+                                                    color: 'whitesmoke'
                                                 },
                                             }}
                                             InputProps={{
@@ -1713,11 +1771,10 @@ class EditForwardingOrderPanel extends Component{
                                             id="additionalInformation" 
                                             label='Nazwisko'
                                             color="primary"
-                                            style={{ width: 150 }}
                                             onChange={this.handleChange('newEventContactPersonLastName')}
                                             InputLabelProps={{
                                                 style:{
-                                                    color: '#c76eff'
+                                                    color: 'whitesmoke'
                                                 },
                                             }}
                                             InputProps={{
@@ -1740,7 +1797,7 @@ class EditForwardingOrderPanel extends Component{
                                             onChange={this.handleChange('newEventContactPersonPhoneNumber')}
                                             InputLabelProps={{
                                                 style:{
-                                                    color: '#c76eff'
+                                                    color: 'whitesmoke'
                                                 },
                                             }}
                                             InputProps={{
@@ -1752,25 +1809,33 @@ class EditForwardingOrderPanel extends Component{
                                     </FormControl>
                                 </Col>
                             </Row>
-                            <Row style={{ marginTop: 20 }}>
+                            <Row style={{ marginTop: 15 }}>
                                 <Col>
-                                    <div className='Orders-Stats-Header' style={{ fontSize: 18, color: '#c76eff' }}>
-                                        <MdLocationCity size='1.6em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Dane adresowe</span>
+                                    <div className='Orders-Stats-Header' style={{ fontSize: 16  }}>
+                                        <MdLocationCity size='1.2em'/><span>&nbsp;&nbsp;&nbsp;</span><span>Dane adresowe</span>
                                     </div>
                                 </Col>
                             </Row>
-                            <Row style={{ marginTop: 10, paddingLeft: 10 }}>
+                            <Row style={{ marginTop: 5, paddingLeft: 10 }}>
                                 <Col>
                                     <FormControl>
                                         <TextField
                                             id="additionalInformation" 
-                                            label='Miejsce'
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Miejsce</span>
+                                                </div>
+                                            }
                                             color="primary"
-                                            style={{ width: 150 }}
                                             onChange={this.handleChange('newEventPlace')}
+                                            error={!this.state.newEventPlaceIsValid}
+                                            helperText={this.state.newEventPlaceHelperText}
                                             InputLabelProps={{
                                                 style:{
-                                                    color: '#c76eff'
+                                                    color: 'whitesmoke'
                                                 },
                                             }}
                                             InputProps={{
@@ -1785,13 +1850,22 @@ class EditForwardingOrderPanel extends Component{
                                     <FormControl>
                                         <TextField
                                             id="additionalInformation" 
-                                            label='Adres'
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Adres</span>
+                                                </div>
+                                            }
                                             color="primary"
                                             style={{ width: 250 }}
+                                            error={!this.state.newEventStreetAddressIsValid}
+                                            helperText={this.state.newEventStreetAddressHelperText}
                                             onChange={this.handleChange('newEventStreetAddress')}
                                             InputLabelProps={{
                                                 style:{
-                                                    color: '#c76eff'
+                                                    color: 'whitesmoke'
                                                 },
                                             }}
                                             InputProps={{
@@ -1803,13 +1877,36 @@ class EditForwardingOrderPanel extends Component{
                                     </FormControl>
                                 </Col>
                             </Row>
-                            <Row style={{textAlign: 'center', marginTop: 40 }}>
+                            <Row style={{textAlign: 'center', marginTop: 30 }}>
                                 <Col>
                                     <Button 
-                                        className="Purple-Button" 
+                                        className="Green-Button" 
                                         variant="light"
                                         style={{width: '110px'}}
                                         onClick={() => {
+                                            let isError = false
+                                            if(this.state.newEventName === ''){
+                                                this.setState({ newEventNameIsValid: false, newEventNameHelperText: 'Pole nie może być puste.' })
+                                                isError = true;
+                                            }
+                                            else{
+                                                this.setState({ newEventNameIsValid: true, newEventNameHelperText: '' })
+                                            }
+                                            if(this.state.newEventPlace === ''){
+                                                this.setState({ newEventPlaceIsValid: false, newEventPlaceHelperText: 'Pole nie może być puste.' })
+                                                isError = true;
+                                            }
+                                            else{
+                                                this.setState({ newEventPlaceIsValid: true, newEventPlaceHelperText: '' })
+                                            }
+                                            if(this.state.newEventStreetAddress === ''){
+                                                this.setState({ newEventStreetAddressIsValid: false, newEventStreetAddressHelperText: 'Pole nie może być puste.' })
+                                                isError = true;
+                                            }
+                                            else{
+                                                this.setState({ newEventStreetAddressIsValid: true, newEventStreetAddressHelperText: '' })
+                                            }
+                                            if(isError) return
                                             this.addEvent();
                                             close()
                                         }}>
@@ -1825,7 +1922,7 @@ class EditForwardingOrderPanel extends Component{
                     modal
                     closeOnDocumentClick={false}
                     open={this.state.isAddTransitModalOpen}
-                    onClose={this.handleAddTransitModal}
+                    onClose={this.handleCloseAddTransitModal}
                     contentStyle={{
                         width: '50vw',
                         height: '95vh',
@@ -1838,8 +1935,8 @@ class EditForwardingOrderPanel extends Component{
                             <Container>
                             <Row style={{textAlign: 'center'}}>
                                 <Col>
-                                    <label className='Orders-Header' style={{ color: '#f2f540' }}>
-                                        <AiOutlineCar size='1.5em'/><span>&nbsp;&nbsp;</span><span>Dodawanie przejazdu</span>
+                                    <label className='Orders-Header' style={{ fontSize: 26 }}>
+                                        <AiOutlineCar size='1.2em'/><span>&nbsp;&nbsp;</span><span>Dodawanie przejazdu</span>
                                     </label>
                                 </Col>
                             </Row>
@@ -1870,14 +1967,18 @@ class EditForwardingOrderPanel extends Component{
                                         <TextField
                                             id="additionalInformation" 
                                             label=
-                                                { 
-                                                    <div>
-                                                        <GiPathDistance/><span>&nbsp;&nbsp;</span><span>Długość trasy (km)</span>
-                                                    </div>
-                                                }
+                                            { 
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <GiPathDistance/><span>&nbsp;&nbsp;</span><span>Długość trasy (km)</span>
+                                                </div>
+                                            }
                                             color="primary"
                                             type='number'
                                             onChange={this.handleChange('newTransitTransportDistance')}
+                                            error={!this.state.newTransitTransportDistanceIsValid}
+                                            helperText={this.state.newTransitTransportDistanceHelperText}
                                             InputLabelProps={{
                                                 style:{
                                                     color: 'whitesmoke'
@@ -1894,12 +1995,12 @@ class EditForwardingOrderPanel extends Component{
                             </Row>
                             <Row style={{ marginTop: 25 }}>
                                 <Col>
-                                    <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
-                                        <FaMapMarkerAlt size='1.5em'/><span>&nbsp;&nbsp;</span><span>Przejazd z:</span>
+                                    <div className='Orders-Header' style={{ fontSize: 16 }}>
+                                        <FaMapMarkerAlt size='1.2em'/><span>&nbsp;&nbsp;</span><span>Przejazd z:</span>
                                     </div>
                                 </Col>
                             </Row>
-                            <Row style={{marginTop: 15 , paddingLeft: 10 }}>
+                            <Row style={{marginTop: 10 , paddingLeft: 10 }}>
                                 <Col>
                                     <FormControl>
                                         <TextField
@@ -2007,12 +2108,12 @@ class EditForwardingOrderPanel extends Component{
                             </Row>
                             <Row style={{ marginTop: 15 }}>
                                 <Col>
-                                    <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
-                                        <FaMapMarker size='1.5em'/><span>&nbsp;&nbsp;</span><span>Przejazd do:</span>
+                                    <div className='Orders-Header' style={{ fontSize: 16 }}>
+                                        <FaMapMarker size='1.2em'/><span>&nbsp;&nbsp;</span><span>Przejazd do:</span>
                                     </div>
                                 </Col>
                             </Row>
-                            <Row style={{marginTop: 15 , paddingLeft: 10 }}>
+                            <Row style={{marginTop: 10 , paddingLeft: 10 }}>
                                 <Col>
                                     <FormControl>
                                         <TextField
@@ -2117,7 +2218,7 @@ class EditForwardingOrderPanel extends Component{
                                     </FormControl>
                                 </Col>
                             </Row>
-                            <Row style={{ marginTop: 25, paddingLeft: 10 }}>
+                            <Row style={{ marginTop: 15, paddingLeft: 10 }}>
                                 <Col>
                                     <FormControl noValidate>
                                         <TextField
@@ -2151,48 +2252,30 @@ class EditForwardingOrderPanel extends Component{
                                             }}
                                         />
                                     </FormControl>
-                                    {/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                                        <KeyboardDatePicker
-                                            margin="normal"
-                                            id="user-date-picker-dialog"
-                                            label="Data zakończenia przejazdu"
-                                            format="MM/dd/yyyy"
-                                            color="primary"
-                                            value={this.state.newTransitEndDate}
-                                            onChange={this.handleEndDateChange.bind(this)}
-                                            KeyboardButtonProps={{
-                                                'aria-label': 'change date'
-                                            }}
-                                            style={{color: '#5CDB95'}}
-                                            InputLabelProps={{
-                                                style:{
-                                                    color: 'whitesmoke'
-                                                },
-                                            }}
-                                            />
-                                    </MuiPickersUtilsProvider> */}
                                 </Col>
                             </Row>
-                            <Row style={{ marginTop: 25 }}>
-                                <Col xs='4'> 
-                                    <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
-                                        <RiTruckFill size='1.5em'/><span>&nbsp;&nbsp;</span><span>Przewoźnik: </span>
+                            <Row style={{ marginTop: 15 }}>
+                                <Col xs='3'> 
+                                    <div className='Orders-Header' style={{ fontSize: 16 }}>
+                                        <span style={{ color: '#f75555', fontSize: 16 }}>*</span>
+                                        <span>&nbsp;</span>
+                                        <RiTruckFill size='1.2em'/><span>&nbsp;&nbsp;</span><span>Przewoźnik: </span>
                                     </div>
                                 </Col>
                                 <Col>
                                     <Button 
-                                        className="Yellow-Button" 
+                                        className="Green-Button" 
                                         variant="light"
-                                        style={{width: '110px'}}
+                                        style={{width: 90, height: 30, fontSize: 13, paddingTop: 5 }}
                                         onClick={this.handleAddTransitModalTransportersTableVisibility}>
                                             <MdEdit size='1.0em'/><span>&nbsp;</span>
                                             <span>{this.state.newTransitSelectedTransporter === '' ? 'Dodaj' : 'Zmień'}</span>
                                     </Button>
                                 </Col>
                             </Row>
-                            <Row style={{ marginTop: 10 }}>
+                            <Row>
                                 <Col>
-                                    <div className='Tile-Header' style={{ fontSize: 22, color: 'whitesmoke' }}>
+                                    <div className='Orders-Header' style={{ fontSize: 16, color: 'whitesmoke' }}>
                                         {this.state.newTransitSelectedTransporter?.fullName}
                                     </div>
                                 </Col>
@@ -2216,9 +2299,9 @@ class EditForwardingOrderPanel extends Component{
                                                             nip: transporter.nip,
                                                             select: 
                                                                 <ImCheckboxChecked
-                                                                    className='Transporter-Details-Icon' 
+                                                                    className='Table-Icon' 
                                                                     onClick={this.handleSelectedTransporterForNewTransit.bind(this, transporter)}
-                                                                    size='1.4em'/>,
+                                                                    size='1.1em'/>,
                                                         }
                                                     ))
                                             }}
@@ -2228,26 +2311,28 @@ class EditForwardingOrderPanel extends Component{
                             }
                             {this.state.newTransitSelectedTransporter !== '' &&
                             <div>
-                            <Row style={{ marginTop: 25 }}>
-                                <Col xs='4'> 
-                                    <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
-                                        <GiFullMotorcycleHelmet size='1.5em'/><span>&nbsp;&nbsp;</span><span>Kierowca: </span>
+                            <Row style={{ marginTop: 10 }}>
+                                <Col xs='3'> 
+                                    <div className='Orders-Header' style={{ fontSize: 16 }}>
+                                        <span style={{ color: '#f75555', fontSize: 16 }}>*</span>
+                                        <span>&nbsp;</span>
+                                        <GiFullMotorcycleHelmet size='1.2em'/><span>&nbsp;&nbsp;</span><span>Kierowca: </span>
                                     </div>
                                 </Col>
                                 <Col>
                                     <Button 
-                                        className="Yellow-Button" 
+                                        className="Green-Button" 
                                         variant="light"
-                                        style={{width: '110px'}}
+                                        style={{ width: 90, height: 30, fontSize: 13, paddingTop: 5 }}
                                         onClick={this.handleAddTransitModalDriversTableVisibility}>
                                             <MdEdit size='1.0em'/><span>&nbsp;</span>
                                             <span>{this.state.newTransitSelectedDriver === '' ? 'Dodaj' : 'Zmień'}</span>
                                     </Button>
                                 </Col>
                             </Row>
-                            <Row style={{ marginTop: 10 }}>
+                            <Row>
                                 <Col>
-                                    <div className='Tile-Header' style={{ fontSize: 22, color: 'whitesmoke' }}>
+                                    <div className='Tile-Header' style={{ fontSize: 16, color: 'whitesmoke' }}>
                                         {this.state.newTransitSelectedDriver?.firstName}<span>&nbsp;</span>{this.state.newTransitSelectedDriver?.lastName}
                                     </div>
                                 </Col>
@@ -2264,7 +2349,7 @@ class EditForwardingOrderPanel extends Component{
                                             data={{
                                                 columns: driversColumns,
                                                 rows:
-                                                    this.state.drivers.map((driver) => (
+                                                    this.state.drivers.filter(x => x.transporterId === this.state.newTransitSelectedTransporter.id).map((driver) => (
                                                         {
                                                             driverFirstName: driver.firstName,
                                                             driverLastName: driver.lastName,
@@ -2272,9 +2357,9 @@ class EditForwardingOrderPanel extends Component{
                                                             mail: driver.mail,
                                                             select: 
                                                                 <ImCheckboxChecked
-                                                                    className='Transporter-Details-Icon' 
+                                                                    className='Table-Icon' 
                                                                     onClick={this.handleSelectedDriverForNewTransit.bind(this, driver)}
-                                                                    size='1.4em'/>,
+                                                                    size='1.1em'/>,
                                                         }
                                                     ))
                                             }}
@@ -2282,26 +2367,28 @@ class EditForwardingOrderPanel extends Component{
                                 </Col>
                             </Row>
                             }
-                            <Row style={{ marginTop: 25 }}>
-                                <Col xs='4'> 
-                                    <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
-                                        <FaTruckMoving size='1.5em'/><span>&nbsp;&nbsp;</span><span>Pojazd: </span>
+                            <Row style={{ marginTop: 10 }}>
+                                <Col xs='3'> 
+                                    <div className='Orders-Header' style={{ fontSize: 16 }}>
+                                        <span style={{ color: '#f75555', fontSize: 16 }}>*</span>
+                                        <span>&nbsp;</span>
+                                        <FaTruckMoving size='1.2em'/><span>&nbsp;&nbsp;</span><span>Pojazd: </span>
                                     </div>
                                 </Col>
                                 <Col>
                                     <Button 
-                                        className="Yellow-Button" 
+                                        className="Green-Button" 
                                         variant="light"
-                                        style={{width: '110px'}}
+                                        style={{ width: 90, height: 30, fontSize: 13, paddingTop: 5 }}
                                         onClick={this.handleAddTransitModalVehiclesTableVisibility}>
                                             <MdEdit size='1.0em'/><span>&nbsp;</span>
                                             <span>{this.state.newTransitSelectedVehicle === '' ? 'Dodaj' : 'Zmień'}</span>
                                     </Button>
                                 </Col>
                             </Row>
-                            <Row style={{ marginTop: 10 }}>
+                            <Row>
                                 <Col>
-                                    <div className='Tile-Header' style={{ fontSize: 22, color: 'whitesmoke' }}>
+                                    <div className='Orders-Header' style={{ fontSize: 16, color: 'whitesmoke' }}>
                                         {this.state.newTransitSelectedVehicle?.brand}<span>&nbsp;</span>{this.state.newTransitSelectedVehicle?.model}
                                     </div>
                                 </Col>
@@ -2318,7 +2405,7 @@ class EditForwardingOrderPanel extends Component{
                                             data={{
                                                 columns: vehiclesColumns,
                                                 rows:
-                                                    this.state.vehicles.map((vehicle) => (
+                                                    this.state.vehicles.filter(x => x.transporterId === this.state.newTransitSelectedTransporter.id).map((vehicle) => (
                                                         {
                                                             vehicleBrand: vehicle.brand,
                                                             vehicleModel: vehicle.model,
@@ -2327,9 +2414,9 @@ class EditForwardingOrderPanel extends Component{
                                                             vehicleType: vehicle.vehicleType.typeName,
                                                             select: 
                                                                 <ImCheckboxChecked
-                                                                    className='Transporter-Details-Icon' 
+                                                                    className='Table-Icon' 
                                                                     onClick={this.handleSelectedVehicleForNewTransit.bind(this, vehicle)}
-                                                                    size='1.4em'/>,
+                                                                    size='1.1em'/>,
                                                         }
                                                     ))
                                             }}
@@ -2339,23 +2426,32 @@ class EditForwardingOrderPanel extends Component{
                             }
                             </div>
                             }
-                            <Row style={{ marginTop: 25 }}>
+                            <Row style={{ marginTop: 15 }}>
                                 <Col>
-                                    <div className='Tile-Header' style={{ fontSize: 22, color: '#f2f540' }}>
-                                        <FaRegMoneyBillAlt size='1.5em'/><span>&nbsp;&nbsp;</span><span>Szczegóły finansowe</span>
+                                    <div className='Orders-Header' style={{ fontSize: 16 }}>
+                                        <FaRegMoneyBillAlt size='1.2em'/><span>&nbsp;&nbsp;</span><span>Szczegóły finansowe</span>
                                     </div>
                                 </Col>
                             </Row>
-                            <Row style={{ marginTop: 15, paddingLeft: 10 }}>
+                            <Row style={{ marginTop: 5, paddingLeft: 10 }}>
                                 <Col>
                                     <FormControl>
                                         <TextField
                                             id="additionalInformation" 
-                                            label='Cena netto (zł)'
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Cena netto (zł)</span>
+                                                </div>
+                                            }
                                             color="primary"
                                             type='number'
                                             style={{ width: 150 }}
                                             onChange={this.handleChange('newTransitNetPrice')}
+                                            error={!this.state.newTransitNetPriceIsValid}
+                                            helperText={this.state.newTransitNetPriceHelperText}
                                             InputLabelProps={{
                                                 style:{
                                                     color: 'whitesmoke'
@@ -2373,11 +2469,20 @@ class EditForwardingOrderPanel extends Component{
                                     <FormControl>
                                         <TextField
                                             id="additionalInformation" 
-                                            label='Cena brutto (zł)'
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Cena brutto (zł)</span>
+                                                </div>
+                                            }
                                             color="primary"
                                             type='number'
                                             style={{ width: 150 }}
                                             onChange={this.handleChange('newTransitGrossPrice')}
+                                            error={!this.state.newTransitGrossPriceIsValid}
+                                            helperText={this.state.newTransitGrossPriceHelperText}
                                             InputLabelProps={{
                                                 style:{
                                                     color: 'whitesmoke'
@@ -2392,7 +2497,7 @@ class EditForwardingOrderPanel extends Component{
                                     </FormControl>
                                 </Col>
                             </Row>
-                            <Row style={{ marginTop: 15, paddingLeft: 10 }}>
+                            <Row style={{ marginTop: 10, paddingLeft: 10 }}>
                                 <Col>
                                     <FormControl>
                                         <InputLabel id="genderLabel">
@@ -2421,9 +2526,9 @@ class EditForwardingOrderPanel extends Component{
                                 </Col>
                                 <Col>
                                     <Button 
-                                        className="Yellow-Button" 
+                                        className="Green-Button" 
                                         variant="light"
-                                        style={{width: '110px'}}
+                                        style={{ width: 110 }}
                                         onClick={() => {
                                             close()
                                         }}>
@@ -2432,10 +2537,38 @@ class EditForwardingOrderPanel extends Component{
                                 </Col>
                                 <Col>
                                     <Button 
-                                        className="Yellow-Button" 
+                                        className="Green-Button" 
                                         variant="light"
-                                        style={{width: '110px'}}
+                                        style={{ width: 110 }}
                                         onClick={() => {
+                                            let isError = false
+
+                                            if(this.state.newTransitTransportDistance === ''){
+                                                this.setState({ newTransitTransportDistanceIsValid: false, newTransitTransportDistanceHelperText: 'Pole nie może być puste.'})
+                                                isError = true
+                                            }
+                                            else{
+                                                this.setState({ newTransitTransportDistanceIsValid: true, newTransitTransportDistanceHelperText: ''})
+                                            }
+
+                                            if(this.state.newTransitNetPrice === ''){
+                                                this.setState({ newTransitNetPriceIsValid: false, newTransitNetPriceHelperText: 'Pole nie może być puste.'})
+                                                isError = true
+                                            }
+                                            else{
+                                                this.setState({ newTransitNetPriceIsValid: true, newTransitNetPriceHelperText: ''})
+                                            }
+
+                                            if(this.state.newTransitGrossPrice === ''){
+                                                this.setState({ newTransitGrossPriceIsValid: false, newTransitGrossPriceHelperText: 'Pole nie może być puste.'})
+                                                isError = true
+                                            }
+                                            else{
+                                                this.setState({ newTransitGrossPriceIsValid: true, newTransitGrossPriceHelperText: ''})
+                                            }
+                                            if(this.state.newTransitSelectedTransporter === '' || this.state.newTransitSelectedDriver === '' || this.state.newTransitSelectedVehicle === '') isError = true
+
+                                            if(isError) return
                                             this.addTransit()
                                             close()
                                         }}>
@@ -2478,22 +2611,22 @@ class EditForwardingOrderPanel extends Component{
                                             scrollY
                                             small
                                             data={{
-                                                columns: transitsColumns,
+                                                columns: transitsColumns2,
                                                 rows:
                                                     this.state.existingTransits.map((existingTransit) => (
                                                         {
                                                             routeShortPath: existingTransit.routeShortPath,
                                                             transitSource: existingTransit.transitSourceStreetAddress + ' ' + existingTransit.transitSourceCity,
                                                             transitDestination: existingTransit.transitDestinationStreetAddress + ' ' + existingTransit.transitDestinationCity,
-                                                            transitDates: 'Not implemented',
+                                                            transitDates: existingTransit.startDate.replace('T', ' ') + ' -> ' + existingTransit.endDate.replace('T', ' '),
                                                             transporter: existingTransit.transporter?.fullName,
                                                             driver: existingTransit.driver?.firstName + ' ' + existingTransit.driver?.lastName,
                                                             vehicle: existingTransit.vehicle?.brand + ' ' + existingTransit.vehicle?.model,
                                                             select:
                                                                 <ImCheckboxChecked
-                                                                    className='Transporter-Details-Icon' 
+                                                                    className='Table-Icon' 
                                                                     onClick={this.handleSelectedExistingTransitToForwardingOrder.bind(this, existingTransit)}
-                                                                    size='1.4em'/>
+                                                                    size='1.1em'/>
                                                             
                                                         }
                                                     ))
@@ -2746,3 +2879,50 @@ const transitsColumns =
     }
 ]
 
+const transitsColumns2 =
+[
+    {
+        label: 'Trasa',
+        field: 'routeShortPath',
+        sort: 'asc',
+        width: 125,
+    },
+    {
+        label: 'Transport z:',
+        field: 'transitSource',
+        sort: 'asc',
+        width: 125
+    },
+    {
+        label: 'Transport do:',
+        field: 'transitDestination',
+        sort: 'asc',
+        width: 125
+    },
+    {
+        label: 'Data rozp. / zakończ.',
+        field: 'transitDates',
+        sort: 'asc',
+        width: 125
+    },
+    {
+        label: 'Przewoźnik',
+        field: 'transporter',
+        width: 100
+    },
+    {
+        label: 'Kierowca',
+        field: 'driver',
+        width: 100
+    },
+    {
+        label: 'Pojazd',
+        field: 'vehicle',
+        width: 100
+    },
+    {
+        label: '',
+        field: 'select'
+    }
+
+]

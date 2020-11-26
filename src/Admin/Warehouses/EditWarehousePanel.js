@@ -34,7 +34,15 @@ class EditWarehousePanel extends Component{
             fax: warehouse !== undefined ? warehouse.fax : null,
             serverResponse: '',
             isServerResponseModalOpen: false,
-            isModalOpen: false
+            isModalOpen: false,
+            nameIsValid: true,
+            nameHelperText: '',
+            streetAddressIsValid: true,
+            streetAddressHelperText: '',
+            zipCodeIsValid: true,
+            zipCodeHelperText: '',
+            cityIsValid: true,
+            cityHelperText: ''
         }
     }
 
@@ -89,10 +97,45 @@ class EditWarehousePanel extends Component{
 
     // Handle click 'Save' button
     handleSaveButton = () => {
+        let isError = false
+
+        if(this.state.name === null || this.state.name === ''){
+            this.setState({ nameIsValid: false, nameHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ nameIsValid: true, nameHelperText: '' })
+        }
+
+        if(this.state.streetAddress === null || this.state.streetAddress === ''){
+            this.setState({ streetAddressIsValid: false, streetAddressHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ streetAddressIsValid: true, streetAddressHelperText: '' })
+        }
+
+        if(this.state.zipCode === null || this.state.zipCode === ''){
+            this.setState({ zipCodeIsValid: false, zipCodeHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ zipCodeIsValid: true, zipCodeHelperText: '' })
+        }
+
+        if(this.state.city === null || this.state.city === ''){
+            this.setState({ cityIsValid: false, cityHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ cityIsValid: true, cityHelperText: '' })
+        }
+
+        if(isError) return
+
         this.setState({
-            trigger: true
+            isModalOpen: true
         })
-        // this.updateWarehouse();
     }
 
     // handle change of text fields
@@ -102,11 +145,6 @@ class EditWarehousePanel extends Component{
         });
       };
 
-    handleOpenModal = () => {
-        this.setState({
-            isModalOpen: true
-        })
-    }
 
     handleCloseModal = () => {
         this.setState({
@@ -140,9 +178,18 @@ class EditWarehousePanel extends Component{
                                 <form  noValidate autoComplete="off">
                                     <TextField 
                                         id="warehouseName" 
-                                        label="Magazyn" 
+                                        label=
+                                        {
+                                            <div>
+                                                <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                <span>&nbsp;</span>
+                                                <span>Magazyn</span>
+                                            </div>
+                                        } 
                                         color="primary"
                                         onChange={this.handleChange('name')}
+                                        error={!this.state.nameIsValid}
+                                        helperText={this.state.nameHelperText}
                                         autoComplete="new-password"
                                         defaultValue={this.state.name}
                                         InputLabelProps={{
@@ -152,7 +199,7 @@ class EditWarehousePanel extends Component{
                                         }}
                                         InputProps={{
                                             style: {
-                                                color: '#5c8bdb'
+                                                color: 'whitesmoke'
                                             }
                                         }} />
                                 </form>
@@ -163,11 +210,20 @@ class EditWarehousePanel extends Component{
                                 <form  noValidate autoComplete="off">
                                     <TextField 
                                         id="warehouseStreetAddress" 
-                                        label="Adres" 
+                                        label=
+                                        {
+                                            <div>
+                                                <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                <span>&nbsp;</span>
+                                                <span>Adres</span>
+                                            </div>
+                                        }
                                         color="primary"
                                         autoComplete="new-password"
                                         defaultValue={this.state.streetAddress}
                                         onChange={this.handleChange('streetAddress')}
+                                        error={!this.state.streetAddressIsValid}
+                                        helperText={this.state.streetAddressHelperText}
                                         InputLabelProps={{
                                             style:{
                                                 color: 'whitesmoke'
@@ -175,7 +231,7 @@ class EditWarehousePanel extends Component{
                                         }}
                                         InputProps={{
                                             style: {
-                                                color: '#5c8bdb'
+                                                color: 'whitesmoke'
                                             }
                                         }} />
                                 </form>
@@ -184,11 +240,20 @@ class EditWarehousePanel extends Component{
                                 <form  noValidate autoComplete="off">
                                     <TextField 
                                         id="warehouseZipCode" 
-                                        label="Kod pocztowy" 
+                                        label=
+                                        {
+                                            <div>
+                                                <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                <span>&nbsp;</span>
+                                                <span>Kod pocztowy</span>
+                                            </div>
+                                        }
                                         color="primary"
                                         autoComplete="new-password"
                                         defaultValue={this.state.zipCode}
                                         onChange={this.handleChange('zipCode')}
+                                        error={!this.state.zipCodeIsValid}
+                                        helperText={this.state.zipCodeHelperText}
                                         InputLabelProps={{
                                             style:{
                                                 color: 'whitesmoke'
@@ -196,7 +261,7 @@ class EditWarehousePanel extends Component{
                                         }}
                                         InputProps={{
                                             style: {
-                                                color: '#5c8bdb'
+                                                color: 'whitesmoke'
                                             }
                                         }} />
                                 </form>
@@ -205,11 +270,22 @@ class EditWarehousePanel extends Component{
                                 <form  noValidate autoComplete="off">
                                     <TextField 
                                         id="warehouseCity" 
-                                        label={<div><FaCity/><span>&nbsp;&nbsp;</span><span>Miasto</span></div>}
+                                        label=
+                                        {
+                                            <div>
+                                                <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                <span>&nbsp;</span>
+                                                <FaCity/>
+                                                <span>&nbsp;&nbsp;</span>
+                                                <span>Nazwa</span>
+                                            </div>
+                                        }
                                         color="primary"
                                         autoComplete="new-password"
                                         defaultValue={this.state.city}
                                         onChange={this.handleChange('city')}
+                                        error={!this.state.cityIsValid}
+                                        helperText={this.state.cityHelperText}
                                         InputLabelProps={{
                                             style:{
                                                 color: 'whitesmoke'
@@ -217,7 +293,7 @@ class EditWarehousePanel extends Component{
                                         }}
                                         InputProps={{
                                             style: {
-                                                color: '#5c8bdb'
+                                                color: 'whitesmoke'
                                             }
                                         }} />
                                 </form>
@@ -225,7 +301,7 @@ class EditWarehousePanel extends Component{
                             </Row>
                             <Row style={{marginTop: '25px'}}>
                                 <Col>
-                                    <label className='Edit-Warehouse-Sub-Header'>Dane osoby do kontaktu</label>
+                                    <label className='Edit-Warehouse-Sub-Header' style={{ fontSize: 16 }}>Dane osoby do kontaktu</label>
                                 </Col>
                             </Row>
                             <Row>
@@ -245,7 +321,7 @@ class EditWarehousePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </form>
@@ -266,7 +342,7 @@ class EditWarehousePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </form>
@@ -289,7 +365,7 @@ class EditWarehousePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </form>
@@ -297,7 +373,7 @@ class EditWarehousePanel extends Component{
                             </Row>
                             <Row style={{marginTop: '25px'}}>
                                 <Col>
-                                    <label className='Edit-Warehouse-Sub-Header'>Pozostałe dane kontaktowe</label>
+                                    <label className='Edit-Warehouse-Sub-Header' style={{ fontSize: 16 }}>Pozostałe dane kontaktowe</label>
                                 </Col>
                             </Row>
                             <Row>
@@ -317,7 +393,7 @@ class EditWarehousePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} 
                                             style={{width: '320px'}}/>
@@ -339,7 +415,7 @@ class EditWarehousePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </form>
@@ -347,13 +423,6 @@ class EditWarehousePanel extends Component{
                             </Row>
                             <Row style={{marginTop: '40px'}}>
                                 <Col xs='1'>
-                                    {/* <NavLink className="Admin-Nav-Link" push to= '/admin/magazyny/'>
-                                        <Button 
-                                            className="Add-Warehouse-Redirect-Button" 
-                                            variant="light">
-                                            Wróć
-                                        </Button>
-                                    </NavLink> */}
                                     <NavLink className="Admin-Nav-Link" push to= '/admin/magazyny/'>
                                         <Button 
                                             className="Add-Warehouse-Redirect-Button" 
@@ -362,20 +431,22 @@ class EditWarehousePanel extends Component{
                                         </Button>
                                     </NavLink>
                                 </Col>
-                                <Col xs='1'>
-                                    <Popup 
-                                        trigger={
-                                            <Button 
-                                                className="Confirm-Edit-Warehouse-Button" 
-                                                variant="light"
-                                                onClick={this.handleSaveButton}
-                                                style={{marginLeft: '30px'}}>
-                                                    Zatwierdź
-                                            </Button>
-                                        }
+                                <Col>
+                                    <Button 
+                                        className="Confirm-Edit-Warehouse-Button" 
+                                        variant="light"
+                                        onClick={this.handleSaveButton}
+                                        style={{marginLeft: '30px'}}>
+                                                Zatwierdź
+                                    </Button>
+                                </Col>
+                                    
+                                    
+                            </Row>
+                            <Popup 
                                         modal
                                         open={this.state.isModalOpen}
-                                        onOpen={this.handleOpenModal}
+                                        onClose={this.handleCloseModal}
                                         contentStyle={{
                                             width: '30vw',
                                             height: '25vh',
@@ -424,9 +495,6 @@ class EditWarehousePanel extends Component{
                                         </div>
                                         )}
                                     </Popup>
-                                    
-                                </Col>
-                            </Row>
                             <Popup 
                                         modal
                                         open={this.state.isServerResponseModalOpen}

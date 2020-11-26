@@ -16,3 +16,12 @@
     width: 16vw;
     border-radius: 15px;
 }
+
+.Table-Icon{
+    color:#50ee9c;
+    size: 1.0em;
+}
+.Table-Icon:hover{
+    color: whitesmoke;
+    cursor: pointer;
+}

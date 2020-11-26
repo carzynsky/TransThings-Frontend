@@ -12,6 +12,8 @@ import ParticlesBackground from '../ParticlesBackground';
 
 class Home extends Component {
     constructor(props){
+        console.log(getSessionCookie())
+
         super(props);
         this.state = {
             login: '',

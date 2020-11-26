@@ -35,6 +35,15 @@ class EditUserPanel extends Component{
             isServerResponseModalOpen: false,
             isModalOpen: false,
             isPeselValid: true,
+
+            firstNameIsValid: true,
+            lastNameIsValid: true,
+            loginIsValid: true,
+            birthDateIsValid: true,
+            firstNameHelperText: '',
+            lastNameHelperText: '',
+            loginHelperText: '',
+            birthDateHelperText: '',
             peselErrorText: ''
         }
     }
@@ -176,6 +185,45 @@ class EditUserPanel extends Component{
       
     // handle open/close modal
     handleOpenModal = () => {
+        let isError = false
+        if(this.state.firstName === ''){
+            this.setState({ firstNameIsValid: false, firstNameHelperText: 'Pole nie może być puste.' })
+                isError = true
+        }
+        else{
+            this.setState({ firstNameIsValid: true, firstNameHelperText: '' })
+        }
+
+        if(this.state.lastName === ''){
+            this.setState({ lastNameIsValid: false, lastNameHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ lastNameIsValid: true, lastNameHelperText: '' })
+        }
+
+        if(this.state.login === ''){
+            this.setState({ loginIsValid: false, loginHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ loginIsValid: true, loginHelperText: '' })
+        }
+
+        if(this.state.birthDate === null){
+            this.setState({ birthDateIsValid: false, birthDateHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ birthDateIsValid: true, birthDateHelperText: '' })
+        }
+
+        if(this.state.peselNumber === ''){
+            this.setState({ isPeselValid: false, peselErrorText: 'Pole nie może być puste.'})
+            isError = true
+        }
+
+        if(isError) return
         this.setState({
             isModalOpen: true
         })
@@ -227,7 +275,7 @@ class EditUserPanel extends Component{
                             </Row>
                             <Row style={{marginTop: '10px'}}>
                                 <Col>
-                                    <label className='Edit-Transporter-Sub-Header' style={{color: '#5CDB95', fontSize: '26px'}}>Dane personalne</label>
+                                    <label className='Edit-Transporter-Sub-Header' style={{color: '#5CDB95', fontSize: 18 }}>Dane personalne</label>
                                 </Col>
                             </Row>
                             <Row>
@@ -235,9 +283,18 @@ class EditUserPanel extends Component{
                                     <FormControl  noValidate autoComplete="off">
                                         <TextField 
                                             id="userFirstName" 
-                                            label="Imię" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Imię</span>
+                                                </div>
+                                            } 
                                             color="primary"
                                             onChange={this.handleChange('firstName')}
+                                            error={!this.state.firstNameIsValid}
+                                            helperText={this.state.firstNameHelperText}
                                             autoComplete="new-password"
                                             value={this.state.firstName}
                                             InputLabelProps={{
@@ -256,9 +313,18 @@ class EditUserPanel extends Component{
                                     <FormControl  noValidate autoComplete="off">
                                         <TextField 
                                             id="driverLastName" 
-                                            label="Nazwisko" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Nazwisko</span>
+                                                </div>
+                                            }
                                             color="primary"
                                             onChange={this.handleChange('lastName')}
+                                            error={!this.state.lastNameIsValid}
+                                            helperText={this.state.lastNameHelperText}
                                             autoComplete="new-password"
                                             value={this.state.lastName}
                                             InputLabelProps={{
@@ -297,7 +363,14 @@ class EditUserPanel extends Component{
                                     <FormControl  noValidate autoComplete="off">
                                         <TextField 
                                             id="userPeselNumber" 
-                                            label="Pesel" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Pesel</span>
+                                                </div>
+                                            }
                                             color="primary"
                                             autoComplete="new-password"
                                             value={this.state.peselNumber}
@@ -323,10 +396,19 @@ class EditUserPanel extends Component{
                                         <KeyboardDatePicker
                                             margin="normal"
                                             id="user-date-picker-dialog"
-                                            label="Data urodzenia"
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Data urodzenia</span>
+                                                </div>
+                                            }
                                             format="MM/dd/yyyy"
                                             color="primary"
                                             value={this.state.birthDate}
+                                            error={!this.state.birthDateIsValid}
+                                            helperText={this.state.birthDateHelperText}
                                             onChange={this.handleBirthDateChange.bind(this)}
                                             KeyboardButtonProps={{
                                                 'aria-label': 'change date'
@@ -388,7 +470,7 @@ class EditUserPanel extends Component{
                             </Row>
                             <Row style={{marginTop: '20px'}}>
                                 <Col>
-                                    <label className='Edit-Transporter-Sub-Header' style={{color: '#5CDB95', fontSize: '26px'}}>Dane kontaktowe</label>
+                                    <label className='Edit-Transporter-Sub-Header' style={{color: '#5CDB95', fontSize: 18 }}>Dane kontaktowe</label>
                                 </Col>
                             </Row>
                             <Row >
@@ -450,18 +532,26 @@ class EditUserPanel extends Component{
                                     </NavLink>
                                 </Col>
                                 <Col>
-                                    <Popup 
-                                        trigger={
-                                            <Button 
-                                                className="Edit-User-Redirect-Button" 
-                                                variant="light"
-                                                style={{marginLeft: '30px'}}>
+                                    <Button 
+                                        className="Edit-User-Redirect-Button" 
+                                        variant="light"
+                                        onClick={this.handleOpenModal}
+                                        style={{marginLeft: '30px'}}>
                                                     Zatwierdź
-                                            </Button>
-                                        }
+                                    </Button>
+                                </Col>
+                                <Col xs='8'>
+                                </Col>
+                                    
+                            </Row>
+                        </Container>
+                    </div>
+                    </Col>
+                </Row>
+                <Popup 
                                         modal
                                         open={this.state.isModalOpen}
-                                        onOpen={this.handleOpenModal}
+                                        onClose={this.handleCloseModal}
                                         contentStyle={{
                                             width: '30vw',
                                             height: '25vh',
@@ -546,14 +636,6 @@ class EditUserPanel extends Component{
                                                 )
                                             }
                                     </Popup>
-                                </Col>
-                                <Col xs='8'>
-                                </Col>
-                            </Row>
-                        </Container>
-                    </div>
-                    </Col>
-                </Row>
             </Container>
         );
     }

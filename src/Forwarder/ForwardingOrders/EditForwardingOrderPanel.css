@@ -70,3 +70,16 @@
 #selectPaymentForm{
     color: whitesmoke;
 }
+
+.Table-Icon{
+    color: #50ee9c;
+}
+
+.Table-Icon:hover{
+    color: whitesmoke;
+    cursor: pointer;
+}
+
+.tmp{
+    color: #f75555;
+}

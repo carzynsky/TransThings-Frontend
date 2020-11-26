@@ -19,10 +19,10 @@
     font-family: 'Overpass', sans-serif;
     width: 80px;
     font-size: 13px;
-    background-color: #f75353;
+    background-color:#50ee9c;
     border-radius: 5px;
-    box-shadow: 2px 2px 15px -4px #f75353;
-    border: solid 1px #f75353;
+    box-shadow: 2px 2px 15px -4px #50ee9c;
+    border: solid 1px #50ee9c;
     color: #202125;
     padding-top: 10px;
 }
@@ -36,7 +36,7 @@
 }
 
 .Select-On-Popup{
-    color: #f75353;
+    color: #50ee9c
 }
 
 .Select-On-Popup:hover{
@@ -45,7 +45,7 @@
 }
 
 .Delete-Load-Icon{
-    color: #f75353;
+    color: #50ee9c;
 }
 .Delete-Load-Icon:hover{
     color: whitesmoke;

@@ -9,7 +9,7 @@
     padding-left: 25px;
     font-size: 26px;
     font-family: 'Overpass', sans-serif;
-    color:#5c8bdb;
+    color:#50ee9c;
 }
 
 .Warehouses-Table-Container{
@@ -33,7 +33,7 @@
 .Warehouse-Details-Header{
     font-size: 30px;
     font-family: 'Overpass', sans-serif;
-    color: #5c8bdb;
+    color: #50ee9c;
     padding-top: 15px;
 }
 
@@ -45,8 +45,8 @@
 }
 
 .Warehouse-Details-Icon{
-    color: #5c8bdb;
-    size: 1em;
+    color: #50ee9c;
+    size: 1.0em;
 }
 .Warehouse-Details-Icon:hover{
     color: whitesmoke;
@@ -56,9 +56,9 @@
     font-family: 'Overpass', sans-serif;
     width: 100px;
     font-size: 13px;
-    background-color: #5c8bdb;
-    box-shadow: 2px 2px 15px -4px #5c8bdb;
-    border: solid 3px #5c8bdb;
+    background-color: #50ee9c;
+    box-shadow: 2px 2px 15px -4px#50ee9c;
+    border: solid 3px #50ee9c;
     color: #202125;
     margin-top: 5px;
     padding-top: 10px;
@@ -69,5 +69,5 @@
     padding-top: 15px;
     font-size: 30px;
     font-family: 'Overpass', sans-serif;
-    color: #5c8bdb;
+    color:#50ee9c;
 }

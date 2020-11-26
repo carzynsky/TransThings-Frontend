@@ -32,7 +32,15 @@ class AddDriverPanel extends Component{
             transporterId: transporterId !== undefined ? transporterId : null,
             serverResponse: '',
             isServerResponseModalOpen: false,
-            isModalOpen: false
+            isModalOpen: false,
+            firstNameIsValid: true,
+            lastNameIsValid: true,
+            birthDateIsValid: true,
+            peselIsValid: true,
+            firstNameHelperText: '',
+            lastNameHelperText: '',
+            birthDateHelperText: '',
+            peselHelperText: '',
         }
     }
 
@@ -86,10 +94,22 @@ class AddDriverPanel extends Component{
 
     // handle change of text fields
     handleChange = (name) => (event) => {
-        this.setState({
-            [name]: event.target.value
-        });
-      };
+        this.setState({ [name]: event.target.value })
+
+        if(name === 'peselNumber'){
+            let val = event.target.value
+            let isNum = /^\d+$/.test(val)
+            if(!isNum) {
+                this.setState({ peselHelperText: 'Numer pesel może zawierać tylko cyfry.', peselIsValid: false })
+                return
+            }
+            if(val.length !== 11){
+                this.setState({ peselHelperText: 'Numer pesel musi zawierać 11 cyfr.', peselIsValid: false })
+                return
+            }
+            this.setState({ peselHelperText: '', peselIsValid: true })
+        }
+    }
 
     handleDateChange = (date) =>{
         this.setState({
@@ -99,16 +119,41 @@ class AddDriverPanel extends Component{
       
     // handle open/close modal
     handleOpenModal = () => {
-        this.setState({
-            isModalOpen: true
-        })
+        let isError = false
+        if(this.state.firstName === '' || this.state.firstName === null){
+            this.setState({ firstNameIsValid: false, firstNameHelperText: 'Pole nie może być puste.' })
+                isError = true
+        }
+        else{
+            this.setState({ firstNameIsValid: true, firstNameHelperText: '' })
+        }
+
+        if(this.state.lastName === '' || this.state.lastName === null){
+            this.setState({ lastNameIsValid: false, lastNameHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ lastNameIsValid: true, lastNameHelperText: '' })
+        }
+
+        if(this.state.birthDate === null){
+            this.setState({ birthDateIsValid: false, birthDateHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ birthDateIsValid: true, birthDateHelperText: '' })
+        }
+
+        if(this.state.peselNumber === '' || this.state.peselNumber === null){
+            this.setState({ peselIsValid: false, peselHelperText: 'Pole nie może być puste.'})
+            isError = true
+        }
+
+        if(isError || !this.state.peselIsValid) return
+        this.setState({ isModalOpen: true })
     }
 
-    handleCloseModal = () => {
-        this.setState({
-            isModalOpen: false
-        })
-    }
+    handleCloseModal = () => this.setState({ isModalOpen: false })
 
     // Server response pop up
     handleCloseServerResponseModal = () =>{
@@ -134,7 +179,7 @@ class AddDriverPanel extends Component{
                             </Row>
                             <Row style={{marginTop: '10px'}}>
                                 <Col>
-                                    <label className='Edit-Transporter-Sub-Header' style={{color: '#e6e947', fontSize: '26px'}}>Dane personalne</label>
+                                    <label className='Edit-Transporter-Sub-Header' style={{color: '#50ee9c', fontSize: 18 }}>Dane personalne</label>
                                 </Col>
                             </Row>
                             <Row>
@@ -142,9 +187,18 @@ class AddDriverPanel extends Component{
                                 <FormControl  noValidate autoComplete="off">
                                     <TextField 
                                         id="driverFirstName" 
-                                        label="Imię" 
+                                        label=
+                                        {
+                                            <div>
+                                                <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                <span>&nbsp;</span>
+                                                <span>Imię</span>
+                                            </div>
+                                        }
                                         color="secondary"
                                         onChange={this.handleChange('firstName')}
+                                        error={!this.state.firstNameIsValid}
+                                        helperText={this.state.firstNameHelperText}
                                         autoComplete="new-password"
                                         InputLabelProps={{
                                             style:{
@@ -153,7 +207,7 @@ class AddDriverPanel extends Component{
                                         }}
                                         InputProps={{
                                             style: {
-                                                color: '#e6e947'
+                                                color: 'whitesmoke'
                                             }
                                         }} />
                                 </FormControl>
@@ -162,9 +216,18 @@ class AddDriverPanel extends Component{
                                     <form  noValidate autoComplete="off">
                                         <TextField 
                                             id="driverLastName" 
-                                            label="Nazwisko" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Nazwisko</span>
+                                                </div>
+                                            }
                                             color="secondary"
                                             onChange={this.handleChange('lastName')}
+                                            error={!this.state.lastNameIsValid}
+                                            helperText={this.state.lastNameHelperText}
                                             autoComplete="new-password"
                                             InputLabelProps={{
                                                 style:{
@@ -173,7 +236,7 @@ class AddDriverPanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#e6e947'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </form>
@@ -182,7 +245,11 @@ class AddDriverPanel extends Component{
                             <Row style={{marginTop: '10px'}}>
                                 <Col>
                                     <FormControl>
-                                        <InputLabel id="genderLabel">Płeć</InputLabel>
+                                        <InputLabel id="genderLabel">
+                                            <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                            <span>&nbsp;</span>
+                                            <span>Płeć</span>
+                                        </InputLabel>
                                             <Select
                                                 id="selectGender"
                                                 color="secondary"
@@ -202,10 +269,19 @@ class AddDriverPanel extends Component{
                                     <form  noValidate autoComplete="off">
                                         <TextField 
                                             id="driverPeselNumber" 
-                                            label="Pesel" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Pesel</span>
+                                                </div>
+                                            }
                                             color="secondary"
                                             autoComplete="new-password"
                                             onChange={this.handleChange('peselNumber')}
+                                            error={!this.state.peselIsValid}
+                                            helperText={this.state.peselHelperText}
                                             InputLabelProps={{
                                                 style:{
                                                     color: 'whitesmoke'
@@ -225,11 +301,20 @@ class AddDriverPanel extends Component{
                                         <KeyboardDatePicker
                                             margin="normal"
                                             id="date-picker-dialog"
-                                            label="Data urodzenia"
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Data urodzenia</span>
+                                                </div>
+                                            }
                                             format="MM/dd/yyyy"
                                             color="secondary"
                                             value={this.state.birthDate}
                                             onChange={this.handleDateChange.bind(this)}
+                                            error={!this.state.birthDateIsValid}
+                                            helperText={this.state.birthDateHelperText}
                                             KeyboardButtonProps={{
                                                 'aria-label': 'change date'
                                             }}
@@ -244,7 +329,7 @@ class AddDriverPanel extends Component{
                             </Row>
                             <Row style={{marginTop: '25px'}}>
                                 <Col>
-                                    <label className='Edit-Transporter-Sub-Header' style={{color: '#e6e947', fontSize: '26px'}}>Dane kontaktowe</label>
+                                    <label className='Edit-Transporter-Sub-Header' style={{color: '#50ee9c', fontSize: 18 }}>Dane kontaktowe</label>
                                 </Col>
                             </Row>
                             <Row >
@@ -303,17 +388,24 @@ class AddDriverPanel extends Component{
                                     </NavLink>
                                 </Col>
                                 <Col>
-                                    <Popup 
-                                        trigger={
-                                            <Button 
-                                                className="Edit-Driver-Redirect-Button" 
-                                                variant="light">
-                                                Zatwierdź
-                                            </Button>
-                                        }
+                                    <Button 
+                                        className="Edit-Driver-Redirect-Button" 
+                                        onClick={this.handleOpenModal}
+                                        variant="light">
+                                            Zatwierdź
+                                    </Button>
+                                </Col>
+                                <Col xs='8'>
+                                </Col>
+                            </Row>
+                        </Container>
+                    </div>
+                    </Col>
+                </Row>
+                <Popup 
                                         modal
                                         open={this.state.isModalOpen}
-                                        onOpen={this.handleOpenModal}
+                                        onClose={this.handleCloseModal}
                                         contentStyle={{
                                             width: '30vw',
                                             height: '25vh',
@@ -397,15 +489,6 @@ class AddDriverPanel extends Component{
                                                 )
                                             }
                                     </Popup>
-                                    
-                                </Col>
-                                <Col xs='8'>
-                                </Col>
-                            </Row>
-                        </Container>
-                    </div>
-                    </Col>
-                </Row>
             </Container>
         );
     }

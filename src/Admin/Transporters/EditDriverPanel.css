@@ -2,16 +2,16 @@
     padding-top: 15px;
     font-size: 40px;
     font-family: 'Overpass', sans-serif;
-    color:#e6e947;
+    color:#50ee9c;
 }
 
 .Confirm-Edit-Driver-Button{
     font-family: 'Overpass', sans-serif;
     width: 110px;
     font-size: 13px;
-    background-color: #e6e947;
-    box-shadow: 2px 2px 15px -4px #e6e947;
-    border: solid 3px #e6e947;
+    background-color: #50ee9c;
+    box-shadow: 2px 2px 15px -4px #50ee9c;
+    border: solid 3px #50ee9c;
     color: #202125;
     margin-top: 5px;
     padding-top: 10px;
@@ -21,23 +21,23 @@
     padding-top: 25px;
     font-size: 20px;
     font-family: 'Overpass', sans-serif;
-    color:#e6e947;
+    color:#50ee9c;
 }
 
 .Edit-Driver-Redirect-Button{
     font-family: 'Overpass', sans-serif;
     width: 110px;
     font-size: 13px;
-    background-color: #e6e947;
-    box-shadow: 2px 2px 15px -4px #e6e947;
-    border: solid 3px #e6e947;
+    background-color: #50ee9c;
+    box-shadow: 2px 2px 15px -4px #50ee9c;
+    border: solid 3px#50ee9c;
     color: #202125;
     margin-top: 25px;
     padding-top: 10px;
 }
 
 #selectGender{
-    color: #e6e947;
+    color: #50ee9c;
 }
 
 #genderLabel{
@@ -47,7 +47,7 @@
 .Edit-Driver-Container{
     padding-top: 15px;
     background-color: #202125;
-    height: 85vh;
+    height: 90vh;
     width: 100%;
     border-radius: 15px;
     margin-top: 50px;

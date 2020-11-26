@@ -30,6 +30,8 @@ class AddTransporterPanel extends Component{
             mail: null,
             serverResponse: '',
             isServerResponseModalOpen: false,
+            fullNameIsValid: true,
+            fullNameHelperText: '',
             isModalOpen: false
         }
     }
@@ -91,9 +93,17 @@ class AddTransporterPanel extends Component{
       };
 
     handleOpenModal = () => {
-        this.setState({
-            isModalOpen: true
-        })
+        let isError = false
+        if(this.state.fullName === null || this.state.fullName === ''){
+            this.setState({ fullNameIsValid: false, fullNameHelperText: 'Pole nie może być puste.' })
+            isError=true
+        }
+        else{
+            this.setState({ fullNameIsValid: true, fullNameHelperText: '' })
+        }
+        if(isError) return
+
+        this.setState({ isModalOpen: true })
     }
 
     handleCloseModal = () => {
@@ -103,11 +113,7 @@ class AddTransporterPanel extends Component{
     }
 
     // Server response pop up
-    handleCloseServerResponseModal = () =>{
-        this.setState({
-            isServerResponseModalOpen: false
-        })
-    }
+    handleCloseServerResponseModal = () => this.setState({ isServerResponseModalOpen: false })
 
     render(){
         return(
@@ -128,9 +134,18 @@ class AddTransporterPanel extends Component{
                                 <form  noValidate autoComplete="off">
                                     <TextField 
                                         id="transporterFullName" 
-                                        label="Pełna nazwa" 
+                                        label=
+                                        {
+                                            <div>
+                                                <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                <span>&nbsp;</span>
+                                                <span>Pełna nazwa</span>
+                                            </div>
+                                        }
                                         color="secondary"
                                         onChange={this.handleChange('fullName')}
+                                        error={!this.state.fullNameIsValid}
+                                        helperText={this.state.fullNameHelperText}
                                         autoComplete="new-password"
                                         defaultValue={this.state.fullName}
                                         InputLabelProps={{
@@ -193,7 +208,7 @@ class AddTransporterPanel extends Component{
                             </Row>
                             <Row style={{marginTop: '20px'}}>
                                 <Col>
-                                    <label className='Edit-Transporter-Sub-Header'>Dane adresowe</label>
+                                    <label className='Edit-Transporter-Sub-Header' style={{ fontSize: 16 }}>Dane adresowe</label>
                                 </Col>
                             </Row>
                             <Row >
@@ -313,7 +328,7 @@ class AddTransporterPanel extends Component{
                             
                             <Row style={{marginTop: '15px'}}>
                                 <Col>
-                                    <div className='Edit-Transporter-Sub-Header'>
+                                    <div className='Edit-Transporter-Sub-Header' style={{ fontSize: 16 }}>
                                         <FaRoute /><span>&nbsp;</span><span>Obsługiwane trasy</span>
                                     </div>
                                 </Col>
@@ -352,18 +367,20 @@ class AddTransporterPanel extends Component{
                                     </NavLink>
                                 </Col>
                                 <Col xs='1'>
-                                    <Popup 
-                                        trigger={
-                                            <Button 
-                                                className="Edit-Transporter-Redirect-Button" 
-                                                variant="light"
-                                                style={{marginLeft: '30px'}}>
-                                                    Zatwierdź
-                                            </Button>
-                                        }
+                                    <Button 
+                                        className="Edit-Transporter-Redirect-Button" 
+                                        variant="light"
+                                        onClick={this.handleOpenModal}
+                                        style={{marginLeft: '50px'}}>
+                                            Zatwierdź
+                                    </Button>
+                                </Col>
+                                    
+                            </Row>
+                            <Popup 
                                         modal
                                         open={this.state.isModalOpen}
-                                        onOpen={this.handleOpenModal}
+                                        onClose={this.handleCloseModal}
                                         contentStyle={{
                                             width: '30vw',
                                             height: '25vh',
@@ -412,8 +429,6 @@ class AddTransporterPanel extends Component{
                                         </div>
                                         )}
                                     </Popup>
-                                </Col>
-                            </Row>
                             <Popup 
                                 modal
                                 open={this.state.isServerResponseModalOpen}

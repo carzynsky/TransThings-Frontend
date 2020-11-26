@@ -103,35 +103,17 @@ class TransportersDashboard extends Component{
     
     async componentDidMount(){
         await this.getTransporters();
-
     }
 
-    handleDetailsClick = (transporter) => {
-        console.log(transporter)
-        this.setState({
-            selectedTransporter: transporter
-        })
-    }
+    handleDetailsClick = (transporter) => this.setState({ selectedTransporter: transporter })
 
     // handle open/close modal popup
-    handleOpenModal = () => {
-        this.setState({
-            isModalOpen: true
-        })
-    }
+    handleOpenModal = () => this.setState({ isModalOpen: true })
 
-    handleCloseModal = () => {
-        this.setState({
-            isModalOpen: false
-        })
-    }
+    handleCloseModal = () => this.setState({ isModalOpen: false })
 
     // Server response pop up
-    handleCloseServerResponseModal = () =>{
-        this.setState({
-            isServerResponseModalOpen: false
-        })
-    }
+    handleCloseServerResponseModal = () => this.setState({ isServerResponseModalOpen: false })
 
     render(){
         return(

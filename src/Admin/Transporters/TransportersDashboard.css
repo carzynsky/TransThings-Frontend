@@ -21,21 +21,21 @@
     padding-top: 15px;
     font-size: 26px;
     font-family: 'Overpass', sans-serif;
-    color: #e64b62;
+    color: #50ee9c;
 }
 
 .Transporter-Info-Header{
     padding-top: 15px;
     font-size: 32px;
     font-family: 'Overpass', sans-serif;
-    color:#e64b62;
+    color:#50ee9c;
 }
 
 .Transporter-Info-Sub{
     padding-top: 15px;
     font-size: 20px;
     font-family: 'Overpass', sans-serif;
-    color:#e64b62;
+    color:#50ee9c;
 }
 
 .Transporter-Info-Stats-Sub{
@@ -75,7 +75,7 @@
 .Transporter-Info-Stats{
     font-size:50px;
     font-family: 'Overpass', sans-serif;
-    color:#e64b62;
+    color:#50ee9c;
 }
 
 .Transporters-Redirect-Button{
@@ -86,10 +86,10 @@
     font-size: 12px;
     padding-bottom: 25px;
     text-align: center;
-    background-color: #e64b62;
-    border: solid 3px #e64b62;
+    background-color: #50ee9c;
+    border: solid 3px#50ee9c;
     color: #202125;
-    box-shadow: 2px 2px 15px -4px #e64b62;
+    box-shadow: 2px 2px 15px -4px #50ee9c;
 }
 
 .Add-Tranporter-Redirect-Button{
@@ -97,15 +97,15 @@
     width: 90px;
     height: 35px;
     font-size: 13px;
-    background-color: #e64b62;
-    box-shadow: 2px 2px 15px -4px #e64b62;
-    border: solid 3px #e64b62;
+    background-color: #50ee9c;
+    box-shadow: 2px 2px 15px -4px #50ee9c;
+    border: solid 3px #50ee9c;
     color: #202125;
     margin-top: 15px;
     margin-right: 15px;
 }
 .Transporter-Details-Icon{
-    color: #e64b62;
+    color:#50ee9c;
     size: 1.0em;
 }
 .Transporter-Details-Icon:hover{
@@ -116,9 +116,9 @@
     font-family: 'Overpass', sans-serif;
     width: 110px;
     font-size: 13px;
-    background-color: #e64b62;
-    box-shadow: 2px 2px 15px -4px #e64b62;
-    border: solid 3px #e64b62;
+    background-color: #50ee9c;
+    box-shadow: 2px 2px 15px -4px #50ee9c;
+    border: solid 3px #50ee9c;
     color: #202125;
     margin-top: 5px;
     padding-top: 10px;
@@ -128,5 +128,5 @@
     padding-top: 25px;
     font-size: 20px;
     font-family: 'Overpass', sans-serif;
-    color:#e64b62;
+    color:#50ee9c;
 }

@@ -28,7 +28,15 @@ class AddWarehousePanel extends Component{
             fax: '',
             serverResponse: '',
             isServerResponseModalOpen: false,
-            isModalOpen: false
+            isModalOpen: false,
+            nameIsValid: true,
+            nameHelperText: '',
+            streetAddressIsValid: true,
+            streetAddressHelperText: '',
+            zipCodeIsValid: true,
+            zipCodeHelperText: '',
+            cityIsValid: true,
+            cityHelperText: ''
         }
     }
 
@@ -84,9 +92,42 @@ class AddWarehousePanel extends Component{
 
     // handle pop up open/close
     handleSaveButton = () => {
-        this.setState({
-            isModalOpen: true
-        })
+        let isError = false
+
+        if(this.state.name === null || this.state.name === ''){
+            this.setState({ nameIsValid: false, nameHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ nameIsValid: true, nameHelperText: '' })
+        }
+
+        if(this.state.streetAddress === null || this.state.streetAddress === ''){
+            this.setState({ streetAddressIsValid: false, streetAddressHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ streetAddressIsValid: true, streetAddressHelperText: '' })
+        }
+
+        if(this.state.zipCode === null || this.state.zipCode === ''){
+            this.setState({ zipCodeIsValid: false, zipCodeHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ zipCodeIsValid: true, zipCodeHelperText: '' })
+        }
+
+        if(this.state.city === null || this.state.city === ''){
+            this.setState({ cityIsValid: false, cityHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ cityIsValid: true, cityHelperText: '' })
+        }
+
+        if(isError) return
+        this.setState({ isModalOpen: true })
     }
 
     handleCloseModal = () => {
@@ -128,9 +169,18 @@ class AddWarehousePanel extends Component{
                                 <form  noValidate autoComplete="off">
                                     <TextField 
                                         id="warehouseName" 
-                                        label="Magazyn" 
+                                        label=
+                                        {
+                                            <div>
+                                                <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                <span>&nbsp;</span>
+                                                <span>Nazwa</span>
+                                            </div>
+                                        }
                                         color="primary"
                                         onChange={this.handleChange('name')}
+                                        error={!this.state.nameIsValid}
+                                        helperText={this.state.nameHelperText}
                                         InputLabelProps={{
                                             style:{
                                                 color: 'whitesmoke'
@@ -138,7 +188,7 @@ class AddWarehousePanel extends Component{
                                         }}
                                         InputProps={{
                                             style: {
-                                                color: '#5c8bdb'
+                                                color: 'whitesmoke'
                                             },
                                         }} />
                                 </form>
@@ -149,10 +199,19 @@ class AddWarehousePanel extends Component{
                                 <form  noValidate autoComplete="off">
                                     <TextField 
                                         id="warehouseStreetAddress" 
-                                        label="Adres" 
+                                        label=
+                                        {
+                                            <div>
+                                                <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                <span>&nbsp;</span>
+                                                <span>Adres</span>
+                                            </div>
+                                        }
                                         color="primary"
                                         autoComplete="new-password"
                                         onChange={this.handleChange('streetAddress')}
+                                        error={!this.state.streetAddressIsValid}
+                                        helperText={this.state.streetAddressHelperText}
                                         InputLabelProps={{
                                             style:{
                                                 color: 'whitesmoke'
@@ -160,7 +219,7 @@ class AddWarehousePanel extends Component{
                                         }}
                                         InputProps={{
                                             style: {
-                                                color: '#5c8bdb'
+                                                color: 'whitesmoke'
                                             }
                                         }} />
                                 </form>
@@ -169,10 +228,19 @@ class AddWarehousePanel extends Component{
                                 <form  noValidate autoComplete="off">
                                     <TextField 
                                         id="warehouseZipCode" 
-                                        label="Kod pocztowy" 
+                                        label=
+                                        {
+                                            <div>
+                                                <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                <span>&nbsp;</span>
+                                                <span>Kod pocztowy</span>
+                                            </div>
+                                        }
                                         color="primary"
                                         autoComplete="new-password"
                                         onChange={this.handleChange('zipCode')}
+                                        error={!this.state.zipCodeIsValid}
+                                        helperText={this.state.zipCodeHelperText}
                                         InputLabelProps={{
                                             style:{
                                                 color: 'whitesmoke'
@@ -180,7 +248,7 @@ class AddWarehousePanel extends Component{
                                         }}
                                         InputProps={{
                                             style: {
-                                                color: '#5c8bdb'
+                                                color: 'whitesmoke'
                                             }
                                         }} />
                                 </form>
@@ -189,10 +257,21 @@ class AddWarehousePanel extends Component{
                                 <form  noValidate autoComplete="off">
                                     <TextField 
                                         id="warehouseCity" 
-                                        label={<div><FaCity/><span>&nbsp;&nbsp;</span><span>Miasto</span></div>}
+                                        label=
+                                        {
+                                            <div>
+                                                <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                <span>&nbsp;</span>
+                                                <FaCity/>
+                                                <span>&nbsp;&nbsp;</span>
+                                                <span>Miasto</span>
+                                            </div>
+                                        }
                                         color="primary"
                                         autoComplete="new-password"
                                         onChange={this.handleChange('city')}
+                                        error={!this.state.cityIsValid}
+                                        helperText={this.state.cityHelperText}
                                         InputLabelProps={{
                                             style:{
                                                 color: 'whitesmoke'
@@ -200,7 +279,7 @@ class AddWarehousePanel extends Component{
                                         }}
                                         InputProps={{
                                             style: {
-                                                color: '#5c8bdb'
+                                                color: 'whitesmoke'
                                             }
                                         }} />
                                 </form>
@@ -208,7 +287,7 @@ class AddWarehousePanel extends Component{
                             </Row>
                             <Row style={{marginTop: '25px'}}>
                                 <Col>
-                                    <label className='Edit-Warehouse-Sub-Header'>Dane osoby do kontaktu</label>
+                                    <label className='Edit-Warehouse-Sub-Header' style={{ fontSize: 16 }}>Dane osoby do kontaktu</label>
                                 </Col>
                             </Row>
                             <Row>
@@ -227,7 +306,7 @@ class AddWarehousePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </form>
@@ -247,7 +326,7 @@ class AddWarehousePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </form>
@@ -269,7 +348,7 @@ class AddWarehousePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </form>
@@ -277,7 +356,7 @@ class AddWarehousePanel extends Component{
                             </Row>
                             <Row style={{marginTop: '25px'}}>
                                 <Col>
-                                    <label className='Edit-Warehouse-Sub-Header'>Pozostałe dane kontaktowe</label>
+                                    <label className='Edit-Warehouse-Sub-Header' style={{ fontSize: 16 }}>Pozostałe dane kontaktowe</label>
                                 </Col>
                             </Row>
                             <Row>
@@ -296,7 +375,7 @@ class AddWarehousePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </form>
@@ -316,7 +395,7 @@ class AddWarehousePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </form>

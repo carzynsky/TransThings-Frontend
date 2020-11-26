@@ -341,7 +341,7 @@ class AddOrderPanel extends Component{
             <Container>
                 <Row style={{marginTop: '50px'}}>
                     <Col xs='9' style={{minWidth: '500px'}}>
-                        <div className='Orders-Header' style={{color: '#f75353'}}>Tworzenie zamówienia transportu</div>
+                        <div className='Orders-Header'>Tworzenie zamówienia transportu</div>
                     </Col>
 
                     <Col xs='1' style={{minWidth: '120px', marginTop: '10px'}}>
@@ -372,9 +372,14 @@ class AddOrderPanel extends Component{
                             <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{color: '#f75353'}}>
-                                            <FaUserTie size='1.5em'/><span>&nbsp;&nbsp;</span><span>Klient</span>
+                                        <div className='Orders-Header' style={{ fontSize: 18 }}>
+                                            <FaUserTie size='1.3em'/><span>&nbsp;&nbsp;</span><span>Klient</span>
                                         </div>
+                                    </Col>
+                                    <Col>
+                                        <label className='Orders-Header' style={{ fontSize: 18, color: 'whitesmoke' }}>
+                                            {this.state.selectedClient?.clientFirstName} {this.state.selectedClient?.clientLastName}
+                                        </label>
                                     </Col>
                                     <Col style={{textAlign: 'right'}}>
                                         <Button 
@@ -389,7 +394,7 @@ class AddOrderPanel extends Component{
                                 {this.state.selectedClient === null && 
                                 <Row>
                                     <Col>
-                                        <label className='Tile-Data-Label' style={{fontSize: '18px'}}>Nie wybrano</label>
+                                        <label className='Tile-Data-Label' style={{ fontSize: 18 }}>Nie wybrano</label>
                                     </Col>
                                 </Row>
                                 }
@@ -398,22 +403,15 @@ class AddOrderPanel extends Component{
                                 <div>
                                     <Row>
                                         <Col>
-                                            <label className='Tile-Data-Label' style={{fontSize: '22px'}}>
-                                                {this.state.selectedClient?.clientFirstName} {this.state.selectedClient?.clientLastName}
+                                            <label className='Tile-Data-Label'>
+                                                <span style={{color: '#50ee9c'}}> <FaAddressCard /><span>&nbsp;&nbsp;</span>Pesel: </span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.clientPeselNumber}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}> <FaAddressCard /><span>&nbsp;&nbsp;</span>Pesel: </span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.clientPeselNumber}
-                                            </label>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}><ImOffice /> <span>&nbsp;&nbsp;</span>Firma:</span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.companyFullName === null ? 'brak danych' : this.state.selectedClient?.companyFullName}
+                                                <span style={{color: '#50ee9c'}}><ImOffice /> <span>&nbsp;&nbsp;</span>Firma:</span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.companyFullName === null ? 'brak danych' : this.state.selectedClient?.companyFullName}
                                             </label>
                                         </Col>
                                         <Col>
@@ -422,35 +420,34 @@ class AddOrderPanel extends Component{
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>NIP: </span>{this.state.selectedClient?.nip === null ? 'brak danych' : this.state.selectedClient?.nip}
+                                                <span style={{color: '#50ee9c'}}>NIP: </span>{this.state.selectedClient?.nip === null ? 'brak danych' : this.state.selectedClient?.nip}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}><HiOutlineOfficeBuilding /><span>&nbsp;&nbsp;</span>Adres:</span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.streetName} {this.state.selectedClient?.city} {this.state.selectedClient?.zipCode}
+                                                <span style={{color: '#50ee9c'}}><HiOutlineOfficeBuilding /><span>&nbsp;&nbsp;</span>Adres:</span><span>&nbsp;&nbsp;</span>{this.state.selectedClient?.streetName} {this.state.selectedClient?.city} {this.state.selectedClient?.zipCode}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}> <AiFillPhone /><span>&nbsp;&nbsp;</span>Nr. kontaktowy(1):<span>&nbsp;&nbsp;</span></span>{this.state.selectedClient?.contactPhoneNumber1}
+                                                <span style={{color: '#50ee9c'}}> <AiFillPhone /><span>&nbsp;&nbsp;</span>Nr. kontaktowy(1):<span>&nbsp;&nbsp;</span></span>{this.state.selectedClient?.contactPhoneNumber1}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}><AiFillPhone /><span>&nbsp;&nbsp;</span>Nr. kontaktowy(2):<span>&nbsp;&nbsp;</span></span>{this.state.selectedClient?.contactPhoneNumber2}
+                                                <span style={{color: '#50ee9c'}}><AiFillPhone /><span>&nbsp;&nbsp;</span>Nr. kontaktowy(2):<span>&nbsp;&nbsp;</span></span>{this.state.selectedClient?.contactPhoneNumber2}
                                             </label>
                                         </Col>
                                     </Row>
-                                    
                                 </div>
                                 }
 
@@ -462,9 +459,14 @@ class AddOrderPanel extends Component{
                         <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{color: '#f75353'}}>
-                                            <FaWarehouse size='1.5em'/><span>&nbsp;&nbsp;</span><span>Magazyn</span>
+                                        <div className='Orders-Header' style={{ fontSize: 18 }}>
+                                            <FaWarehouse size='1.3em'/><span>&nbsp;&nbsp;</span><span>Magazyn</span>
                                         </div>
+                                    </Col>
+                                    <Col>
+                                        <label className='Orders-Header' style={{ fontSize: 18 }}>
+                                            {this.state.selectedWarehouse?.name}
+                                        </label>
                                     </Col>
                                     <Col style={{textAlign: 'right'}}>
                                         <Button 
@@ -479,7 +481,7 @@ class AddOrderPanel extends Component{
                                 {this.state.selectedWarehouse === null &&
                                 <Row>
                                     <Col>
-                                        <label className='Tile-Data-Label' style={{fontSize: '18px'}}>Nie wybrano</label>
+                                        <label className='Tile-Data-Label' style={{ fontSize: 18 }}>Nie wybrano</label>
                                     </Col>
                                 </Row>
                                 }
@@ -488,43 +490,36 @@ class AddOrderPanel extends Component{
                                 <div>
                                     <Row>
                                         <Col>
-                                            <label className='Tile-Data-Label' style={{fontSize: '22px'}}>
-                                                {this.state.selectedWarehouse?.name}
+                                            <label className='Tile-Data-Label'>
+                                                <span style={{color: '#50ee9c'}}>Adres: </span>{this.state.selectedWarehouse?.streetAddress} {this.state.selectedWarehouse?.zipCode} {this.state.selectedWarehouse?.city}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Adres: </span>{this.state.selectedWarehouse?.streetAddress} {this.state.selectedWarehouse?.zipCode} {this.state.selectedWarehouse?.city}
+                                                <span style={{color: '#50ee9c'}}>Dane osoby do kontaktu: </span>{this.state.selectedWarehouse?.contactPersonFirstName} {this.state.selectedWarehouse?.contactPersonLastName}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Dane osoby do kontaktu: </span>{this.state.selectedWarehouse?.contactPersonFirstName} {this.state.selectedWarehouse?.contactPersonLastName}
+                                                <span style={{color: '#50ee9c'}}>Nr. kontaktowy: </span>{this.state.selectedWarehouse?.contactPhoneNumber}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Nr. kontaktowy: </span>{this.state.selectedWarehouse?.contactPhoneNumber}
+                                                <span style={{color: '#50ee9c'}}>Adres email: </span>{this.state.selectedWarehouse?.mail}
                                             </label>
                                         </Col>
                                     </Row>
-                                    <Row>
+                                    <Row style={{ marginTop: -10 }}>
                                         <Col>
                                             <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Adres email: </span>{this.state.selectedWarehouse?.mail}
-                                            </label>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col>
-                                            <label className='Tile-Data-Label'>
-                                                <span style={{color: '#f75353'}}>Fax: </span>{this.state.selectedWarehouse?.fax}
+                                                <span style={{color: '#50ee9c'}}>Fax: </span>{this.state.selectedWarehouse?.fax}
                                             </label>
                                         </Col>
                                     </Row>
@@ -541,8 +536,8 @@ class AddOrderPanel extends Component{
                             <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{color: '#f75353'}}>
-                                            <MdLocationOn size='1.5em'/><span>&nbsp;&nbsp;</span><span>Adres dostawy</span>
+                                        <div className='Orders-Header' style={{ fontSize: 18 }}>
+                                            <MdLocationOn size='1.3em'/><span>&nbsp;&nbsp;</span><span>Adres dostawy</span>
                                         </div>
                                     </Col>
                                 </Row>
@@ -659,8 +654,8 @@ class AddOrderPanel extends Component{
                         <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{color: '#f75353'}}>
-                                            <BiPackage size='1.5em'/><span>&nbsp;&nbsp;</span><span>Towary</span>
+                                        <div className='Orders-Header' style={{ fontSize: 18 }}>
+                                            <BiPackage size='1.3em'/><span>&nbsp;&nbsp;</span><span>Towary</span>
                                         </div>
                                     </Col>
                                     <Col style={{textAlign: 'right'}}>
@@ -718,29 +713,29 @@ class AddOrderPanel extends Component{
                             <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{color: '#f75353'}}>
-                                            <CgDetailsMore size='1.5em'/><span>&nbsp;&nbsp;</span><span>Szczegóły zamówienia</span>
+                                        <div className='Orders-Header' style={{ fontSize: 18 }}>
+                                            <CgDetailsMore size='1.3em'/><span>&nbsp;&nbsp;</span><span>Szczegóły zamówienia</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
-                                            <FaWeightHanging size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga netto:<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalNetWeight}</span>
+                                        <div className='Tile-Data-Label' style={{ fontSize: 14 }}>
+                                            <FaWeightHanging size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga netto:<span>&nbsp;&nbsp;</span><span style={{ color: '#50ee9c' }}>{this.state.totalNetWeight}</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
-                                            <FaWeight size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga brutto:<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalGrossWeight}</span>
+                                        <div className='Tile-Data-Label' style={{fontSize: 14 }}>
+                                            <FaWeight size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita waga brutto:<span>&nbsp;&nbsp;</span><span style={{ color: '#50ee9c' }}>{this.state.totalGrossWeight}</span>
                                         </div>
                                     </Col>
                                 </Row>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Data-Label' style={{fontSize: '14px'}}>
-                                            <FaGlassWhiskey size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita objętość:<span>&nbsp;&nbsp;</span><span style={{color: '#f75353'}}>{this.state.totalVolume}</span>
+                                        <div className='Tile-Data-Label' style={{ fontSize: 14 }}>
+                                            <FaGlassWhiskey size='1.3em'/><span>&nbsp;&nbsp;</span>Całkowita objętość:<span>&nbsp;&nbsp;</span><span style={{ color: '#50ee9c' }}>{this.state.totalVolume}</span>
                                         </div>
                                     </Col>
                                 </Row>
@@ -801,8 +796,8 @@ class AddOrderPanel extends Component{
                         <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Tile-Header' style={{color: '#f75353'}}>
-                                            <BiMessageAdd size='1.5em'/><span>&nbsp;&nbsp;</span><span>Dodatkowe informacje</span>
+                                        <div className='Orders-Header' style={{ fontSize: 18 }}>
+                                            <BiMessageAdd size='1.3em'/><span>&nbsp;&nbsp;</span><span>Dodatkowe informacje</span>
                                         </div>
                                     </Col>
                                 </Row>
@@ -824,7 +819,7 @@ class AddOrderPanel extends Component{
                                                 }}
                                                 InputProps={{
                                                     style: {
-                                                        color: '#5c8bdb'
+                                                        color: 'whitesmoke'
                                                     },
                                                 }} />
                                         </FormControl>
@@ -850,7 +845,7 @@ class AddOrderPanel extends Component{
                             <Container>
                             <Row style={{textAlign: 'center'}}>
                                 <Col>
-                                    <label className='Orders-Header'>
+                                    <label className='Orders-Header' style={{ fontSize: 20 }}>
                                         {this.state.selectedPopup === 'clients' ? 'Wybierz klienta' : 'Wybierz magazyn'}
                                     </label>
                                 </Col>
@@ -941,7 +936,7 @@ class AddOrderPanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 },
                                             }} 
                                         />
@@ -967,7 +962,7 @@ class AddOrderPanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 },
                                             }} 
                                         />
@@ -989,7 +984,7 @@ class AddOrderPanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 },
                                             }} 
                                         />
@@ -1011,7 +1006,7 @@ class AddOrderPanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 },
                                             }} 
                                         />
@@ -1034,7 +1029,7 @@ class AddOrderPanel extends Component{
                                             InputProps={{
                                                 inputProps: { min: 0, max: 999999 },
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 },
                                             }} 
                                         />
@@ -1059,7 +1054,7 @@ class AddOrderPanel extends Component{
                                             InputProps={{
                                                 inputProps: { min: 0, max: 999999 },
                                                 style: {
-                                                    color: '#5c8bdb'
+                                                    color: 'whitesmoke'
                                                 },
                                             }} 
                                         />
@@ -1069,18 +1064,18 @@ class AddOrderPanel extends Component{
                             <Row style={{marginTop: '30px'}}>
                                 <Col>
                                     <label className='Tile-Data-Label'>
-                                        <span style={{color: '#f75353', fontSize: '18px'}}>Waga netto (kg): </span>
-                                        <span style={{fontSize: '18px'}}>{this.state.addLoadAmount * this.state.addLoadWeight}</span>
+                                        <span style={{ color: '#50ee9c', fontSize: 16 }}>Waga netto (kg): </span>
+                                        <span style={{ fontSize: 16 }}>{this.state.addLoadAmount * this.state.addLoadWeight}</span>
                                     </label>
                                 </Col>
                                 <Col>
                                     <label className='Tile-Data-Label'>
-                                        <span style={{color: '#f75353', fontSize: '18px'}}>Waga brutto (kg): </span>
-                                        <span style={{fontSize: '18px'}}>{this.state.addLoadAmount * this.state.addLoadWeight + parseInt(this.state.newLoadPackageWeight)}</span>
+                                        <span style={{ color: '#50ee9c', fontSize: 16 }}>Waga brutto (kg): </span>
+                                        <span style={{ fontSize: 16 }}>{this.state.addLoadAmount * this.state.addLoadWeight + parseInt(this.state.newLoadPackageWeight)}</span>
                                     </label>
                                 </Col>
                             </Row>
-                            <Row style={{textAlign: 'center', marginTop: '60px'}}>
+                            <Row style={{textAlign: 'center', marginTop: '40px'}}>
                                 <Col>
                                     <Button 
                                         className="Tile-Button" 

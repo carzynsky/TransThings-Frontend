@@ -35,6 +35,15 @@ class AddUserPanel extends Component{
             isServerResponseModalOpen: false,
             isModalOpen: false,
             isPeselValid: true,
+
+            firstNameIsValid: true,
+            lastNameIsValid: true,
+            loginIsValid: true,
+            birthDateIsValid: true,
+            firstNameHelperText: '',
+            lastNameHelperText: '',
+            loginHelperText: '',
+            birthDateHelperText: '',
             peselErrorText: ''
         }
     }
@@ -143,6 +152,45 @@ class AddUserPanel extends Component{
       
     // handle open/close modal
     handleOpenModal = () => {
+        let isError = false
+        if(this.state.firstName === ''){
+            this.setState({ firstNameIsValid: false, firstNameHelperText: 'Pole nie może być puste.' })
+                isError = true
+        }
+        else{
+            this.setState({ firstNameIsValid: true, firstNameHelperText: '' })
+        }
+
+        if(this.state.lastName === ''){
+            this.setState({ lastNameIsValid: false, lastNameHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ lastNameIsValid: true, lastNameHelperText: '' })
+        }
+
+        if(this.state.login === ''){
+            this.setState({ loginIsValid: false, loginHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ loginIsValid: true, loginHelperText: '' })
+        }
+
+        if(this.state.birthDate === null){
+            this.setState({ birthDateIsValid: false, birthDateHelperText: 'Pole nie może być puste.' })
+            isError = true
+        }
+        else{
+            this.setState({ birthDateIsValid: true, birthDateHelperText: '' })
+        }
+
+        if(this.state.peselNumber === ''){
+            this.setState({ isPeselValid: false, peselErrorText: 'Pole nie może być puste.'})
+            isError = true
+        }
+
+        if(isError) return
         if(this.state.isPeselValid) this.setState({ isModalOpen: true })
     }
 
@@ -179,7 +227,7 @@ class AddUserPanel extends Component{
                             </Row>
                             <Row style={{marginTop: '10px'}}>
                                 <Col>
-                                    <label className='Edit-Transporter-Sub-Header' style={{color: '#5CDB95', fontSize: '26px'}}>Dane personalne</label>
+                                    <label className='Edit-Transporter-Sub-Header' style={{ color: '#5CDB95', fontSize: 18 }}>Dane personalne</label>
                                 </Col>
                             </Row>
                             <Row>
@@ -187,9 +235,18 @@ class AddUserPanel extends Component{
                                     <FormControl  noValidate autoComplete="off">
                                         <TextField 
                                             id="userFirstName" 
-                                            label="Imię" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Imię</span>
+                                                </div>
+                                            }
                                             color="primary"
                                             onChange={this.handleChange('firstName')}
+                                            error={!this.state.firstNameIsValid}
+                                            helperText={this.state.firstNameHelperText}
                                             autoComplete="new-password"
                                             value={this.state.firstName}
                                             InputLabelProps={{
@@ -208,9 +265,18 @@ class AddUserPanel extends Component{
                                     <FormControl  noValidate autoComplete="off">
                                         <TextField 
                                             id="userLastName" 
-                                            label="Nazwisko" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Nazwisko</span>
+                                                </div>
+                                            }
                                             color="primary"
                                             onChange={this.handleChange('lastName')}
+                                            error={!this.state.lastNameIsValid}
+                                            helperText={this.state.lastNameHelperText}
                                             autoComplete="new-password"
                                             value={this.state.lastName}
                                             InputLabelProps={{
@@ -250,7 +316,14 @@ class AddUserPanel extends Component{
                                     <FormControl  noValidate autoComplete="off">
                                         <TextField 
                                             id="userPeselNumber" 
-                                            label="Pesel" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Pesel</span>
+                                                </div>
+                                            }
                                             error={!this.state.isPeselValid}
                                             helperText={this.state.peselErrorText}
                                             color="primary"
@@ -276,11 +349,20 @@ class AddUserPanel extends Component{
                                         <KeyboardDatePicker
                                             margin="normal"
                                             id="user-date-picker-dialog"
-                                            label="Data urodzenia"
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Data urodzenia</span>
+                                                </div>
+                                            }
                                             format="MM/dd/yyyy"
                                             color="primary"
                                             value={this.state.birthDate}
                                             onChange={this.handleBirthDateChange.bind(this)}
+                                            error={!this.state.birthDateIsValid}
+                                            helperText={this.state.birthDateHelperText}
                                             KeyboardButtonProps={{
                                                 'aria-label': 'change date'
                                             }}
@@ -340,9 +422,18 @@ class AddUserPanel extends Component{
                                     <FormControl  noValidate autoComplete="off">
                                         <TextField 
                                             id="userLogin" 
-                                            label="Login" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Login</span>
+                                                </div>
+                                            }
                                             color="primary"
                                             onChange={this.handleChange('login')}
+                                            error={!this.state.loginIsValid}
+                                            helperText={this.state.loginHelperText}
                                             autoComplete="new-password"
                                             InputLabelProps={{
                                                 style:{
@@ -359,7 +450,7 @@ class AddUserPanel extends Component{
                             </Row>
                             <Row style={{marginTop: '20px'}}>
                                 <Col>
-                                <label className='Edit-Transporter-Sub-Header' style={{color: '#5CDB95', fontSize: '26px'}}>Dane kontaktowe</label>
+                                <label className='Edit-Transporter-Sub-Header' style={{ color: '#5CDB95', fontSize: 18 }}>Dane kontaktowe</label>
                                 </Col>
                             </Row>
                             <Row >

@@ -2,9 +2,9 @@
     font-family: 'Overpass', sans-serif;
     width: 110px;
     font-size: 13px;
-    background-color: #5c8bdb;
-    box-shadow: 2px 2px 15px -4px #5c8bdb;
-    border: solid 3px #5c8bdb;
+    background-color: #50ee9c;
+    box-shadow: 2px 2px 15px -4px #50ee9c;
+    border: solid 3px #50ee9c;
     color: #202125;
     margin-top: 5px;
     padding-top: 10px;
@@ -14,12 +14,12 @@
     padding-top: 25px;
     font-size: 20px;
     font-family: 'Overpass', sans-serif;
-    color:#5c8bdb;
+    color:#50ee9c;
 }
 .Edit-Warehouse-Sub-Header{
     padding-top: 15px;
     font-size: 22px;
     font-family: 'Overpass', sans-serif;
-    color:#5c8bdb;
+    color:#50ee9c;
 }
 

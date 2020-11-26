@@ -2,16 +2,16 @@
     padding-top: 15px;
     font-size: 40px;
     font-family: 'Overpass', sans-serif;
-    color:#da55f1;
+    color:#50ee9c;
 }
 
 .Confirm-Edit-Vehicle-Button{
     font-family: 'Overpass', sans-serif;
     width: 110px;
     font-size: 13px;
-    background-color: #da55f1;
-    box-shadow: 2px 2px 15px -4px #da55f1;
-    border: solid 3px #da55f1;
+    background-color: #50ee9c;
+    box-shadow: 2px 2px 15px -4px #50ee9c;
+    border: solid 3px #50ee9c;
     color: #202125;
     margin-top: 5px;
     padding-top: 10px;
@@ -21,16 +21,16 @@
     padding-top: 25px;
     font-size: 20px;
     font-family: 'Overpass', sans-serif;
-    color:#da55f1;
+    color:#50ee9c;
 }
 
 .Edit-Vehicle-Redirect-Button{
     font-family: 'Overpass', sans-serif;
     width: 110px;
     font-size: 13px;
-    background-color: #da55f1;
-    box-shadow: 2px 2px 15px -4px #da55f1;
-    border: solid 3px #da55f1;
+    background-color: #50ee9c;
+    box-shadow: 2px 2px 15px -4px #50ee9c;
+    border: solid 3px #50ee9c;
     color: #202125;
     margin-top: 5px;
     padding-top: 10px;
@@ -41,5 +41,5 @@
 }
 
 #selectVehicleType{
-    color: #da55f1;
+    color: #50ee9c;
 }

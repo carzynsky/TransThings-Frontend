@@ -29,7 +29,13 @@ class AddVehiclePanel extends Component{
             vehicleTypeId: '',
             serverResponse: null,
             isServerResponseModalOpen: false,
-            isModalOpen: false
+            isModalOpen: false,
+            brandIsValid: true,
+            brandHelperText: '',
+            modelIsValid: true,
+            modelHelperText: '',
+            loadingCapacityIsValid: true,
+            loadingCapacityHelperText: ''
         }
     }
 
@@ -113,9 +119,31 @@ class AddVehiclePanel extends Component{
       
     // handle open/close modal
     handleOpenModal = () => {
-        this.setState({
-            isModalOpen: true
-        })
+        let isError = false
+        if(this.state.brand === null || this.state.brand === ''){
+            this.setState({ brandIsValid: false, brandHelperText: 'Pole nie może być puste' })
+            isError = true
+        }
+        else{
+            this.setState({ brandIsValid: true, brandHelperText: '' })
+        }
+        if(this.state.model=== null || this.state.model === ''){
+            this.setState({ modelIsValid: false, modelHelperText: 'Pole nie może być puste' })
+            isError = true
+        }
+        else{
+            this.setState({ modelIsValid: true, modelHelperText: '' })
+        }
+        if(this.state.loadingCapacity === null || this.state.loadingCapacity === ''){
+            this.setState({ loadingCapacityIsValid: false, loadingCapacityHelperText: 'Pole nie może być puste' })
+            isError = true
+        }
+        else{
+            this.setState({ loadingCapacityIsValid: true, loadingCapacityHelperText: '' })
+        }
+
+        if(isError) return
+        this.setState({ isModalOpen: true })
     }
 
     handleCloseModal = () => {
@@ -154,9 +182,18 @@ class AddVehiclePanel extends Component{
                                 <FormControl  noValidate autoComplete="off">
                                     <TextField 
                                         id="vehicleBrand" 
-                                        label="Marka" 
+                                        label=
+                                        {
+                                            <div>
+                                                <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                <span>&nbsp;</span>
+                                                <span>Marka</span>
+                                            </div>
+                                        }
                                         color="secondary"
                                         onChange={this.handleChange('brand')}
+                                        error={!this.state.brandIsValid}
+                                        helperText={this.state.brandHelperText}
                                         autoComplete="new-password"
                                         InputLabelProps={{
                                             style:{
@@ -165,7 +202,7 @@ class AddVehiclePanel extends Component{
                                         }}
                                         InputProps={{
                                             style: {
-                                                color: '#da55f1'
+                                                color: 'whitesmoke'
                                             }
                                         }} />
                                 </FormControl>
@@ -174,9 +211,18 @@ class AddVehiclePanel extends Component{
                                     <FormControl  noValidate autoComplete="off">
                                         <TextField 
                                             id="vehicleModel" 
-                                            label="Model" 
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Model</span>
+                                                </div>
+                                            }
                                             color="secondary"
                                             onChange={this.handleChange('model')}
+                                            error={!this.state.modelIsValid}
+                                            helperText={this.state.modelHelperText}
                                             autoComplete="new-password"
                                             InputLabelProps={{
                                                 style:{
@@ -185,7 +231,7 @@ class AddVehiclePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#da55f1'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </FormControl>
@@ -207,7 +253,7 @@ class AddVehiclePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#da55f1'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </FormControl>
@@ -218,10 +264,19 @@ class AddVehiclePanel extends Component{
                                     <FormControl  noValidate autoComplete="off">
                                         <TextField 
                                             id="vehicleLoadingCapacity" 
-                                            label='Pojemność załadunku'
+                                            label=
+                                            {
+                                                <div>
+                                                    <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                                    <span>&nbsp;</span>
+                                                    <span>Pojemność załadunku</span>
+                                                </div>
+                                            }
                                             color="secondary"
                                             autoComplete="new-password"
                                             onChange={this.handleChange('loadingCapacity')}
+                                            error={!this.state.loadingCapacityIsValid}
+                                            helperText={this.state.loadingCapacityHelperText}
                                             InputLabelProps={{
                                                 style:{
                                                     color: 'whitesmoke'
@@ -229,7 +284,7 @@ class AddVehiclePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#da55f1'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </FormControl>
@@ -238,7 +293,11 @@ class AddVehiclePanel extends Component{
                             <Row style={{marginTop: '10px'}}>
                                 <Col>
                                     <FormControl>
-                                        <InputLabel id="vehicleTypeLabel">Typ pojazdu</InputLabel>
+                                        <InputLabel id="vehicleTypeLabel">
+                                            <span style={{ color: '#f75555', fontSize: 18 }}>*</span>
+                                            <span>&nbsp;</span>
+                                            <span>Typ pojazdu</span>
+                                        </InputLabel>
                                             <Select
                                                 id="selectVehicleType"
                                                 color="secondary"
@@ -266,7 +325,7 @@ class AddVehiclePanel extends Component{
                                             }}
                                             InputProps={{
                                                 style: {
-                                                    color: '#da55f1'
+                                                    color: 'whitesmoke'
                                                 }
                                             }} />
                                     </FormControl>
@@ -286,18 +345,24 @@ class AddVehiclePanel extends Component{
                                     </NavLink>
                                 </Col>
                                 <Col xs='1'>
-                                    <Popup 
-                                        trigger={
-                                            <Button 
-                                                className="Edit-Vehicle-Redirect-Button" 
-                                                variant="light"
-                                                style={{marginLeft: '30px'}}>
-                                                    Zatwierdź
-                                            </Button>
-                                        }
+                                    <Button 
+                                        className="Edit-Vehicle-Redirect-Button" 
+                                        variant="light"
+                                        onClick={this.handleOpenModal}
+                                        style={{marginLeft: '50px'}}>
+                                            Zatwierdź
+                                    </Button>
+                                </Col>
+                                    
+                            </Row>
+                        </Container>
+                    </div>
+                    </Col>
+                </Row>
+                <Popup 
                                         modal
                                         open={this.state.isModalOpen}
-                                        onOpen={this.handleOpenModal}
+                                        onClose={this.handleCloseModal}
                                         contentStyle={{
                                             width: '30vw',
                                             height: '25vh',
@@ -382,12 +447,6 @@ class AddVehiclePanel extends Component{
                                                 )
                                             }
                                     </Popup>
-                                </Col>
-                            </Row>
-                        </Container>
-                    </div>
-                    </Col>
-                </Row>
             </Container>
         );
     }

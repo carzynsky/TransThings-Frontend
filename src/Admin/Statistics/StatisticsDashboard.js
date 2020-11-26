@@ -163,7 +163,7 @@ class StatisticsDashboard extends Component{
                             <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Order-Stats-Tile-Header'>Wykres zamówień (ostatnie 6 miesięcy)</div>
+                                        <div className='Order-Stats-Tile-Header'>Wykres liczby zamówień (ostatnie 6 miesięcy)</div>
                                     </Col>
                                 </Row>
                                 <Row style={{ paddingTop: 10 }}>
@@ -243,7 +243,7 @@ class StatisticsDashboard extends Component{
                             <Container>
                                 <Row>
                                     <Col>
-                                        <div className='Order-Stats-Tile-Header' style={{ color: 'rgba(216, 248, 74, 0.9)' }}>Wykres przejazdów (ostatnie 6 miesięcy)</div>
+                                        <div className='Order-Stats-Tile-Header' style={{ color: 'rgba(216, 248, 74, 0.9)' }}>Wykres liczby przejazdów (ostatnie 6 miesięcy)</div>
                                     </Col>
                                 </Row>
                                 <Row style={{ paddingTop: 10 }}>
@@ -320,6 +320,8 @@ const lineChartOptions = {
         {
           ticks: {
             beginAtZero: true,
+            min: 0,
+            max: 50,
             fontColor: 'rgb(255,255,255,0.6)',
           },
         },

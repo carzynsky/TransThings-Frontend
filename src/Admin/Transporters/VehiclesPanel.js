@@ -177,7 +177,7 @@ class VehiclesPanel extends Component{
                         <div className='Transporter-Tile' style={{backgroundColor: 'transparent'}}>
                             <Container>
                                 <Row>
-                                    <Col style={{textAlign: 'center', paddingBottom: '20px',paddingTop: '20px', color: '#da55f1'}}>
+                                    <Col style={{textAlign: 'center', paddingBottom: '20px',paddingTop: '20px', color: '#50ee9c'}}>
                                         <FaTruckMoving size='6.0em'/>
                                     </Col>
                                 </Row>
