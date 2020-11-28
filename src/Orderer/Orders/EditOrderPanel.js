@@ -69,6 +69,8 @@ class EditOrderPanel extends Component{
             forwarders: [],
             selectedConsultant: null,
 
+            selectedForwarder: null,
+
             vehicleTypes: [],
             selectedVehicleTypeId: '',
 
@@ -123,7 +125,7 @@ class EditOrderPanel extends Component{
                 selectedOrderStatusId: data.orderStatusId,
                 selectedVehicleTypeId: data.vehicleTypeId,
                 forwardingOrderNumber: data.forwardingOrder?.forwardingOrderNumber,
-                forwarder: data.forwardingOrder?.forwarder,
+                selectedForwarder: data.forwardingOrder?.forwarder,
                 forwardingOrderId: data.forwardingOrderId,
                 netPrice: data.netPrice?.toFixed(2),
                 grossPrice: data.grossPrice?.toFixed(2),
@@ -131,6 +133,33 @@ class EditOrderPanel extends Component{
                 isClientVerified: data.isClientVerified,
                 isAvailableAtWarehouse: data.isAvailableAtWarehouse,
             })
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+
+    // PUT call to API to update forwarding order
+    async updateForwardingOrder(forwarder){
+        try
+        {
+            console.log(this.state.selectedForwarder)
+            const response = await axios.put('https://localhost:44394/forwarding-orders/' + this.state.order?.forwardingOrderId,
+            {
+                'forwardingOrderNumber': this.state.order?.forwardingOrder?.forwardingOrderNumber,
+                'createDate': this.state.order?.forwardingOrder?.createDate,
+                'forwarderId': forwarder?.id,
+                'additionalDescription': this.state.order?.forwardingOrder?.additionalDescription
+            },
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=UTF-8',
+                    'Authorization': 'Bearer ' + this.state.token.token
+                },
+                
+            })
+            console.log(response)
         }
         catch(error){
             console.log(error);
@@ -530,6 +559,9 @@ class EditOrderPanel extends Component{
     // handle selected consultant
     handleSelectedConsultant = (consultant) => this.setState({ selectedConsultant: consultant })
 
+    // handle selected forwarder
+    handleSelectedForwarder = (forwarder) => this.setState({ selectedForwarder: forwarder })
+
     // handle selected (assigned) forwarding order to this transport order
     handleSelectedAssignedForwardingOrder = (forwardingOrder) => this.setState({ 
         forwardingOrderId: forwardingOrder?.id, 
@@ -766,11 +798,21 @@ class EditOrderPanel extends Component{
                                             Spedytor
                                         </div>
                                     </Col>
+                                    {this.state.order?.forwardingOrder !== null &&
+                                    <Col>
+                                            <Button 
+                                                className="Small-Button"
+                                                variant="light"
+                                                onClick={this.handleOpenModal.bind(this, 'addForwarder')}
+                                                style={{marginTop: 15}}>Zmień
+                                            </Button>
+                                    </Col>
+                                    }
                                 </Row>
                                 <Row style={{textAlign: 'center', marginTop: 10}}>
                                     <Col>
-                                        <div className='Tile-Data-Label' style={{ fontSize: 20 }}>{this.state.forwarder === undefined ? 'brak' 
-                                        : <span><span>{this.state.forwarder?.firstName}</span><span>&nbsp;</span><span>{this.state.forwarder?.lastName}</span></span>}</div>
+                                        <div className='Tile-Data-Label' style={{ fontSize: 20 }}>{this.state.selectedForwarder === undefined ? 'brak' 
+                                        : this.state.selectedForwarder === null ? 'Brak' : <span><span>{this.state.selectedForwarder?.firstName}</span><span>&nbsp;</span><span>{this.state.selectedForwarder?.lastName}</span></span>}</div>
                                     </Col>
                                 </Row>
                             </Container>
@@ -1517,7 +1559,7 @@ class EditOrderPanel extends Component{
                             <Row style={{textAlign: 'center'}}>
                                 <Col>
                                     <label className='Orders-Header'>
-                                        {this.state.selectedPopup === 'addConsultant' ? 'Wybierz konsultanta spedycji' : 'Wybierz magazyn'}
+                                        {this.state.selectedPopup === 'addConsultant' ? 'Wybierz konsultanta spedycji' : this.state.selectedPopup === 'addForwarder' ? 'Wybierz spedytora':'Wybierz magazyn'}
                                     </label>
                                 </Col>
                             </Row>
@@ -1529,8 +1571,8 @@ class EditOrderPanel extends Component{
                                 scrollY
                                 small
                                 data={{
-                                    columns: this.state.selectedPopup === 'addConsultant' ? forwardersColumns : warehousesColumns,
-                                    rows: this.state.selectedPopup === 'addConsultant' ? 
+                                    columns: this.state.selectedPopup === 'addConsultant' || this.state.selectedPopup === 'addForwarder' ? forwardersColumns : warehousesColumns,
+                                    rows: this.state.selectedPopup === 'addConsultant' || this.state.selectedPopup === 'addForwarder' ? 
 
                                         this.state.forwarders.map((forwarder) => (
                                             {
@@ -1539,10 +1581,16 @@ class EditOrderPanel extends Component{
                                                 login: forwarder.login,
                                                 mail: forwarder.mail,
                                                 select: <ImCheckboxChecked 
-                                                            className='Select-On-Popup' 
+                                                            className='Table-Icon' 
                                                             size='1.5em'
                                                             onClick={() => {
-                                                                this.handleSelectedConsultant(forwarder)
+                                                                if(this.state.selectedPopup === 'addConsultant'){
+                                                                    this.handleSelectedConsultant(forwarder)
+                                                                }
+                                                                else{
+                                                                    this.handleSelectedForwarder(forwarder);
+                                                                    this.updateForwardingOrder(forwarder);
+                                                                }
                                                                 close()
                                                             }}/>
                                                 }
@@ -1555,7 +1603,7 @@ class EditOrderPanel extends Component{
                                                 city: warehouse.city,
                                                 zipCode: warehouse.zipCode,
                                                 select: <ImCheckboxChecked 
-                                                            className='Select-On-Popup' 
+                                                            className='Table-Icon' 
                                                             size='1.5em'
                                                             onClick={() => {
                                                                 this.handleSelectedWarehouse(warehouse);
@@ -1971,7 +2019,7 @@ class EditOrderPanel extends Component{
                                                             contactPhoneNumber: forwardingOrder.constactPhoneNumber,
                                                             select: 
                                                                 <ImCheckboxChecked
-                                                                    className='Transporter-Details-Icon' 
+                                                                    className='Table-Icon' 
                                                                     onClick={this.handleSelectedAssignedForwardingOrder.bind(this, forwardingOrder)}
                                                                     size='1.4em'/>,
                                                         }

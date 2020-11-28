@@ -78,6 +78,7 @@ class AddOrderPanel extends Component{
                 this.setState({
                     clients: []
                 })
+                return
             }
             this.setState({
                 clients: data

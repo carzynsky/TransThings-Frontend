@@ -42,6 +42,10 @@ class CustomersDashboard extends Component{
             });
 
             const data = await response.data;
+            if(data.length === 0){
+                this.setState({ customers: [], customersCount: 0})
+                return
+            }
             this.setState({
                 customers: data,
                 customersCount: data.length
