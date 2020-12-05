@@ -121,10 +121,13 @@ class StatisticsDashboard extends Component{
             var months = [];
             var transitsData = [];
 
-            data.transitsByLastMonths.map( x => {
-                months.push(x.month)
-                transitsData.push(x.amountOfTransits)
-            })
+            if(data.transitsByLastMonths !== null){
+                data.transitsByLastMonths.map( x => {
+                    months.push(x.month)
+                    transitsData.push(x.amountOfTransits)
+                })
+            }
+           
         
             this.setState({ 
                 transitStats: data,
